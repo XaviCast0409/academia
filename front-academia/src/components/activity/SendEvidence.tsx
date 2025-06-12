@@ -23,8 +23,10 @@ export const SendEvidence = () => {
     const studentId = payload.id;
 
     try {
+      const studentName = payload.name || payload.studentName || ""; // Adjust according to your token payload structure
       await addEvidence({
         studentId,
+        studentName,
         activityId: Number(id),
         filePath: imageLinks,
         status: 'pending',
