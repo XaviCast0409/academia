@@ -15,48 +15,14 @@ import { useEffect, useState } from 'react';
 import { ProductUserModal } from './ProductUserModal';
 import { ProductUserCard } from './ProductUserCard';
 import { ConfirmDialog } from '../../utils/ConfirmDialog';
-import type { Product } from '../../types/products';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import { useProductStore } from '../../store/productsStore';
+import type { Product } from '../../types/products';
 
 const MySwal = withReactContent(Swal);
 
-// Simulaciones de llamadas API:
-const fetchProductsLocal = async (page: number, professorId?: string): Promise<{ products: Product[], totalPages: number }> => {
-	// Aquí reemplaza con tu llamada real a la API
-	const allProducts = JSON.parse(localStorage.getItem('products') || '[]') as Product[];
-	const perPage = 6;
-	const filtered = professorId ? allProducts.filter(p => p.professorId === Number(professorId)) : allProducts;
-	const totalPages = Math.ceil(filtered.length / perPage);
-	const paginated = filtered.slice((page - 1) * perPage, page * perPage);
-	return { products: paginated, totalPages };
-};
-
-const addProductLocal = async (product: Product) => {
-	const current = JSON.parse(localStorage.getItem('products') || '[]');
-	localStorage.setItem('products', JSON.stringify([...current, product]));
-};
-
-const editProductLocal = async (id: number, product: Product) => {
-	const current = JSON.parse(localStorage.getItem('products') || '[]');
-	const updated = current.map((p: Product) => (p.id === id ? { ...p, ...product } : p));
-	localStorage.setItem('products', JSON.stringify(updated));
-};
-
-const removeProductLocal = async (id: number) => {
-	const current = JSON.parse(localStorage.getItem('products') || '[]');
-	const updated = current.filter((p: Product) => p.id !== id);
-	localStorage.setItem('products', JSON.stringify(updated));
-};
-
-const purchaseProductLocal = async (userId: number, productId: number) => {
-	// Simula compra (podrías registrar la compra en localStorage también si deseas)
-	console.log(`Usuario ${userId} compró producto ${productId}`);
-};
-
 export const ProductsUserPage = () => {
-	const [products, setProducts] = useState<Product[]>([]);
-	const [totalPages, setTotalPages] = useState(1);
 	const [page, setPage] = useState(1);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [editingProduct, setEditingProduct] = useState<Product | undefined>();
@@ -65,20 +31,16 @@ export const ProductsUserPage = () => {
 	const [buyDialogOpen, setBuyDialogOpen] = useState(false);
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
+	const { products, totalPages, fetchProducts, addProduct, editProduct, removeProduct } = useProductStore();
+
 	const token = localStorage.getItem('token');
 	const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
 	const isProfessor = user?.roleId === 1;
 	const professorId = isProfessor ? String(user.id) : undefined;
 
-	const loadProducts = async () => {
-		const { products, totalPages } = await fetchProductsLocal(page, professorId);
-		setProducts(products);
-		setTotalPages(totalPages);
-	};
-
 	useEffect(() => {
-		loadProducts();
-	}, [page]);
+		fetchProducts(page, professorId);
+	}, [page, fetchProducts, professorId]);
 
 	const handleAddClick = () => {
 		setEditingProduct(undefined);
@@ -97,9 +59,9 @@ export const ProductsUserPage = () => {
 
 	const confirmDelete = async () => {
 		if (selectedId !== null) {
-			await removeProductLocal(selectedId);
+			await removeProduct(selectedId);
 			setConfirmOpen(false);
-			await loadProducts();
+			await fetchProducts(page, professorId);
 		}
 	};
 
@@ -116,7 +78,8 @@ export const ProductsUserPage = () => {
 		if (!user || !selectedProduct) return;
 
 		try {
-			await purchaseProductLocal(user.id, selectedProduct.id);
+			// Aquí puedes conectar con un servicio real más adelante
+			console.log(`Usuario ${user.id} compró producto ${selectedProduct.id}`);
 			setBuyDialogOpen(false);
 			await MySwal.fire({
 				icon: 'success',
@@ -137,18 +100,14 @@ export const ProductsUserPage = () => {
 		setSelectedProduct(null);
 	};
 
-	const handleSaveProduct = async (product: Omit<Product, 'id'>) => {
+	const handleSaveProduct = async (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {
 		if (editingProduct) {
-			await editProductLocal(editingProduct.id, { ...editingProduct, ...product });
+			await editProduct(editingProduct.id, product);
 		} else {
-			const newProduct: Product = {
-				id: Date.now(),
-				...product,
-			};
-			await addProductLocal(newProduct);
+			await addProduct({ ...product, professorId: Number(professorId) });
 		}
 		setModalOpen(false);
-		await loadProducts();
+		await fetchProducts(page, professorId);
 	};
 
 	return (
