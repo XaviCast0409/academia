@@ -19,6 +19,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useProductStore } from '../../store/productsStore';
 import type { Product } from '../../types/products';
+import { useTransactionStore } from '../../store/transactionStore';
 
 const MySwal = withReactContent(Swal);
 
@@ -30,6 +31,7 @@ export const ProductsUserPage = () => {
 	const [selectedId, setSelectedId] = useState<number | null>(null);
 	const [buyDialogOpen, setBuyDialogOpen] = useState(false);
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+	const { purchaseProduct } = useTransactionStore();
 
 	const { products, totalPages, fetchProducts, addProduct, editProduct, removeProduct } = useProductStore();
 
@@ -78,8 +80,7 @@ export const ProductsUserPage = () => {
 		if (!user || !selectedProduct) return;
 
 		try {
-			// Aquí puedes conectar con un servicio real más adelante
-			console.log(`Usuario ${user.id} compró producto ${selectedProduct.id}`);
+			await purchaseProduct(user.id, selectedProduct.id);
 			setBuyDialogOpen(false);
 			await MySwal.fire({
 				icon: 'success',

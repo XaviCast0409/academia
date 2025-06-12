@@ -6,9 +6,10 @@ interface ActivityCardProps {
   title: string;
   description: string;
   image: string;
+  xavicoints?: number;
 }
 
-const ActivityCardStudent = ({ id, title, description, image }: ActivityCardProps) => {
+const ActivityCardStudent = ({ id, title, description, image, xavicoints }: ActivityCardProps) => {
   const navigate = useNavigate();
 
   return (
@@ -26,6 +27,11 @@ const ActivityCardStudent = ({ id, title, description, image }: ActivityCardProp
         <Typography variant="body2" color="white">
           {description}
         </Typography>
+        {xavicoints && (
+          <Typography variant="body2" color="white" sx={{ mt: 1 }}>
+            <strong>Xavicoints:</strong> {xavicoints}
+          </Typography>
+        )}
         <Button
           variant="contained"
           onClick={() => navigate(`/users/actividades/evidence/${id}`)}

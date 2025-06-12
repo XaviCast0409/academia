@@ -18,7 +18,7 @@ export const AvailableActivities = () => {
     totalPages,
     pageSize,
     setPage,
-  } = useActivityStore();
+  } = useActivityStore(); 
 
   const [studentId, setStudentId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false); // ✅ estado local de carga
@@ -65,6 +65,7 @@ export const AvailableActivities = () => {
                   title={activity.title}
                   description={activity.description}
                   image={activity.images?.[0] || 'https://via.placeholder.com/300'}
+                  xavicoints={activity.xavicoints}
                 />
               </Grid>
             ))}

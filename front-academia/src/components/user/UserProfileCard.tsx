@@ -78,7 +78,7 @@ export const UserProfileCard = ({ user }: Props) => {
 
             <Typography variant={isMobile ? "body1" : "h6"} gutterBottom>
               <MonetizationOnIcon sx={{ mr: 1 }} />
-              Xacoins: <strong>{user.xavicoints ?? 0}</strong>
+              Xavicoins: <strong>{user.xavicoints ?? 0}</strong>
             </Typography>
           </Grid>
         </Grid>
