@@ -145,6 +145,7 @@ export const CreateUserForm = () => {
         render={({ field }) => (
           <TextField
             label="Rol"
+            {...field}
             fullWidth
             disabled // 👈 desactiva la edición
             value={2} // 👈 forzamos el valor a 2 (Alumno)
