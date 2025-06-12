@@ -8,6 +8,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const database_1 = __importDefault(require("./config/database"));
 const index_1 = __importDefault(require("./routes/index"));
+process.loadEnvFile();
 const app = (0, express_1.default)();
 // CORS para desarrollo: permite cualquier origen
 app.use((0, cors_1.default)({
@@ -22,9 +23,10 @@ app.use(index_1.default);
 app.get("/", (req, res) => {
     res.send("¡Hola, mundo!");
 });
+const port = process.env.PORT || 3000;
 // Sincronización de base de datos y levantamiento del servidor
 database_1.default.sequelize.sync({ alter: true }).then(() => {
-    app.listen(3000, () => {
+    app.listen(port, () => {
         console.log("🚀 Campus virtual corriendo en el puerto 3000");
     });
 });

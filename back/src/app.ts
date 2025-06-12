@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import db from "./config/database";
 import router from "./routes/index";
+process.loadEnvFile();
 
 const app = express();
 
@@ -23,9 +24,11 @@ app.get("/", (req, res) => {
   res.send("¡Hola, mundo!");
 });
 
+const port = process.env.PORT || 3000;
+
 // Sincronización de base de datos y levantamiento del servidor
 db.sequelize.sync({ alter: true }).then(() => {
-  app.listen(3000, () => {
+  app.listen(port, () => {
     console.log("🚀 Campus virtual corriendo en el puerto 3000");
   });
 });
