@@ -31,7 +31,7 @@ exports.sequelize = new sequelize_1.Sequelize(environment_1.default.production.u
 const modelsDir = path_1.default.join(__dirname, "../models");
 fs_1.default.readdirSync(modelsDir)
     .filter((file) => {
-    return (file.indexOf(".") !== 0 && file.slice(-3) === ".ts" && !file.includes("index"));
+    return (file.indexOf(".") !== 0 && file.slice(-3) === ".js" && !file.includes("index"));
 })
     .forEach((file) => {
     const modelModule = require(path_1.default.join(modelsDir, file));
