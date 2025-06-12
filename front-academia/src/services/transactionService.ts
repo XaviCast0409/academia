@@ -1,8 +1,14 @@
 import { api } from '../utils/api';
-import type { Transaction, TransactionInput } from '../types/transaction';
+import type { Transaction, TransactionInput, TransactionOutput } from '../types/transaction';
 
-export const getAllTransactions = async (): Promise<Transaction[]> => {
-  const response = await api.get('/transactions');
+export const getAllTransactions = async (page: number, limit: number, userId: number): Promise<TransactionOutput> => {
+  const response = await api.get('/transactions/get-all', {
+    params: {
+      page, // Default to page 1
+      limit, // Default to limit of 10
+      userId
+    },
+  });
   return response.data;
 };
 

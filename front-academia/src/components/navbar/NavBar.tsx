@@ -128,14 +128,17 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
                   },
                 }}
               >
-                {user.roleId === 3 && (
+                {user.roleId === 2 && (
                   <MenuItem key="perfil" onClick={goToProfile}>Perfil</MenuItem>
                 )}
-                {user.roleId === 3 && (
+                {user.roleId === 2 && (
                   <MenuItem key="actividades" onClick={() => navigate('/users/actividades')}>Panel de Actividades</MenuItem>
                 )}
-                {user.roleId === 3 && (
+                {user.roleId === 2 && (
                   <MenuItem key="shop" onClick={() => navigate('/users/shop')}>Panel de Productos</MenuItem>
+                )}
+                {user.roleId === 2 && (
+                  <MenuItem key="transactions" onClick={() => navigate('/users/transactions')}>Mis Transacciones</MenuItem>
                 )}
                 <MenuItem key="session" onClick={handleLogout}>Cerrar sesión</MenuItem>
               </Menu>

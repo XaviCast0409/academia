@@ -10,9 +10,27 @@ const getTransaction = async (id) => {
     return transaction;
 };
 exports.getTransaction = getTransaction;
-const getTransactions = async () => {
-    const transactions = await database_1.default.Transaction.findAll();
-    return transactions;
+const getTransactions = async (page = 1, limit = 10, userIdNumber) => {
+    const offset = (page - 1) * limit;
+    const { rows: transactions, count: total } = await database_1.default.Transaction.findAndCountAll({
+        where: userIdNumber ? { userId: userIdNumber } : {},
+        include: [
+            {
+                model: database_1.default.User,
+                as: 'user',
+                attributes: ['id', 'name', 'email'],
+            },
+            {
+                model: database_1.default.Product,
+                as: 'product',
+                attributes: ['id', 'name', 'price'],
+            },
+        ],
+        order: [['createdAt', 'DESC']],
+        limit,
+        offset,
+    });
+    return { transactions, total };
 };
 exports.getTransactions = getTransactions;
 const createTransaction = async (transaction) => {

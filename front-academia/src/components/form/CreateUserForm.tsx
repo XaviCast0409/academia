@@ -1,25 +1,34 @@
 import {
-  Box, Button, MenuItem, TextField, Typography
+  Box,
+  Button,
+  MenuItem,
+  TextField,
+  Typography,
+  CircularProgress
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRoleStore } from '../../store/roleStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { createUser } from '../../services/userService';
 import type { CreateUserDTO } from '../../types/user';
 import { PokemonSelector } from '../pokemon/PokemonSelector';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const schema = yup.object().shape({
   name: yup.string().required('Nombre requerido'),
   email: yup.string().email('Email inválido').required('Email requerido'),
   password: yup.string().min(6, 'Mínimo 6 caracteres').required('Contraseña requerida'),
   roleId: yup.number().required('Rol requerido'),
-  pokemonId: yup.number().required('Pokémon requerido') // 👈
+  pokemonId: yup.number().required('Pokémon requerido')
 });
 
 export const CreateUserForm = () => {
-  const { roles, getAllRoles } = useRoleStore();
+  const { getAllRoles } = useRoleStore();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const {
     control,
@@ -28,23 +37,40 @@ export const CreateUserForm = () => {
     formState: { errors }
   } = useForm<CreateUserDTO>({
     resolver: yupResolver(schema),
-    defaultValues: { name: '', email: '', password: '', roleId: 0 }
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      roleId: 2, // 👈 rol alumno por defecto
+      pokemonId: undefined
+    }
   });
 
   useEffect(() => {
-    const fetchRoles = async () => {
-      await getAllRoles();
-    };
-    fetchRoles();
+    getAllRoles();
   }, [getAllRoles]);
 
   const onSubmit = async (data: CreateUserDTO) => {
     try {
+      setLoading(true);
       await createUser(data);
-      alert('Usuario creado con éxito');
+      await Swal.fire({
+        icon: 'success',
+        title: '¡Usuario creado!',
+        text: 'Tu cuenta ha sido registrada correctamente.',
+        confirmButtonColor: '#e07f3f'
+      });
       reset();
+      navigate('/'); // 👈 redirige al login
     } catch (err) {
-      alert('Error al crear usuario');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al crear usuario',
+        text: 'Verifica los datos ingresados o intenta más tarde.',
+        confirmButtonColor: '#e07f3f'
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,20 +144,17 @@ export const CreateUserForm = () => {
         control={control}
         render={({ field }) => (
           <TextField
-            select
             label="Rol"
             fullWidth
-            {...field}
-            error={!!errors.roleId}
-            helperText={errors.roleId?.message}
+            disabled // 👈 desactiva la edición
+            value={2} // 👈 forzamos el valor a 2 (Alumno)
             margin="normal"
             sx={{ '& .MuiInputBase-root': { backgroundColor: '#fff' } }}
+            helperText="Este campo no se puede modificar"
           >
-            {roles.map((role) => (
-              <MenuItem key={role.id} value={role.id}>
-                {role.name}
-              </MenuItem>
-            ))}
+            <MenuItem value={2}>
+              Alumno
+            </MenuItem>
           </TextField>
         )}
       />
@@ -146,16 +169,17 @@ export const CreateUserForm = () => {
         type="submit"
         fullWidth
         variant="contained"
+        disabled={loading}
         sx={{
           mt: 3,
           bgcolor: '#E07F3F',
           color: '#fff',
           '&:hover': {
             bgcolor: '#C26C2D',
-          },
+          }
         }}
       >
-        Crear Usuario
+        {loading ? <CircularProgress size={24} color="inherit" /> : 'Crear Usuario'}
       </Button>
     </Box>
   );

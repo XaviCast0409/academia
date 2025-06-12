@@ -5,6 +5,7 @@ import {
   Typography,
   Pagination,
   Box,
+  CircularProgress,
 } from '@mui/material';
 import { useActivityStore } from '../../store/activityStore';
 import ActivityCardStudent from './ActivityCardStudent';
@@ -15,11 +16,12 @@ export const AvailableActivities = () => {
     getAvailableActivitiesForStudentPaginated,
     page,
     totalPages,
-    pageSize, // asegúrate de tenerlo en la store
-    setPage,  // crea esta acción en tu store si no existe
+    pageSize,
+    setPage,
   } = useActivityStore();
 
   const [studentId, setStudentId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false); // ✅ estado local de carga
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -29,13 +31,18 @@ export const AvailableActivities = () => {
   }, []);
 
   useEffect(() => {
-    if (studentId) {
-      getAvailableActivitiesForStudentPaginated(studentId, page, pageSize);
-    }
+    const fetchActivities = async () => {
+      if (!studentId) return;
+      setLoading(true); // ✅ empieza carga
+      await getAvailableActivitiesForStudentPaginated(studentId, page, pageSize);
+      setLoading(false); // ✅ termina carga
+    };
+
+    fetchActivities();
   }, [studentId, page, pageSize]);
 
   const handlePageChange = (_: any, value: number) => {
-    setPage(value); // cambiar página en la store
+    setPage(value);
   };
 
   return (
@@ -44,27 +51,35 @@ export const AvailableActivities = () => {
         Actividades Disponibles
       </Typography>
 
-      <Grid container spacing={3}>
-        {activities.map((activity) => (
-          <Grid key={activity.id}>
-            <ActivityCardStudent
-              id={activity.id}
-              title={activity.title}
-              description={activity.description}
-              image={activity.images?.[0] || 'https://via.placeholder.com/300'}
-            />
+      {loading ? (
+        <Box display="flex" justifyContent="center" mt={6}>
+          <CircularProgress color="primary" />
+        </Box>
+      ) : (
+        <>
+          <Grid container spacing={3}>
+            {activities.map((activity) => (
+              <Grid key={activity.id}>
+                <ActivityCardStudent
+                  id={activity.id}
+                  title={activity.title}
+                  description={activity.description}
+                  image={activity.images?.[0] || 'https://via.placeholder.com/300'}
+                />
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
 
-      <Box display="flex" justifyContent="center" mt={4}>
-        <Pagination
-          count={totalPages}
-          page={page}
-          onChange={handlePageChange}
-          color="primary"
-        />
-      </Box>
+          <Box display="flex" justifyContent="center" mt={4}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Box>
+        </>
+      )}
     </Container>
   );
 };

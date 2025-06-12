@@ -11,10 +11,14 @@ import { errorHelper } from "../../utils/error";
 
 export const getAllTransactionscontroller = async (req: Request, res: Response) => {
   try {
-    const transactions = await getTransactions();
+    const { page, limit, userId } = req.query;
+    const pageNumber = parseInt(page as string);
+    const limitNumber = parseInt(limit as string);
+    const userIdNumber = userId ? parseInt(userId as string) : undefined;
+    const transactions = await getTransactions(pageNumber, limitNumber, userIdNumber);
     res.status(200).json(transactions);
   } catch (error: any) {
-    errorHelper(res, error);
+    errorHelper(error, res);
   }
 };
 

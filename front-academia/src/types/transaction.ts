@@ -6,10 +6,9 @@ export interface TransactionInput {
   description: string;
 }
 
-export interface TransactionOutput extends TransactionInput {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date;
+export interface TransactionOutput {
+  transactions: Transaction[];
+  total: number; // Total amount for the transaction
 }
 
 export interface Transaction {

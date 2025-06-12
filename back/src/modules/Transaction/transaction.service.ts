@@ -6,9 +6,33 @@ export const getTransaction = async (id: number): Promise<TransactionOutput> => 
   return transaction;
 };
 
-export const getTransactions = async (): Promise<TransactionOutput[]> => {
-  const transactions = await db.Transaction.findAll();
-  return transactions;
+export const getTransactions = async (
+  page: number = 1,
+  limit: number = 10,
+  userIdNumber?: number
+): Promise<{ transactions: TransactionOutput[]; total: number }> => {
+  const offset = (page - 1) * limit;
+
+  const { rows: transactions, count: total } = await db.Transaction.findAndCountAll({
+    where: userIdNumber ? { userId: userIdNumber } : {},
+    include: [
+      {
+        model: db.User,
+        as: 'user',
+        attributes: ['id', 'name', 'email'],
+      },
+      {
+        model: db.Product,
+        as: 'product',
+        attributes: ['id', 'name', 'price'],
+      },
+    ],
+    order: [['createdAt', 'DESC']],
+    limit,
+    offset,
+  });
+
+  return { transactions, total };
 };
 
 export const createTransaction = async (transaction: TransactionInput): Promise<TransactionOutput> => {

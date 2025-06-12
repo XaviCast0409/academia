@@ -49,7 +49,7 @@ export const PokemonSelector = ({ field }: Props) => {
 
       <Grid container spacing={2}>
         {pokemons.map((pokemon) => (
-          <Grid key={pokemon.id} item xs={6} sm={4} md={3} {...({} as any)}>
+          <Grid key={pokemon.id} >
             <Card
               sx={{
                 border:

@@ -10,9 +10,11 @@ import {
   Typography,
   Paper,
   Link,
+  CircularProgress,
 } from "@mui/material";
 import { loginUser } from "../../services/authService";
 import { useAuthStore } from "../../store/authStore";
+import { useState } from "react";
 
 interface LoginFormInputs {
   email: string;
@@ -27,20 +29,22 @@ export const Login = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>();
   const login = useAuthStore((state) => state.login);
+  const [loading, setLoading] = useState(false); // ✅ estado para loader
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
+      setLoading(true); // 🔄 muestra el loader
       const token = await loginUser(data);
       login(token);
       const decoded = jwtDecode<{ roleId: number }>(token);
       const roleId = decoded.roleId;
 
       switch (roleId) {
-        case 1:
         case 3:
+        case 2:
           navigate("/users/profile");
           break;
-        case 2:
+        case 1:
           navigate("/admin");
           break;
         default:
@@ -53,6 +57,8 @@ export const Login = () => {
         text: "Correo o contraseña incorrectos.",
         confirmButtonColor: "#e07f3f",
       });
+    } finally {
+      setLoading(false); // ✅ oculta el loader
     }
   };
 
@@ -85,6 +91,7 @@ export const Login = () => {
         >
           Iniciar Sesión
         </Typography>
+
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <TextField
             fullWidth
@@ -126,6 +133,7 @@ export const Login = () => {
             variant="contained"
             type="submit"
             fullWidth
+            disabled={loading} // ❌ desactiva mientras carga
             sx={{
               mt: 3,
               backgroundColor: "#e07f3f",
@@ -135,7 +143,11 @@ export const Login = () => {
               fontWeight: "bold",
             }}
           >
-            Iniciar sesión
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Iniciar sesión"
+            )}
           </Button>
         </form>
 

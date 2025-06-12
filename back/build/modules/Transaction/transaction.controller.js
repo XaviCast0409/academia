@@ -5,11 +5,15 @@ const transaction_service_1 = require("./transaction.service");
 const error_1 = require("../../utils/error");
 const getAllTransactionscontroller = async (req, res) => {
     try {
-        const transactions = await (0, transaction_service_1.getTransactions)();
+        const { page, limit, userId } = req.query;
+        const pageNumber = parseInt(page);
+        const limitNumber = parseInt(limit);
+        const userIdNumber = userId ? parseInt(userId) : undefined;
+        const transactions = await (0, transaction_service_1.getTransactions)(pageNumber, limitNumber, userIdNumber);
         res.status(200).json(transactions);
     }
     catch (error) {
-        (0, error_1.errorHelper)(res, error);
+        (0, error_1.errorHelper)(error, res);
     }
 };
 exports.getAllTransactionscontroller = getAllTransactionscontroller;

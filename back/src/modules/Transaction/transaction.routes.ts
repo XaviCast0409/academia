@@ -10,7 +10,7 @@ import {
 
 const transactionRouter = Router();
 
-transactionRouter.get("/", getAllTransactionscontroller);
+transactionRouter.get("/get-all", getAllTransactionscontroller);
 transactionRouter.get("/:id", getTransactionController);
 transactionRouter.post("/", createTransactionController);
 transactionRouter.put("/:id", updateTransactionController);

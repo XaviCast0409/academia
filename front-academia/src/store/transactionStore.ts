@@ -11,8 +11,9 @@ import {
 
 interface TransactionState {
   transactions: Transaction[];
+  totalPages: number; // Optional, if you want to handle pagination
   addTransaction: (transaction: Transaction) => void;
-  getAllTransactions: () => Promise<void>;
+  getAllTransactions: (page: number, limit: number, userId: number) => Promise<void>;
   getTransaction: (id: number) => Promise<Transaction>;
   createTransaction: (transaction: Omit<Transaction, "id" | "createdAt" | "updatedAt">) => Promise<Transaction>;
   updateTransaction: (id: number, transaction: Omit<Transaction, "id" | "createdAt" | "updatedAt">) => Promise<Transaction>;
@@ -22,14 +23,20 @@ interface TransactionState {
 
 export const useTransactionStore = create<TransactionState>((set) => ({
   transactions: [],
+  totalPages: 1, // Initialize totalPages if you want to handle pagination
   addTransaction: (transaction) =>
     set((state) => ({
       transactions: [...state.transactions, transaction],
     })),
-  getAllTransactions: async () => {
-    const transactions = await getAllTransactions();
-    set({ transactions });
-  },
+  getAllTransactions: async (page, limit, userId) => {
+  const res = await getAllTransactions(page, limit, userId); // este `getAllTransactions` de `services/transactionService` debe retornar { transactions, total }
+  const { transactions, total } = res;
+
+  set({
+    transactions,
+    totalPages: Math.ceil(total / limit),
+  });
+},
   getTransaction: async (id) => {
     const transaction = await getTransaction(id);
     return transaction;

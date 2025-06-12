@@ -13,6 +13,7 @@ import { AvailableActivities } from "./components/activity/ActivityPerStudentPag
 import { SendEvidence } from "./components/activity/SendEvidence";
 import { UserProfilePage } from "./components/user/UserProfilePage";
 import { ProductsUserPage } from "./components/productsUser/ProductUserPage"
+import { UserTransactionsList } from "./components/transaction/TransactionPage";
 
 function App() {
   
@@ -28,6 +29,7 @@ function App() {
           <Route path="/users/actividades/evidence/:id" element={<SendEvidence />} />
           <Route path="/users/profile" element={<UserProfilePage />} />
           <Route path="/users/shop" element={<ProductsUserPage />} />
+          <Route path="/users/transactions" element={<UserTransactionsList />} />
 
         </Route>
         {/* profesor */}
