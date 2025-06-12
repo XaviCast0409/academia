@@ -156,7 +156,7 @@ export const Login = () => {
             ¿No tienes una cuenta?{" "}
             <Link
               component={RouterLink}
-              to="/register"
+              to="/create-user"
               underline="hover"
               sx={{ color: "#0d3745", fontWeight: "bold" }}
             >
