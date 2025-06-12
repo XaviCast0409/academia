@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "build"         // 👈 Aquí defines la carpeta de salida
+  },
+  "include": ["src"],         // 👈 Solo si quieres compilar solo tu carpeta src
+  "exclude": ["node_modules"] // 👈 Para evitar que compile paquetes
+}

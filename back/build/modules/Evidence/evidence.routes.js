@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const evidence_controller_1 = require("./evidence.controller");
+const routerEvidence = (0, express_1.Router)();
+routerEvidence.get("/:id", evidence_controller_1.getEvidenceController);
+routerEvidence.post("/", evidence_controller_1.createEvidenceController);
+routerEvidence.put("/:id", evidence_controller_1.updateEvidenceController);
+routerEvidence.delete("/:id", evidence_controller_1.deleteEvidenceController);
+routerEvidence.get("/activities/:activityId", evidence_controller_1.getEvidencesByActivityController);
+exports.default = routerEvidence;

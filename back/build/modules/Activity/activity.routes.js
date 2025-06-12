@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const activity_controller_1 = require("./activity.controller");
+const routerActivity = (0, express_1.Router)();
+routerActivity.get('/:id', activity_controller_1.getActivityController);
+routerActivity.get('/', activity_controller_1.getActivitiesController);
+routerActivity.post('/create', activity_controller_1.createActivityController);
+routerActivity.put('/:id', activity_controller_1.updateActivityController);
+routerActivity.delete('/:id', activity_controller_1.deleteActivityController);
+routerActivity.get('/available/:studentId', activity_controller_1.getAvailableActivitiesForStudentPaginatedController);
+routerActivity.post('/change/evidence/:activityId', activity_controller_1.changeEvidenceStatusAndAddXavicointsController);
+exports.default = routerActivity;

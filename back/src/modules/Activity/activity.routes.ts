@@ -1,0 +1,22 @@
+import { Router } from "express";
+import {
+    getActivityController,
+    getActivitiesController,
+    createActivityController,
+    updateActivityController,
+    deleteActivityController,
+    getAvailableActivitiesForStudentPaginatedController,
+    changeEvidenceStatusAndAddXavicointsController
+} from './activity.controller'
+
+const routerActivity = Router();
+
+routerActivity.get('/:id', getActivityController);
+routerActivity.get('/', getActivitiesController);
+routerActivity.post('/create', createActivityController);
+routerActivity.put('/:id', updateActivityController);
+routerActivity.delete('/:id', deleteActivityController);
+routerActivity.get('/available/:studentId', getAvailableActivitiesForStudentPaginatedController);
+routerActivity.post('/change/evidence/:activityId', changeEvidenceStatusAndAddXavicointsController);
+
+export default routerActivity;
