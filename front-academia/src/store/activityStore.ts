@@ -10,7 +10,7 @@ interface ActivityState {
   pageSize: number;
 
   fetchActivities: () => Promise<void>;
-  addActivity: (activity: Activity) => Promise<void>;
+  addActivity: (activity: ActivityInput) => Promise<void>;
   editActivity: (id: number, activity: Activity) => Promise<void>;
   removeActivity: (id: number) => Promise<void>;
   getAvailableActivitiesForStudentPaginated: (studentId: number, page: number, limit: number) => Promise<void>;
@@ -44,7 +44,7 @@ export const useActivityStore = create<ActivityState>((set) => ({
     }
   },
 
-  addActivity: async (activity: ActivityInput) => {
+  addActivity: async (activity) => {
     try {
       const newActivity = await createActivity(activity);
       set((state) => ({ activities: [...state.activities, newActivity] }));
