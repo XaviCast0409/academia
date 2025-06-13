@@ -59,8 +59,8 @@ export const UserTransactionsList = () => {
               <Grid key={tx.id}>
                 <Card sx={{ bgcolor: palette.accent, color: 'white' }}>
                   <CardContent>
-                    <Typography variant="h6">{tx.product.name}</Typography>
-                    <Typography variant="body2">XaviCoins: {tx.product.price}</Typography>
+                    <Typography variant="h6">{tx.product?.name}</Typography>
+                    <Typography variant="body2">XaviCoins: {tx.product?.price}</Typography>
                     <Typography variant="body2">
                       Fecha: {new Date(tx.createdAt).toLocaleString()}
                     </Typography>

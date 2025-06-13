@@ -1,11 +1,14 @@
 import { create } from "zustand";
 import type { Activity, ActivityInput } from "../types/activity";
-import { createActivity, getActivities, updateActivity, deleteActivity, getAvailableActivitiesForStudentPaginated, changeEvidenceStatusAndAddXavicoints } from "../services/activityService";
+import { createActivity, getActivities, updateActivity, deleteActivity, getAvailableActivitiesForStudentPaginated, changeEvidenceStatusAndAddXavicoints, getActivity } from "../services/activityService";
 interface ActivityState {
   activities: Activity[];
+  activity: Activity | undefined; // 👈 para manejar la actividad por ID
+
   page: number;
   totalPages: number;
   pageSize: number;
+
   fetchActivities: () => Promise<void>;
   addActivity: (activity: Activity) => Promise<void>;
   editActivity: (id: number, activity: Activity) => Promise<void>;
@@ -14,6 +17,7 @@ interface ActivityState {
   changeEvidenceStatusAndAddXavicoints: (activityId: number, data: any) => Promise<Activity>;
   setPage: (page: number) => void;
   setTotalPages: (totalPages: number) => void;
+  activityById: (id: number) => Promise<void>;
 }
 
 export const useActivityStore = create<ActivityState>((set) => ({
@@ -21,6 +25,7 @@ export const useActivityStore = create<ActivityState>((set) => ({
   page: 1,
   totalPages: 1,
   pageSize: 10,
+  activity: undefined, // 👈 inicializa la actividad por ID como undefined
 
   fetchActivities: async () => {
     try {
@@ -28,6 +33,14 @@ export const useActivityStore = create<ActivityState>((set) => ({
       set({ activities });
     } catch (error) {
       console.error("Error fetching activities:", error);
+    }
+  },
+  activityById: async (id: number) => {
+    try {
+      const activity = await getActivity(id);
+      set({ activity: activity }); // Actualiza el estado con la actividad obtenida
+    } catch (error) {
+      console.error("Error fetching activity by ID:", error);
     }
   },
 

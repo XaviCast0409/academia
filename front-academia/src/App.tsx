@@ -14,6 +14,7 @@ import { SendEvidence } from "./components/activity/SendEvidence";
 import { UserProfilePage } from "./components/user/UserProfilePage";
 import { ProductsUserPage } from "./components/productsUser/ProductUserPage"
 import { UserTransactionsList } from "./components/transaction/TransactionPage";
+import { ViewActivityPage } from "./components/activity/ViewActivityPage";
 
 function App() {
   
@@ -30,6 +31,7 @@ function App() {
           <Route path="/users/profile" element={<UserProfilePage />} />
           <Route path="/users/shop" element={<ProductsUserPage />} />
           <Route path="/users/transactions" element={<UserTransactionsList />} />
+          <Route path="/users/actividades/ver/:id" element={<ViewActivityPage />} />
 
         </Route>
         {/* profesor */}

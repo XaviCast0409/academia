@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
+import { useEffect } from "react";
 
 const Input = styled("input")({
   display: "none",
@@ -17,9 +18,10 @@ const Input = styled("input")({
 
 interface EvidenceUploaderProps {
   onUploadComplete: (urls: string[]) => void;
+  resetUploader: number;
 }
 
-const EvidenceUploader: React.FC<EvidenceUploaderProps> = ({ onUploadComplete }) => {
+const EvidenceUploader: React.FC<EvidenceUploaderProps> = ({ onUploadComplete, resetUploader }) => {
   const [files, setFiles] = useState<FileList | null>(null);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [selectedCount, setSelectedCount] = useState<number>(0);
@@ -37,6 +39,14 @@ const EvidenceUploader: React.FC<EvidenceUploaderProps> = ({ onUploadComplete })
     );
     setPreviewUrls(previews);
   };
+
+  useEffect(() => {
+  setFiles(null);
+  setPreviewUrls([]);
+  setSelectedCount(0);
+  setIsUploading(false);
+  setIsUploaded(false);
+}, [resetUploader]);
 
   const handleUpload = async () => {
     if (!files || files.length === 0) return;

@@ -28,7 +28,7 @@ export const ProductCard = ({ product, onEdit, onDelete }: Props) => {
           {product.description}
         </Typography>
         <Typography variant="subtitle1" sx={{ mt: 1, color: '#E07F3F' }}>
-          S/. {product.price}
+          Xavicoins {product.price}
         </Typography>
       </CardContent>
       <CardActions>

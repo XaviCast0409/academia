@@ -4,6 +4,8 @@ import { Box, Button, Container, Typography } from '@mui/material';
 import { useState } from 'react';
 import ImageCloudinary from '../../components/cloudinary/Image';
 import { useEvidenceStore } from '../../store/evidenceStore';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 interface FormValues {
   filePath: string[];
@@ -13,17 +15,20 @@ export const SendEvidence = () => {
   const { id } = useParams();
   const [imageLinks, setImageLinks] = useState<string[]>([]);
   const { control, handleSubmit } = useForm<FormValues>();
+  const [uploaderKey, /* setUploaderKey */] = useState<number>(0);
+  const navigate = useNavigate();
 
   const addEvidence = useEvidenceStore((state) => state.addEvidence);
 
   const onSubmit = async () => {
     const token = localStorage.getItem('token');
     if (!token) return;
+
     const payload = JSON.parse(atob(token.split('.')[1]));
     const studentId = payload.id;
+    const studentName = payload.name || payload.studentName || "";
 
     try {
-      const studentName = payload.name || payload.studentName || ""; // Adjust according to your token payload structure
       await addEvidence({
         studentId,
         studentName,
@@ -31,12 +36,27 @@ export const SendEvidence = () => {
         filePath: imageLinks,
         status: 'pending',
       });
-      alert('Evidencia enviada correctamente');
+
+      Swal.fire({
+        title: '¡Evidencia enviada!',
+        text: 'Tu evidencia fue enviada correctamente.',
+        icon: 'success',
+        confirmButtonColor: 'rgb(132, 52, 28)',
+        confirmButtonText: 'OK',
+      }).then(() => {
+        navigate('/users/actividades');
+      });
     } catch (error) {
       console.error(error);
-      alert('Error al enviar la evidencia');
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo enviar la evidencia. Intenta nuevamente.',
+        icon: 'error',
+        confirmButtonColor: 'rgb(224, 127, 63)',
+      });
     }
   };
+
 
   return (
     <Container sx={{ mt: 4 }}>
@@ -48,7 +68,7 @@ export const SendEvidence = () => {
           name="filePath"
           control={control}
           render={() => (
-            <ImageCloudinary setImageLinks={setImageLinks} />
+            <ImageCloudinary setImageLinks={setImageLinks} resetUploader={uploaderKey} />
           )}
         />
         <Button

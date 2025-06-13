@@ -6,6 +6,8 @@ import ImageCloudinary from "../cloudinary/Image";
 import { useState } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Swal from "sweetalert2";
+
 
 
 interface FormValues {
@@ -26,6 +28,7 @@ const schema = yup.object().shape({
 
 const ActivityForm = ({ professorId }: { professorId: number }) => {
   const { addActivity } = useActivityStore();
+  const [uploaderKey, setUploaderKey] = useState<number>(0);
   const { control, handleSubmit, reset } = useForm<FormValues>({
     resolver: yupResolver(schema),
   });
@@ -36,14 +39,25 @@ const ActivityForm = ({ professorId }: { professorId: number }) => {
       ...data,
       images: imageLinks,
       professorId,
-      id: 0, // El ID se asignará automáticamente en el backend
+      id: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+
     await addActivity(payload);
-    reset();
-    setImageLinks([]);
-    window.location.reload();
+
+    // Mostrar alerta de éxito
+    Swal.fire({
+      title: "¡Actividad creada!",
+      text: "La actividad se ha creado exitosamente.",
+      icon: "success",
+      confirmButtonColor: "rgb(224, 127, 63)",
+      confirmButtonText: "Aceptar",
+    }).then(() => {
+      reset();
+      setImageLinks([]);
+      setUploaderKey(prev => prev + 1); // Forzar el reinicio del uploader
+    });
   };
 
   return (
@@ -152,7 +166,7 @@ const ActivityForm = ({ professorId }: { professorId: number }) => {
         />
 
         <Box mt={2} mb={2}>
-          <ImageCloudinary setImageLinks={setImageLinks}/>
+          <ImageCloudinary setImageLinks={setImageLinks} resetUploader={uploaderKey} />
         </Box>
 
         <Button

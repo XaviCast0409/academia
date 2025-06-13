@@ -3,18 +3,15 @@ import { Container } from '@mui/material';
 
 interface ImageCloudinaryProps {
   setImageLinks: (urls: string[]) => void;
+  resetUploader: number;
 }
 
-const ImageCloudinary = ({ setImageLinks }: ImageCloudinaryProps) => {
-
+const ImageCloudinary = ({ setImageLinks, resetUploader }: ImageCloudinaryProps) => {
   return (
     <Container>
       <EvidenceUploader
-        onUploadComplete={(urls) => {
-          setImageLinks(urls);
-          // Aquí puedes enviarlas a tu backend
-          console.log('Links listos para enviar al backend:', urls);
-        }}
+        onUploadComplete={(urls) => setImageLinks(urls)}
+        resetUploader={resetUploader}
       />
     </Container>
   );

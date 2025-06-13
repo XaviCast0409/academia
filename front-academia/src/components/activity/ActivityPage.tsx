@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useActivityStore } from "../../store/activityStore";
 import { ConfirmDialog } from "../../utils/ConfirmDialog";
 import { ActivityCard } from "./ActivityCard";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export const ActivityPage = () => {
 	const ACTIVITIES_PER_PAGE = 10;
@@ -51,13 +51,12 @@ export const ActivityPage = () => {
 			</Box>
 			<Grid container spacing={2}>
 				{paginatedActivities.map((activity) => (
-					<Grid key={activity.id} {...({} as any)}>
-						<Link to={`/admin/actividad/registroEvidence/${activity.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-							<ActivityCard
-								activity={activity}
-								onDelete={() => handleDelete(activity.id)}
-							/>
-						</Link>
+					<Grid key={activity.id}>
+						<ActivityCard
+							activity={activity}
+							onDelete={() => handleDelete(activity.id)}
+						/>
+
 					</Grid>
 				))}
 			</Grid>
