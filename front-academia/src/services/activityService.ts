@@ -12,6 +12,8 @@ export const getActivities = async (): Promise<any[]> => {
 };
 
 export const createActivity = async (data: any): Promise<any> => {
+  console.log('Creating activity with data:', data);
+  
   const response = await api.post(`/activities/create`, data);
   return response.data;
 };

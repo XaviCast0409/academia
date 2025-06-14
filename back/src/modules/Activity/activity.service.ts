@@ -35,14 +35,6 @@ export const createActivity = async (
     throw new Error("Title, description, pdfPath and xavicoints are required.");
   }
 
-  const findActivity = await db.Activity.findOne({
-    where: { title: activity.title },
-  });
-
-  if (findActivity) {
-    throw new Error("Activity already exists.");
-  }
-
   const newActivity = await db.Activity.create(activity);
   return newActivity;
 };
