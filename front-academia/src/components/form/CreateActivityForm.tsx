@@ -39,9 +39,6 @@ const ActivityForm = ({ professorId }: { professorId: number }) => {
       ...data,
       images: imageLinks,
       professorId,
-      id: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     };
 
     await addActivity(payload);

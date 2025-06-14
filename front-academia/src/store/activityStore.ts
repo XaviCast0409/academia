@@ -80,7 +80,7 @@ export const useActivityStore = create<ActivityState>((set) => ({
   getAvailableActivitiesForStudentPaginated: async (studentId: number, page: number, limit: number) => {
     try {
       const activities = await getAvailableActivitiesForStudentPaginated(studentId, page, limit);
-      set({ activities: activities.activities });
+      set({ activities: activities.activities, page: activities.currentPage, totalPages: activities.totalPages });
     } catch (error) {
       console.error("Error fetching activities:", error);
     }
