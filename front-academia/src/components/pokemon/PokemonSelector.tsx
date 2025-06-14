@@ -14,7 +14,7 @@ import { getAllPokemons } from '../../services/pokemonService';
 interface Pokemon {
   id: number;
   name: string;
-  imageUrl: string; // debe coincidir con el campo que devuelves en la DB
+  imageUrl: string;
 }
 
 interface Props {
@@ -42,37 +42,62 @@ export const PokemonSelector = ({ field }: Props) => {
   }, [page]);
 
   return (
-    <Box mt={0} p={3} bgcolor="#F5E8DC" >
-      <Typography variant="h6" mb={1}>
-        Selecciona tu Pokémon
+    <Box mt={4} p={2} sx={{
+      backgroundColor: '#F5E8DC',
+      borderRadius: 3,
+      border: '3px solid #E07F3F',
+      boxShadow: '0px 0px 15px rgba(224, 127, 63, 0.3)',
+      fontFamily: "'Press Start 2P', cursive"
+    }}>
+      <Typography
+        variant="h6"
+        mb={2}
+        align="center"
+        sx={{
+          fontFamily: "'Press Start 2P'",
+          fontSize: '0.75rem',
+          color: '#84341C'
+        }}
+      >
+        SELECCIONA TU POKÉMON
       </Typography>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={2} justifyContent="center">
         {pokemons.map((pokemon) => (
-          <Grid key={pokemon.id} >
+          <Grid key={pokemon.id}>
             <Card
+              onClick={() => field.onChange(pokemon.id)}
               sx={{
-                border:
-                  field.value === pokemon.id
-                    ? '3px solid #E07F3F'
-                    : '1px solid #DDD',
+                width: 100,
+                height: 140,
                 cursor: 'pointer',
+                border: field.value === pokemon.id
+                  ? '4px solid #E07F3F'
+                  : '2px solid #0D3745',
+                backgroundColor: '#fff',
                 transition: '0.2s',
-                boxShadow: field.value === pokemon.id ? '0px 4px 12px rgba(0,0,0,0.2)' : 'none',
+                boxShadow: field.value === pokemon.id
+                  ? '0 0 10px #E07F3F'
+                  : 'none',
                 '&:hover': {
-                  border: '2px solid #E07F3F',
+                  transform: 'scale(1.05)',
+                  borderColor: '#E07F3F',
                 },
               }}
-              onClick={() => field.onChange(pokemon.id)}
             >
               <CardMedia
                 component="img"
-                height="100"
+                height="80"
                 image={pokemon.imageUrl}
                 alt={pokemon.name}
+                sx={{ objectFit: 'contain', marginTop: 1 }}
               />
-              <CardContent>
-                <Typography align="center" fontSize={14}>
+              <CardContent sx={{ padding: 1 }}>
+                <Typography
+                  align="center"
+                  fontSize={10}
+                  sx={{ fontFamily: "'Press Start 2P'", wordBreak: 'break-word' }}
+                >
                   {pokemon.name}
                 </Typography>
               </CardContent>
@@ -81,12 +106,14 @@ export const PokemonSelector = ({ field }: Props) => {
         ))}
       </Grid>
 
-      <Box mt={2} display="flex" justifyContent="space-between">
+      <Box mt={3} display="flex" justifyContent="space-between">
         <Button
           variant="outlined"
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
           sx={{
+            fontFamily: "'Press Start 2P'",
+            fontSize: '0.5rem',
             borderColor: '#0D3745',
             color: '#0D3745',
             '&:hover': {
@@ -95,13 +122,15 @@ export const PokemonSelector = ({ field }: Props) => {
             },
           }}
         >
-          Anterior
+          ◀ ANTERIOR
         </Button>
         <Button
           variant="outlined"
           onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={page === totalPages}
           sx={{
+            fontFamily: "'Press Start 2P'",
+            fontSize: '0.5rem',
             borderColor: '#0D3745',
             color: '#0D3745',
             '&:hover': {
@@ -110,7 +139,7 @@ export const PokemonSelector = ({ field }: Props) => {
             },
           }}
         >
-          Siguiente
+          SIGUIENTE ▶
         </Button>
       </Box>
     </Box>

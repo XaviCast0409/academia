@@ -12,9 +12,7 @@ export const getAllProducts = async (page = 1, professorId?: string): Promise<Ge
             page,
             professorId
         },
-    });
-    console.log("getAllProducts response:", response.data);
-    
+    });    
     return response.data;
 };
 

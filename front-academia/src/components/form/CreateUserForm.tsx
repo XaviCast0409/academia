@@ -4,7 +4,7 @@ import {
   MenuItem,
   TextField,
   Typography,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
@@ -41,7 +41,7 @@ export const CreateUserForm = () => {
       name: '',
       email: '',
       password: '',
-      roleId: 2, // 👈 rol alumno por defecto
+      roleId: 2,
       pokemonId: undefined
     }
   });
@@ -61,7 +61,7 @@ export const CreateUserForm = () => {
         confirmButtonColor: '#e07f3f'
       });
       reset();
-      navigate('/'); // 👈 redirige al login
+      navigate('/');
     } catch (err) {
       Swal.fire({
         icon: 'error',
@@ -78,16 +78,30 @@ export const CreateUserForm = () => {
     <Box
       component="form"
       onSubmit={handleSubmit(onSubmit)}
-      width={400}
-      mx="auto"
-      mt={4}
-      p={3}
-      bgcolor="#F5E8DC"
-      borderRadius={2}
-      boxShadow="0px 4px 12px rgba(0,0,0,0.1)"
+      sx={{
+        maxWidth: 500,
+        mx: 'auto',
+        my: 6,
+        px: 4,
+        py: 5,
+        backgroundColor: '#F5E8DC',
+        borderRadius: 4,
+        boxShadow: '0 0 20px rgba(224, 127, 63, 0.4)',
+        border: '4px solid #E07F3F',
+        fontFamily: "'Press Start 2P', cursive"
+      }}
     >
-      <Typography variant="h5" mb={2} color="#84341C">
-        Crear Usuario
+      <Typography
+        variant="h5"
+        align="center"
+        mb={4}
+        sx={{
+          fontFamily: "'Press Start 2P', cursive",
+          color: '#84341C',
+          fontSize: '1rem'
+        }}
+      >
+        CREAR USUARIO
       </Typography>
 
       <Controller
@@ -101,7 +115,15 @@ export const CreateUserForm = () => {
             error={!!errors.name}
             helperText={errors.name?.message}
             margin="normal"
-            sx={{ '& .MuiInputBase-root': { backgroundColor: '#fff' } }}
+            InputLabelProps={{ style: { fontFamily: "'Press Start 2P'", fontSize: '0.6rem' } }}
+            inputProps={{ style: { fontFamily: "'Press Start 2P'", fontSize: '0.6rem' } }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#fff',
+                '& fieldset': { borderColor: '#84341C' },
+                '&:hover fieldset': { borderColor: '#E07F3F' }
+              }
+            }}
           />
         )}
       />
@@ -117,7 +139,15 @@ export const CreateUserForm = () => {
             error={!!errors.email}
             helperText={errors.email?.message}
             margin="normal"
-            sx={{ '& .MuiInputBase-root': { backgroundColor: '#fff' } }}
+            InputLabelProps={{ style: { fontFamily: "'Press Start 2P'", fontSize: '0.6rem' } }}
+            inputProps={{ style: { fontFamily: "'Press Start 2P'", fontSize: '0.6rem' } }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#fff',
+                '& fieldset': { borderColor: '#84341C' },
+                '&:hover fieldset': { borderColor: '#E07F3F' }
+              }
+            }}
           />
         )}
       />
@@ -134,7 +164,15 @@ export const CreateUserForm = () => {
             error={!!errors.password}
             helperText={errors.password?.message}
             margin="normal"
-            sx={{ '& .MuiInputBase-root': { backgroundColor: '#fff' } }}
+            InputLabelProps={{ style: { fontFamily: "'Press Start 2P'", fontSize: '0.6rem' } }}
+            inputProps={{ style: { fontFamily: "'Press Start 2P'", fontSize: '0.6rem' } }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#fff',
+                '& fieldset': { borderColor: '#84341C' },
+                '&:hover fieldset': { borderColor: '#E07F3F' }
+              }
+            }}
           />
         )}
       />
@@ -147,15 +185,21 @@ export const CreateUserForm = () => {
             label="Rol"
             {...field}
             fullWidth
-            disabled // 👈 desactiva la edición
-            value={2} // 👈 forzamos el valor a 2 (Alumno)
+            disabled
+            value={2}
             margin="normal"
-            sx={{ '& .MuiInputBase-root': { backgroundColor: '#fff' } }}
             helperText="Este campo no se puede modificar"
+            InputLabelProps={{ style: { fontFamily: "'Press Start 2P'", fontSize: '0.6rem' } }}
+            inputProps={{ style: { fontFamily: "'Press Start 2P'", fontSize: '0.6rem' } }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#fff',
+                '& fieldset': { borderColor: '#84341C' },
+                '&:hover fieldset': { borderColor: '#E07F3F' }
+              }
+            }}
           >
-            <MenuItem value={2}>
-              Alumno
-            </MenuItem>
+            <MenuItem value={2}>Alumno</MenuItem>
           </TextField>
         )}
       />
@@ -173,14 +217,19 @@ export const CreateUserForm = () => {
         disabled={loading}
         sx={{
           mt: 3,
-          bgcolor: '#E07F3F',
+          py: 1.5,
+          backgroundColor: '#E07F3F',
           color: '#fff',
+          fontFamily: "'Press Start 2P', cursive",
+          fontSize: '0.6rem',
+          transition: 'all 0.2s ease-in-out',
           '&:hover': {
-            bgcolor: '#C26C2D',
+            backgroundColor: '#C26C2D',
+            transform: 'scale(1.02)'
           }
         }}
       >
-        {loading ? <CircularProgress size={24} color="inherit" /> : 'Crear Usuario'}
+        {loading ? <CircularProgress size={24} color="inherit" /> : 'CREAR USUARIO'}
       </Button>
     </Box>
   );
