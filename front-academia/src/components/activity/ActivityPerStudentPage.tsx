@@ -1,3 +1,4 @@
+// Estilo inspirado en videojuegos tipo shop de Pokémon con colores, bordes y detalles visuales más ricos
 import { useEffect, useState } from 'react';
 import {
   Grid,
@@ -6,6 +7,7 @@ import {
   Pagination,
   Box,
   CircularProgress,
+  Paper,
 } from '@mui/material';
 import { useActivityStore } from '../../store/activityStore';
 import ActivityCardStudent from './ActivityCardStudent';
@@ -21,7 +23,7 @@ export const AvailableActivities = () => {
   } = useActivityStore(); 
 
   const [studentId, setStudentId] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false); // ✅ estado local de carga
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -33,9 +35,9 @@ export const AvailableActivities = () => {
   useEffect(() => {
     const fetchActivities = async () => {
       if (!studentId) return;
-      setLoading(true); // ✅ empieza carga
+      setLoading(true);
       await getAvailableActivitiesForStudentPaginated(studentId, page, pageSize);
-      setLoading(false); // ✅ termina carga
+      setLoading(false);
     };
 
     fetchActivities();
@@ -46,41 +48,42 @@ export const AvailableActivities = () => {
   };
 
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Actividades Disponibles
-      </Typography>
-
-      {loading ? (
-        <Box display="flex" justifyContent="center" mt={6}>
-          <CircularProgress color="primary" />
-        </Box>
-      ) : (
-        <>
-          <Grid container spacing={3}>
-            {activities.map((activity) => (
-              <Grid key={activity.id}>
-                <ActivityCardStudent
-                  id={activity.id}
-                  title={activity.title}
-                  description={activity.description}
-                  image={activity.images?.[0] || 'https://via.placeholder.com/300'}
-                  xavicoints={activity.xavicoints}
-                />
-              </Grid>
-            ))}
-          </Grid>
-
-          <Box display="flex" justifyContent="center" mt={4}>
-            <Pagination
-              count={totalPages}
-              page={page}
-              onChange={handlePageChange}
-              color="primary"
-            />
+    <Container maxWidth="lg" sx={{ mt: 6, fontFamily: 'Press Start 2P', minHeight: '80vh' }}>
+      <Paper elevation={6} sx={{ p: 4, borderRadius: 4, bgcolor: 'rgb(13, 55, 69)', color: 'white' }}>
+        <Typography variant="h4" gutterBottom align="center" sx={{ color: '#FFCC00' }}>
+          ✨ Tienda de Actividades Pokémon ✨
+        </Typography>
+        {loading ? (
+          <Box display="flex" justifyContent="center" mt={6}>
+            <CircularProgress color="secondary" />
           </Box>
-        </>
-      )}
+        ) : (
+          <>
+            <Grid container spacing={4} justifyContent="center">
+              {activities.map((activity) => (
+                <Grid key={activity.id}>
+                  <ActivityCardStudent
+                    id={activity.id}
+                    title={activity.title}
+                    description={activity.description}
+                    image={activity.images?.[0] || 'https://via.placeholder.com/300'}
+                    xavicoints={activity.xavicoints}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+
+            <Box display="flex" justifyContent="center" mt={5}>
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={handlePageChange}
+                color="secondary"
+              />
+            </Box>
+          </>
+        )}
+      </Paper>
     </Container>
   );
 };

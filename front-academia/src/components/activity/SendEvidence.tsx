@@ -1,11 +1,17 @@
 import { useForm, Controller } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
-import { Box, Button, Container, Typography } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { useState } from 'react';
 import ImageCloudinary from '../../components/cloudinary/Image';
 import { useEvidenceStore } from '../../store/evidenceStore';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
 
 interface FormValues {
   filePath: string[];
@@ -15,8 +21,10 @@ export const SendEvidence = () => {
   const { id } = useParams();
   const [imageLinks, setImageLinks] = useState<string[]>([]);
   const { control, handleSubmit } = useForm<FormValues>();
-  const [uploaderKey, /* setUploaderKey */] = useState<number>(0);
+  const [uploaderKey] = useState<number>(0);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const addEvidence = useEvidenceStore((state) => state.addEvidence);
 
@@ -41,7 +49,7 @@ export const SendEvidence = () => {
         title: '¡Evidencia enviada!',
         text: 'Tu evidencia fue enviada correctamente.',
         icon: 'success',
-        confirmButtonColor: 'rgb(132, 52, 28)',
+        confirmButtonColor: '#84341c',
         confirmButtonText: 'OK',
       }).then(() => {
         navigate('/users/actividades');
@@ -52,32 +60,85 @@ export const SendEvidence = () => {
         title: 'Error',
         text: 'No se pudo enviar la evidencia. Intenta nuevamente.',
         icon: 'error',
-        confirmButtonColor: 'rgb(224, 127, 63)',
+        confirmButtonColor: '#E07F3F',
       });
     }
   };
 
-
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h5" gutterBottom>
+    <Container
+      maxWidth="sm"
+      sx={{
+        mt: 4,
+        p: 3,
+        bgcolor: '#fffefc',
+        border: '4px solid #0D3745',
+        borderRadius: 4,
+        boxShadow: '6px 6px 0 #E07F3F',
+        fontFamily: `'Press Start 2P', cursive`,
+      }}
+    >
+            <Button
+        variant="outlined"
+        onClick={() => navigate(-1)}
+        sx={{
+          mb: 3,
+          border: '3px solid #84341c',
+          color: '#84341c',
+          fontSize: isMobile ? '0.5rem' : '0.65rem',
+          fontFamily: `'Press Start 2P', cursive`,
+          px: 2,
+          py: 1,
+          '&:hover': {
+            backgroundColor: 'rgba(132, 52, 28, 0.1)',
+            borderColor: '#E07F3F',
+          },
+        }}
+      >
+        ← Volver
+      </Button>
+      <Typography
+        variant="h5"
+        sx={{
+          color: '#0D3745',
+          fontSize: isMobile ? '0.9rem' : '1.1rem',
+          textAlign: 'center',
+          mb: 3,
+          fontFamily: `'Press Start 2P', cursive`,
+        }}
+      >
         Subir Evidencia para Actividad #{id}
       </Typography>
-      <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+        sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
+      >
         <Controller
           name="filePath"
           control={control}
           render={() => (
-            <ImageCloudinary setImageLinks={setImageLinks} resetUploader={uploaderKey} />
+            <ImageCloudinary
+              setImageLinks={setImageLinks}
+              resetUploader={uploaderKey}
+            />
           )}
         />
+
         <Button
           type="submit"
           variant="contained"
           sx={{
-            mt: 3,
-            backgroundColor: 'rgb(132, 52, 28)',
-            '&:hover': { backgroundColor: 'rgb(13, 55, 69)' },
+            backgroundColor: '#E07F3F',
+            fontFamily: `'Press Start 2P', cursive`,
+            fontSize: '0.6rem',
+            px: 3,
+            py: 1.5,
+            borderRadius: 2,
+            '&:hover': {
+              backgroundColor: '#84341c',
+            },
           }}
         >
           Enviar Evidencia

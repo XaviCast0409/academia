@@ -13,7 +13,8 @@ import {
   ListItemButton,
   ListItemText,
   useMediaQuery,
-  useTheme
+  useTheme,
+  Box
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -60,6 +61,7 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
           width: SIDEBAR_WIDTH,
           backgroundColor: '#0D3745',
           color: '#FFFFFF',
+          fontFamily: `'Press Start 2P', cursive`,
         },
       }}
     >
@@ -85,34 +87,52 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: '#E07F3F',
+          backgroundColor: '#0D3745',
           width: admin && !isMobile ? `calc(100% - ${SIDEBAR_WIDTH}px)` : '100%',
           ml: admin && !isMobile ? `${SIDEBAR_WIDTH}px` : 0,
-          boxShadow: 'none'
+          boxShadow: 'none',
+          fontFamily: `'Press Start 2P', cursive`,
         }}
       >
-        <Toolbar>
-          {admin && isMobile && (
-            <IconButton edge="start" color="inherit" onClick={() => setMobileMenuOpen(true)} sx={{ mr: 2 }}>
-              <MenuIcon />
-            </IconButton>
+        <Toolbar sx={{ flexWrap: 'wrap', justifyContent: 'space-between' }}>
+          <Box display="flex" alignItems="center">
+            {admin && isMobile && (
+              <IconButton edge="start" color="inherit" onClick={() => setMobileMenuOpen(true)} sx={{ mr: 2 }}>
+                <MenuIcon />
+              </IconButton>
+            )}
+            <Typography
+              variant="h6"
+              sx={{ cursor: 'pointer', color: '#E07F3F', fontWeight: 'bold', fontSize: '1rem', fontFamily: `'Press Start 2P', cursive` }}
+              onClick={() => navigate(user ? (user.roleId === 1 ? '/admin' : '/users/profile') : '/')}
+            >
+              🎮 Xavi Play
+            </Typography>
+          </Box>
+
+          {!isMobile && (
+            <Box display="flex" gap={3} ml={4}>
+              {user?.roleId === 2 && (
+                <Button onClick={() => navigate('/users/actividades')} sx={{ color: '#FFF', fontFamily:"inherit" }} >Actividades</Button>
+              )}
+              {user?.roleId === 2 && (
+                <Button onClick={() => navigate('/users/shop')} sx={{ color: '#FFF', fontFamily:"inherit" }}>Productos</Button>
+              )}
+              {user?.roleId === 2 && (
+                <Button onClick={() => navigate('/users/transactions')} sx={{ color: '#FFF', fontFamily:"inherit" }}>Transacciones</Button>
+              )}
+            </Box>
           )}
-          <Typography
-            variant="h6"
-            sx={{ flexGrow: 1, cursor: 'pointer', fontWeight: 'bold', color: '#FFFFFF' }}
-            onClick={() => navigate(user ? (user.roleId === 1 ? '/admin' : '/users/profile') : '/')}
-          >
-            Mi Proyecto
-          </Typography>
+
           {user ? (
             <>
               <IconButton onClick={handleMenuClick} size="large">
                 <Avatar
                   src={user?.pokemon?.imageUrl}
                   alt={user?.pokemon?.name}
-                  sx={{ bgcolor: '#E07F3F', color: '#fff' }}
+                  sx={{ bgcolor: '#E07F3F', color: '#fff', width: 50, height: 50 }}
                 >
-                  {!user?.pokemon?.imageUrl && <AccountCircleIcon />}
+                  {!user?.pokemon?.imageUrl && <AccountCircleIcon fontSize="large" />}
                 </Avatar>
               </IconButton>
               <Menu
@@ -125,35 +145,24 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
                   sx: {
                     backgroundColor: '#F5E8DC',
                     color: '#84341C',
+                    fontFamily: `'Press Start 2P', cursive`,
                   },
                 }}
               >
                 {user.roleId === 2 && (
-                  <MenuItem key="perfil" onClick={() => {
-                    handleClose();
-                    goToProfile();
-                  }}>Perfil</MenuItem>
+                  <MenuItem onClick={goToProfile} sx={{fontFamily: "inherit"}}>Perfil</MenuItem>
                 )}
-                {user.roleId === 2 && (
-                  <MenuItem key="actividades" onClick={() => {
-                    handleClose();
-                    navigate('/users/actividades');
-                  }}>Panel de Actividades</MenuItem>
+                {user.roleId === 2 && isMobile && (
+                  <MenuItem onClick={() => navigate('/users/actividades')} sx={{fontFamily: "inherit"}}>Actividades</MenuItem>
                 )}
-                {user.roleId === 2 && (
-                  <MenuItem key="shop" onClick={() => {
-                    handleClose();
-                    navigate('/users/shop');
-                  }}>Panel de Productos</MenuItem>
+                {user.roleId === 2 && isMobile && (
+                  <MenuItem onClick={() => navigate('/users/shop')} sx={{fontFamily: "inherit"}}>Productos</MenuItem>
                 )}
-                {user.roleId === 2 && (
-                  <MenuItem key="transactions" onClick={() => {
-                    handleClose();
-                    navigate('/users/transactions');
-                  }}>Mis Transacciones</MenuItem>
+                {user.roleId === 2 && isMobile && (
+                  <MenuItem onClick={() => navigate('/users/transactions')} sx={{fontFamily: "inherit"}}>Transacciones</MenuItem>
                 )}
-
-                <MenuItem key="session" onClick={handleLogout}>Cerrar sesión</MenuItem>
+                
+                <MenuItem onClick={handleLogout} sx={{fontFamily: "inherit"}}>Cerrar sesión</MenuItem>
               </Menu>
             </>
           ) : (
@@ -166,6 +175,7 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
                 '&:hover': {
                   backgroundColor: '#C76F2F',
                 },
+                fontFamily: `'Press Start 2P', cursive`,
               }}
             >
               Iniciar sesión

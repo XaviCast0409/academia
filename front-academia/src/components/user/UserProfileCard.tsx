@@ -6,9 +6,13 @@ import {
   Grid,
   useMediaQuery,
   useTheme,
+  Box,
+  Chip,
+  Divider,
 } from "@mui/material";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import EmailIcon from "@mui/icons-material/Email";
+import CatchingPokemonIcon from '@mui/icons-material/CatchingPokemon';
 import type { User } from "../../types/user";
 
 interface Props {
@@ -22,24 +26,21 @@ export const UserProfileCard = ({ user }: Props) => {
   return (
     <Card
       sx={{
-        backgroundColor: "#FF573B",
+        background: "linear-gradient(135deg, #E07F3F, #84341C)",
         color: "#fff",
-        borderRadius: 4,
-        boxShadow: 6,
-        maxWidth: isMobile ? 350 : 900,
+        borderRadius: 6,
+        boxShadow: "0 8px 30px rgba(0,0,0,0.5)",
+        maxWidth: isMobile ? 360 : 1000,
         mx: "auto",
-        mt: 4,
-        height: isMobile ? "auto" : "70vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        mt: 6,
         px: isMobile ? 2 : 6,
+        border: "5px solid #FFCC00",
       }}
     >
-      <CardContent sx={{ width: "100%" }}>
+      <CardContent>
         <Grid
           container
-          spacing={isMobile ? 2 : 6}
+          spacing={4}
           direction={isMobile ? "column" : "row"}
           alignItems="center"
           justifyContent="center"
@@ -49,37 +50,53 @@ export const UserProfileCard = ({ user }: Props) => {
               src={user.pokemon?.highResImageUrl}
               alt={user.name}
               sx={{
-                width: isMobile ? 150 : 400,
-                height: isMobile ? 150 : 400,
+                width: isMobile ? 180 : 280,
+                height: isMobile ? 180 : 280,
                 mx: "auto",
-                border: "5px solid #FFCC00",
+                border: "6px solid #FFCC00",
+              }}
+            />
+            <Chip
+              label={`Pokémon: ${user.pokemon?.name || "Ninguno"}`}
+              icon={<CatchingPokemonIcon />}
+              sx={{
+                mt: 2,
+                bgcolor: "#0D3745",
+                color: "#fff",
+                fontWeight: "bold",
               }}
             />
           </Grid>
 
-          <Grid textAlign={isMobile ? "left" : "center"}>
-            <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
-              {user.name}
-            </Typography>
+          <Grid>
+            <Box sx={{ textAlign: isMobile ? "center" : "left" }}>
+              <Typography
+                variant={isMobile ? "h5" : "h4"}
+                gutterBottom
+                sx={{
+                  color: "#FFCC00",
+                  textShadow: "2px 2px #0D3745",
+                  fontFamily: "'Press Start 2P', cursive",
+                }}
+              >
+                {user.name}
+              </Typography>
 
-            <Typography variant={isMobile ? "body1" : "h6"} gutterBottom>
-              <EmailIcon sx={{ mr: 1 }} />
-              {user.email}
-            </Typography>
+              <Divider sx={{ my: 2, borderColor: "#FFCC00" }} />
 
-            <Typography variant={isMobile ? "body1" : "h6"} gutterBottom>
-              Rol: <strong>{user.role?.name || "Sin rol"}</strong>
-            </Typography>
+              <Typography variant="body1" sx={{ mb: 2, fontFamily: "'Press Start 2P', cursive", fontSize: isMobile ? "0.9rem" : "1rem" }}>
+                <EmailIcon sx={{ mr: 1 }} /> {user.email}
+              </Typography>
 
-            <Typography variant={isMobile ? "body1" : "h6"} gutterBottom>
-              Pokémon Asignado:{" "}
-              <strong>{user.pokemon?.name || "Ninguno"}</strong>
-            </Typography>
+              <Typography variant="body1" sx={{ mb: 2, fontFamily: "'Press Start 2P', cursive", fontSize: isMobile ? "0.9rem" : "1rem" }}>
+                Rol: <strong>{user.role?.name || "Sin rol"}</strong>
+              </Typography>
 
-            <Typography variant={isMobile ? "body1" : "h6"} gutterBottom>
-              <MonetizationOnIcon sx={{ mr: 1 }} />
-              Xavicoins: <strong>{user.xavicoints ?? 0}</strong>
-            </Typography>
+              <Typography variant="body1" sx={{ mb: 2, fontFamily: "'Press Start 2P', cursive" , fontSize: isMobile ? "0.9rem" : "1rem", }}>
+                <MonetizationOnIcon sx={{ mr: 1 }} />
+                Xavicoins: <strong>{user.xavicoints ?? 0}</strong>
+              </Typography>
+            </Box>
           </Grid>
         </Grid>
       </CardContent>

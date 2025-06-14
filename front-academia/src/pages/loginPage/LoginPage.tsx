@@ -29,19 +29,19 @@ export const Login = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>();
   const login = useAuthStore((state) => state.login);
-  const [loading, setLoading] = useState(false); // ✅ estado para loader
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
-      setLoading(true); // 🔄 muestra el loader
+      setLoading(true);
       const token = await loginUser(data);
       login(token);
       const decoded = jwtDecode<{ roleId: number }>(token);
       const roleId = decoded.roleId;
 
       switch (roleId) {
-        case 3:
         case 2:
+        case 3:
           navigate("/users/profile");
           break;
         case 1:
@@ -58,7 +58,7 @@ export const Login = () => {
         confirmButtonColor: "#e07f3f",
       });
     } finally {
-      setLoading(false); // ✅ oculta el loader
+      setLoading(false);
     }
   };
 
@@ -70,24 +70,30 @@ export const Login = () => {
         alignItems: "center",
         justifyContent: "center",
         minHeight: "100vh",
-        backgroundColor: "#f9f9f9",
+        backgroundColor: "#0D3745",
+        fontFamily: "'Press Start 2P', cursive",
       }}
     >
       <Paper
-        elevation={6}
+        elevation={12}
         sx={{
           padding: 4,
           width: "100%",
-          backgroundColor: "#fff",
+          backgroundColor: "#F5E8DC",
           borderRadius: 4,
-          boxShadow: "0 8px 24px rgba(0, 0, 0, 0.1)",
+          boxShadow: "0px 0px 20px 5px rgba(224, 127, 63, 0.4)",
+          border: "4px solid #E07F3F",
         }}
       >
         <Typography
           variant="h4"
           align="center"
           gutterBottom
-          sx={{ fontWeight: "bold", color: "#0d3745" }}
+          sx={{
+            fontFamily: "'Press Start 2P', cursive",
+            color: "#84341C",
+            fontSize: "1rem",
+          }}
         >
           Iniciar Sesión
         </Typography>
@@ -100,7 +106,20 @@ export const Login = () => {
             {...register("email", { required: "El correo es obligatorio" })}
             error={!!errors.email}
             helperText={errors.email?.message}
+            InputLabelProps={{ style: { fontFamily: "'Press Start 2P'" } }}
+            inputProps={{ style: { fontFamily: "'Press Start 2P'" } }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#84341C",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#E07F3F",
+                },
+              },
+            }}
           />
+
           <TextField
             fullWidth
             label="Contraseña"
@@ -111,19 +130,31 @@ export const Login = () => {
             })}
             error={!!errors.password}
             helperText={errors.password?.message}
+            InputLabelProps={{ style: { fontFamily: "'Press Start 2P'" } }}
+            inputProps={{ style: { fontFamily: "'Press Start 2P'" } }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#84341C",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#E07F3F",
+                },
+              },
+            }}
           />
 
           <Box
             display="flex"
-            justifyContent="space-between"
-            alignItems="center"
+            justifyContent="flex-end"
             mt={1}
+            sx={{ fontFamily: "'Press Start 2P'", fontSize: "0.5rem" }}
           >
             <Link
               component={RouterLink}
               to="/forgot-password"
               underline="hover"
-              sx={{ fontSize: 14, color: "#84341c" }}
+              sx={{ color: "#84341C", fontSize: "0.5rem" }}
             >
               ¿Olvidaste tu contraseña?
             </Link>
@@ -133,32 +164,48 @@ export const Login = () => {
             variant="contained"
             type="submit"
             fullWidth
-            disabled={loading} // ❌ desactiva mientras carga
+            disabled={loading}
             sx={{
               mt: 3,
-              backgroundColor: "#e07f3f",
+              py: 1.5,
+              backgroundColor: "#E07F3F",
+              color: "#fff",
+              fontFamily: "'Press Start 2P', cursive",
+              fontSize: "0.6rem",
+              transition: "all 0.2s ease-in-out",
               "&:hover": {
-                backgroundColor: "#c76d32",
+                backgroundColor: "#C76F2F",
+                transform: "scale(1.02)",
               },
-              fontWeight: "bold",
             }}
           >
             {loading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
-              "Iniciar sesión"
+              "INGRESAR"
             )}
           </Button>
         </form>
 
         <Box textAlign="center" mt={3}>
-          <Typography variant="body2">
+          <Typography
+            variant="body2"
+            sx={{
+              fontFamily: "'Press Start 2P', cursive",
+              fontSize: "0.5rem",
+              color: "#84341C",
+            }}
+          >
             ¿No tienes una cuenta?{" "}
             <Link
               component={RouterLink}
               to="/create-user"
               underline="hover"
-              sx={{ color: "#0d3745", fontWeight: "bold" }}
+              sx={{
+                color: "#0D3745",
+                fontWeight: "bold",
+                fontSize: "0.5rem",
+              }}
             >
               Crear cuenta
             </Link>
