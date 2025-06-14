@@ -113,13 +113,13 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
           {!isMobile && (
             <Box display="flex" gap={3} ml={4}>
               {user?.roleId === 2 && (
-                <Button onClick={() => navigate('/users/actividades')} sx={{ color: '#FFF', fontFamily:"inherit" }} >Actividades</Button>
+                <Button onClick={() => {navigate('/users/actividades'); setMobileMenuOpen(false)}} sx={{ color: '#FFF', fontFamily:"inherit" }} >Actividades</Button>
               )}
               {user?.roleId === 2 && (
-                <Button onClick={() => navigate('/users/shop')} sx={{ color: '#FFF', fontFamily:"inherit" }}>Productos</Button>
+                <Button onClick={() => {navigate('/users/shop'); setMobileMenuOpen(false)}} sx={{ color: '#FFF', fontFamily:"inherit" }}>Productos</Button>
               )}
               {user?.roleId === 2 && (
-                <Button onClick={() => navigate('/users/transactions')} sx={{ color: '#FFF', fontFamily:"inherit" }}>Transacciones</Button>
+                <Button onClick={() => {navigate('/users/transactions'); setMobileMenuOpen(false)}} sx={{ color: '#FFF', fontFamily:"inherit" }}>Transacciones</Button>
               )}
             </Box>
           )}
