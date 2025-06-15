@@ -24,6 +24,7 @@ const Sidebar = () => {
     { text: 'Subir Actividad', path: '/admin/actividad' },
     { text: 'Subir Recompensa', path: '/admin/recompensa' },
     { text: 'Lista de Actividades', path: '/admin/actividad-list' },
+    { text: 'Lista de Evidencias', path: '/admin/evidences' },
   ];
 
   if (isMobile) return null; // Oculta el sidebar en móvil

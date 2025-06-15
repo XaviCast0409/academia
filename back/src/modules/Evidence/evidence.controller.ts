@@ -4,7 +4,8 @@ import {
   createEvidence,
   updateEvidence,
   deleteEvidence,
-  getEvidencesByActivity
+  getEvidencesByActivity,
+  getProfessorEvidences
 } from "./evidence.service";
 import { errorHelper } from "../../utils/error";
 
@@ -51,6 +52,17 @@ export const getEvidencesByActivityController = async (req: Request, res: Respon
     const { activityId } = req.params;
     const { page = 1, limit = 10 } = req.query;
     const evidences = await getEvidencesByActivity(parseInt(activityId), Number(page), Number(limit));
+    res.status(200).json(evidences);
+  } catch (error) {
+    errorHelper(error, res);
+  }
+}
+
+export const getProfessorEvidencesController = async (req: Request, res: Response) => {
+  try {
+    const { professorId } = req.params;
+    const { page, limit  } = req.query;
+    const evidences = await getProfessorEvidences(parseInt(professorId), Number(page), Number(limit));
     res.status(200).json(evidences);
   } catch (error) {
     errorHelper(error, res);

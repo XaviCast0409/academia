@@ -78,6 +78,9 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
         <ListItemButton onClick={() => { navigate('/admin/actividad-list'); setMobileMenuOpen(false); }}>
           <ListItemText primary="Lista de Actividades" />
         </ListItemButton>
+        <ListItemButton onClick={() => { navigate('/admin/evidences'); setMobileMenuOpen(false); }}>
+          <ListItemText primary="Evidencias" />
+        </ListItemButton>
       </List>
     </Drawer>
   );

@@ -15,6 +15,7 @@ import { UserProfilePage } from "./components/user/UserProfilePage";
 import { ProductsUserPage } from "./components/productsUser/ProductUserPage"
 import { UserTransactionsList } from "./components/transaction/TransactionPage";
 import { ViewActivityPage } from "./components/activity/ViewActivityPage";
+import { ProfessorEvidenceList } from "./components/evidence/EvidencePerProfessor";
 
 function App() {
   
@@ -40,6 +41,7 @@ function App() {
           <Route path="/admin/recompensa" element={<ProductsPage />} />
           <Route path="/admin/actividad-list" element={<ActivityPage />} />
           <Route path="/admin/actividad/registroEvidence/:id" element={<RegistroPerActivityPage />} />
+          <Route path="/admin/evidences" element={<ProfessorEvidenceList />} />
         </Route>
 
         {/* <Route path="/evidences" element={<ImageCloudinary />} /> */}
