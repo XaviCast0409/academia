@@ -33,8 +33,8 @@ export const getUsersController = async (_req: Request, res: Response) => {
 
 export const createUserController = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, roleId, pokemonId } = req.body as UserInput;
-    const user = await createUser(name, email, password, roleId, pokemonId);
+    const { name, email, password, roleId, pokemonId, section } = req.body as UserInput;
+    const user = await createUser(name, email, password, roleId, pokemonId, section);
     res.json(user);
   } catch (error: any) {
     errorHelper(error, res);
@@ -44,9 +44,14 @@ export const createUserController = async (req: Request, res: Response) => {
 export const updateUserController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, email, password, roleId } = req.body as UserInput;
-    const user = await updateUser(parseInt(id), name, email, password, roleId);
-    res.json(user);
+
+    const updatedUser = await updateUser(parseInt(id), req.body); // ahora acepta cualquier campo parcial
+
+    if (!updatedUser) {
+      res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.json(updatedUser);
   } catch (error: any) {
     errorHelper(error, res);
   }

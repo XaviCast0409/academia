@@ -1,6 +1,6 @@
 import db from "../../config/database";
 import { encrypt, generateToken, verified } from "../../utils/validations";
-import { UserOutput } from "../../models/User";
+import { UserOutput, UserInput } from "../../models/User";
 
 export const getUser = async (id: number): Promise<UserOutput> => {
   try {
@@ -27,7 +27,8 @@ export const createUser = async (
   email: string,
   password: string,
   roleId: number,
-  pokemonId: number // opcional si no se requiere al crear
+  pokemonId: number, // opcional si no se requiere al crear
+  section?: string // opcional si no se requiere al crear
 ): Promise<UserOutput> => {
   const findUser = await db.User.findOne({ where: { email } });
   if (findUser) {
@@ -36,24 +37,26 @@ export const createUser = async (
 
   password = await encrypt(password);
   const user = await db.User.create(
-    { name, email, password, roleId, pokemonId }
+    { name, email, password, roleId, pokemonId, section },
   );
   return user;
 };
 
+
 export const updateUser = async (
   id: number,
-  name: string,
-  email: string,
-  password: string,
-  roleId: number
-): Promise<UserOutput> => {
-  password = await encrypt(password);
-  const user = await db.User.update(
-    { name, email, password, roleId },
-    { where: { id }, include: db.Role }
-  );
-  return user;
+  updateData: Partial<UserInput>
+): Promise<UserOutput | null> => {
+  // Si incluye password, la encriptamos
+  if (updateData.password) {
+    updateData.password = await encrypt(updateData.password);
+  }
+
+  await db.User.update(updateData, { where: { id } });
+
+  // Retornamos el usuario actualizado
+  const updatedUser = await db.User.findByPk(id);
+  return updatedUser;
 };
 
 export const deleteUser = async (id: number): Promise<number> => {

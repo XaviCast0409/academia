@@ -4,6 +4,7 @@ export interface CreateUserDTO {
   password: string;
   roleId: number;
   pokemonId: number; // 👈 nuevo campo
+  section: string; // Sección del usuario, opcional
 }
 
 export interface User {
@@ -13,6 +14,7 @@ export interface User {
   password: string;
   roleId: number;
   pokemonId: number;
+  section?: string; // Sección del usuario, opcional
   pokemon: {
     id: number;
     name: string;
