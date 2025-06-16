@@ -4,17 +4,17 @@ import fs from "fs";
 import path from "path";
 
 const db: any = {}
-export const sequelize = new Sequelize({
+/* export const sequelize = new Sequelize({
   username: dataConfig.development.username,
   password: dataConfig.development.password,
   database: dataConfig.development.database,
   host: dataConfig.development.host,
   dialect: "postgres",
   logging: false,
-});
+}); */
 
 // configuracion produccion de la base de datos
-/* export const sequelize = new Sequelize(dataConfig.production.url, {
+export const sequelize = new Sequelize(dataConfig.production.url, {
   dialect: "postgres",
   logging: false,
   dialectOptions: {
@@ -23,14 +23,14 @@ export const sequelize = new Sequelize({
       rejectUnauthorized: false, // Cambia esto según tus necesidades de seguridad
     },
   },
-}); */
+});
 
 const modelsDir = path.join(__dirname, "../models");
 
 fs.readdirSync(modelsDir)
   .filter((file: string) => {
     return (
-      file.indexOf(".") !== 0 && file.slice(-3) === ".ts" && !file.includes("index")
+      file.indexOf(".") !== 0 && file.slice(-3) === ".js" && !file.includes("index")
     );
   })
   .forEach((file: string) => {

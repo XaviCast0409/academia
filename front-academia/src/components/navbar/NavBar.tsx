@@ -69,9 +69,6 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
         <ListItemButton onClick={() => { navigate('/admin'); setMobileMenuOpen(false); }}>
           <ListItemText primary="Dashboard" />
         </ListItemButton>
-        <ListItemButton onClick={() => { navigate('/admin/actividad'); setMobileMenuOpen(false); }}>
-          <ListItemText primary="Subir Actividad" />
-        </ListItemButton>
         <ListItemButton onClick={() => { navigate('/admin/recompensa'); setMobileMenuOpen(false); }}>
           <ListItemText primary="Subir Recompensa" />
         </ListItemButton>
@@ -116,14 +113,18 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
           {!isMobile && (
             <Box display="flex" gap={3} ml={4}>
               {user?.roleId === 2 && (
-                <Button onClick={() => {navigate('/users/actividades'); setMobileMenuOpen(false)}} sx={{ color: '#FFF', fontFamily:"inherit" }} >Actividades</Button>
+                <Button onClick={() => { navigate('/users/actividades')}} sx={{ color: '#FFF', fontFamily: "inherit" }} >Actividades</Button>
               )}
               {user?.roleId === 2 && (
-                <Button onClick={() => {navigate('/users/shop'); setMobileMenuOpen(false)}} sx={{ color: '#FFF', fontFamily:"inherit" }}>Productos</Button>
+                <Button onClick={() => { navigate('/users/shop')}} sx={{ color: '#FFF', fontFamily: "inherit" }}>Productos</Button>
               )}
               {user?.roleId === 2 && (
-                <Button onClick={() => {navigate('/users/transactions'); setMobileMenuOpen(false)}} sx={{ color: '#FFF', fontFamily:"inherit" }}>Transacciones</Button>
+                <Button onClick={() => { navigate('/users/transactions') }} sx={{ color: '#FFF', fontFamily: "inherit" }}>Transacciones</Button>
               )}
+              {user?.roleId === 2 && (
+                <Button onClick={() => { navigate('/users/evidences') }} sx={{ color: '#FFF', fontFamily: "inherit" }}>Evidencias</Button>
+              )}
+
             </Box>
           )}
 
@@ -153,19 +154,22 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
                 }}
               >
                 {user.roleId === 2 && (
-                  <MenuItem onClick={goToProfile} sx={{fontFamily: "inherit"}}>Perfil</MenuItem>
+                  <MenuItem onClick={goToProfile} sx={{ fontFamily: "inherit" }}>Perfil</MenuItem>
                 )}
                 {user.roleId === 2 && isMobile && (
-                  <MenuItem onClick={() => navigate('/users/actividades')} sx={{fontFamily: "inherit"}}>Actividades</MenuItem>
+                  <MenuItem onClick={() => {navigate('/users/actividades'); handleClose()}} sx={{ fontFamily: "inherit" }}>Actividades</MenuItem>
                 )}
                 {user.roleId === 2 && isMobile && (
-                  <MenuItem onClick={() => navigate('/users/shop')} sx={{fontFamily: "inherit"}}>Productos</MenuItem>
+                  <MenuItem onClick={() => {navigate('/users/shop'); handleClose()}} sx={{ fontFamily: "inherit" }}>Productos</MenuItem>
                 )}
                 {user.roleId === 2 && isMobile && (
-                  <MenuItem onClick={() => navigate('/users/transactions')} sx={{fontFamily: "inherit"}}>Transacciones</MenuItem>
+                  <MenuItem onClick={() =>{ navigate('/users/transactions'); handleClose()} } sx={{ fontFamily: "inherit" }}>Transacciones</MenuItem>
                 )}
-                
-                <MenuItem onClick={handleLogout} sx={{fontFamily: "inherit"}}>Cerrar sesión</MenuItem>
+                {user?.roleId === 2 && isMobile && (
+                  <MenuItem onClick={() => { navigate('/users/evidences'); handleClose()}} sx={{ fontFamily: "inherit" }}>Evidencias</MenuItem>
+                )}
+
+                <MenuItem onClick={handleLogout} sx={{ fontFamily: "inherit" }}>Cerrar sesión</MenuItem>
               </Menu>
             </>
           ) : (

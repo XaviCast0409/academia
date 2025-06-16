@@ -16,9 +16,10 @@ import { ProductsUserPage } from "./components/productsUser/ProductUserPage"
 import { UserTransactionsList } from "./components/transaction/TransactionPage";
 import { ViewActivityPage } from "./components/activity/ViewActivityPage";
 import { ProfessorEvidenceList } from "./components/evidence/EvidencePerProfessor";
+import { EvidencePerStudents } from "./components/evidence/EvidencePerStudents";
 
 function App() {
-  
+
   return (
     <>
       <Routes>
@@ -27,21 +28,21 @@ function App() {
         <Route path="/create-user" element={<CreateUserForm />} />
         {/* Rutas de usuario */}
         <Route path="/users" element={<UserLayout />}>
-          <Route path="/users/actividades" element={<AvailableActivities />} />
-          <Route path="/users/actividades/evidence/:id" element={<SendEvidence />} />
-          <Route path="/users/profile" element={<UserProfilePage />} />
-          <Route path="/users/shop" element={<ProductsUserPage />} />
-          <Route path="/users/transactions" element={<UserTransactionsList />} />
-          <Route path="/users/actividades/ver/:id" element={<ViewActivityPage />} />
-
+          <Route path="actividades" element={<AvailableActivities />} />
+          <Route path="actividades/evidence/:id" element={<SendEvidence />} />
+          <Route path="profile" element={<UserProfilePage />} />
+          <Route path="shop" element={<ProductsUserPage />} />
+          <Route path="transactions" element={<UserTransactionsList />} />
+          <Route path="actividades/ver/:id" element={<ViewActivityPage />} />
+          <Route path="evidences" element={<EvidencePerStudents />} />
         </Route>
         {/* profesor */}
         <Route path="/admin" element={<AdminLayout />} >
-          <Route path="/admin/actividad" element={<PageAdmin />} />
-          <Route path="/admin/recompensa" element={<ProductsPage />} />
-          <Route path="/admin/actividad-list" element={<ActivityPage />} />
-          <Route path="/admin/actividad/registroEvidence/:id" element={<RegistroPerActivityPage />} />
-          <Route path="/admin/evidences" element={<ProfessorEvidenceList />} />
+          <Route path="actividad" element={<PageAdmin />} />
+          <Route path="recompensa" element={<ProductsPage />} />
+          <Route path="actividad-list" element={<ActivityPage />} />
+          <Route path="actividad/registroEvidence/:id" element={<RegistroPerActivityPage />} />
+          <Route path="evidences" element={<ProfessorEvidenceList />} />
         </Route>
 
         {/* <Route path="/evidences" element={<ImageCloudinary />} /> */}

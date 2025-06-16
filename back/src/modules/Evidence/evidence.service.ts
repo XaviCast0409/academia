@@ -1,7 +1,7 @@
 import db from "../../config/database";
 import { EvidenceInput, EvidenceOutput } from "../../models/Evidence";
 
-export const getEvidence = async (id: number): Promise<EvidenceOutput> => {
+export const getEvidence = async (id: number): Promise<any> => {
   const evidence = await db.Evidence.findByPk(id, {
     include: [
       {
@@ -20,24 +20,46 @@ export const getEvidence = async (id: number): Promise<EvidenceOutput> => {
 };
 
 export const getEvidencesByStudent = async (
-  studentId: number
-): Promise<EvidenceOutput[]> => {
-  const evidences = await db.Evidence.findAll({
+  studentId: number,
+  page: number = 1,
+  limit: number = 10
+) => {
+  const offset = (page - 1) * limit;
+
+  const { rows: evidences, count: total } = await db.Evidence.findAndCountAll({
     where: { studentId },
     include: [
       {
-        model: db.User,
-        as: "student",
-        attributes: ["id", "name"],
-      },
-      {
         model: db.Activity,
         as: "activity",
-        attributes: ["id", "title"],
+        attributes: ["id", "title", "description"],
+        include: [
+          {
+            model: db.User,
+            as: "professor",
+            attributes: ["id", "name"],
+          },
+        ],
       },
     ],
+    order: [
+      [db.sequelize.literal(`CASE 
+        WHEN "status" = 'pending' THEN 0
+        WHEN "status" = 'approved' THEN 1
+        WHEN "status" = 'rejected' THEN 2
+      END`), 'ASC'],
+      ['createdAt', 'ASC'],
+    ],
+    limit,
+    offset,
   });
-  return evidences;
+
+  return {
+    evidences,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
 };
 
 export const getEvidencesByActivity = async (
@@ -164,4 +186,3 @@ export const getProfessorEvidences = async (
     totalItems: count,
   };
 };
-

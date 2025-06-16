@@ -90,7 +90,9 @@ export const ProductsUserPage = () => {
           sx={{
             fontFamily: `'Press Start 2P', cursive`,
             color: '#0D3745',
-            fontSize: '1.2rem',
+            fontSize: '1.1rem',
+            mb: 4,
+            textAlign: 'center',
           }}
         >
           Productos
@@ -134,7 +136,6 @@ export const ProductsUserPage = () => {
         </Box>
       )}
 
-      {/* ✅ Modal reemplazado por componente BuyConfirmDialog */}
       <BuyConfirmDialog
         open={buyDialogOpen}
         onClose={() => setBuyDialogOpen(false)}

@@ -3,7 +3,8 @@ import { create } from "zustand";
 import {
   getEvidencesByActivity,
   createEvidence,
-  getEvidencePerProfessor
+  getEvidencePerProfessor,
+  getEvidencePerStudent
 } from "../services/evidenceService";
 import type { Evidence } from "../types/evidence";
 
@@ -17,6 +18,7 @@ interface EvidenceState {
   updateEvidenceStatus: (updatedEvidence: Evidence) => void;
   getEvidencePerProfessor: (professorId: number, page?: number, limit?: number) => Promise<void>;
   cleanEvidences: () => void;
+  getEvidencePerStudent: (studentId: number, page?: number, limit?: number) => Promise<void>;
 }
 
 export const useEvidenceStore = create<EvidenceState>((set) => ({
@@ -66,5 +68,17 @@ export const useEvidenceStore = create<EvidenceState>((set) => ({
       console.error("Error fetching evidences for professor:", error);
     }
   },
-  cleanEvidences: () => set({ evidences: [], page: 1, totalPages: 1})
+  cleanEvidences: () => set({ evidences: [], page: 1, totalPages: 1}),
+  getEvidencePerStudent: async (studentId, page = 1, limit = 10) => {
+    try {
+      const data = await getEvidencePerStudent(studentId, page, limit);      
+      set({
+        evidences: data.evidences,
+        page: data.page,
+        totalPages: data.totalPages,
+      });
+    } catch (error) {
+      console.error("Error fetching evidences for student:", error);
+    }
+  },
 }));

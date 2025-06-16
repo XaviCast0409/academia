@@ -11,13 +11,14 @@ interface ActivityCardProps {
 }
 
 const ActivityCardStudent = ({ id, title, description, image, xavicoints }: ActivityCardProps) => {
+  const { activityById, page } = useActivityStore();
   const navigate = useNavigate();
-  const activityById = useActivityStore((state) => state.activityById);
 
-  const handleViewActivity = async () => {
-    await activityById(id);
-    navigate(`/users/actividades/ver/${id}`);
-  };
+const handleViewActivity = async () => {
+  localStorage.setItem('actividadActualPage', String(page));
+  await activityById(id);
+  navigate(`/users/actividades/ver/${id}`);
+};
 
   return (
     <Card

@@ -15,7 +15,6 @@ export const verified = async (pass : string, passHash: string) : Promise<boolea
 };
 
 export const generateToken = (id: number, roleId: number, idRole: number) => {
-  console.log("JWT_SECRET", id, roleId);
   const jwt = sign({ id, roleId, idRole }, JWT_SECRET, {
     expiresIn: "2h",
   });

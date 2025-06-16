@@ -1,14 +1,22 @@
 // RegistroPerActivityPage.tsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Typography, List, Pagination } from "@mui/material";
+import { Box, Typography, List, Pagination, useMediaQuery, Button, useTheme } from "@mui/material";
 import { useEvidenceStore } from "../../store/evidenceStore";
 import { EvidenceItem } from "./EvidenceItem";
 import { EvidenceModal } from "./EvidenceModal";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const RegistroPerActivityPage = () => {
   const { id } = useParams<{ id: string }>();
   const activityId = Number(id);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const fromPage = location.state?.fromPage || 1;
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const {
     evidences,
@@ -39,6 +47,10 @@ export const RegistroPerActivityPage = () => {
     fetchEvidencesByActivity(activityId, value, limit);
   };
 
+  const handleBack = () => {
+    navigate(`/admin/actividad-list?page=${fromPage}`);
+  };
+
   return (
     <Box p={3} sx={{ backgroundColor: "#fefefe" }}>
       <Typography
@@ -53,6 +65,26 @@ export const RegistroPerActivityPage = () => {
       >
         Registro de Evidencias por Actividad
       </Typography>
+
+      <Button
+        variant="outlined"
+        onClick={handleBack} // 👈 aquí
+        sx={{
+          mb: 4,
+          border: '4px solid #84341c',
+          color: '#84341c',
+          fontSize: isMobile ? '0.7rem' : '1rem',
+          px: 3,
+          py: 1.5,
+          fontFamily: `'Press Start 2P', cursive`,
+          '&:hover': {
+            backgroundColor: 'rgba(132, 52, 28, 0.1)',
+            borderColor: '#E07F3F',
+          },
+        }}
+      >
+        ← Volver
+      </Button>
 
       <List>
         {evidences.map((evidence) => (

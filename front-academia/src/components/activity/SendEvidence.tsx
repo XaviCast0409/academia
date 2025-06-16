@@ -12,6 +12,7 @@ import { useState } from 'react';
 import ImageCloudinary from '../../components/cloudinary/Image';
 import { useEvidenceStore } from '../../store/evidenceStore';
 import Swal from 'sweetalert2';
+import { useActivityStore } from '../../store/activityStore';
 
 interface FormValues {
   filePath: string[];
@@ -52,7 +53,13 @@ export const SendEvidence = () => {
         confirmButtonColor: '#84341c',
         confirmButtonText: 'OK',
       }).then(() => {
-        navigate('/users/actividades');
+        const lastPage = Number(localStorage.getItem('actividadActualPage')) || 1;
+        setTimeout(() => {
+          navigate('/users/actividades');
+          setTimeout(() => {
+            useActivityStore.getState().setPage(lastPage);
+          }, 100); // pequeño delay para garantizar el montaje
+        }, 100);
       });
     } catch (error) {
       console.error(error);
@@ -78,7 +85,7 @@ export const SendEvidence = () => {
         fontFamily: `'Press Start 2P', cursive`,
       }}
     >
-            <Button
+      <Button
         variant="outlined"
         onClick={() => navigate(-1)}
         sx={{

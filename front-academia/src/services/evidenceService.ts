@@ -28,3 +28,15 @@ export const getEvidencePerProfessor = async (
 
   return res.data;
 }
+
+export const getEvidencePerStudent = async (
+  studentId: number,
+  page: number = 1,
+  limit: number = 10
+): Promise<EvidencePaginated> => {
+  const res = await api.get(`/evidences/student/${studentId}`, {
+    params: { page, limit },
+  });
+
+  return res.data;
+}

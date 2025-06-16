@@ -41,6 +41,7 @@ export const ProfessorEvidenceList = () => {
     totalPages,
     getEvidencePerProfessor,
     updateEvidenceStatus,
+    cleanEvidences
   } = useEvidenceStore();
   const changeStatusAndAddPoints = useActivityStore(state => state.changeEvidenceStatusAndAddXavicoints);
 
@@ -53,6 +54,8 @@ export const ProfessorEvidenceList = () => {
     };
 
     fetchEvidences();
+
+    return cleanEvidences;
   }, [page, professorId, getEvidencePerProfessor]);
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {

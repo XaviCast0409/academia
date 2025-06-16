@@ -5,7 +5,8 @@ import {
   updateEvidenceController,
   deleteEvidenceController,
   getEvidencesByActivityController,
-  getProfessorEvidencesController
+  getProfessorEvidencesController,
+  getEvidencesByStudentController
 } from "./evidence.controller";
 
 const routerEvidence = Router();
@@ -16,5 +17,6 @@ routerEvidence.put("/:id", updateEvidenceController);
 routerEvidence.delete("/:id", deleteEvidenceController);
 routerEvidence.get("/activities/:activityId", getEvidencesByActivityController);
 routerEvidence.get("/professor/:professorId", getProfessorEvidencesController);
+routerEvidence.get("/student/:studentId", getEvidencesByStudentController);
 
 export default routerEvidence;
