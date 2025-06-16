@@ -1,6 +1,7 @@
 import db from "../../config/database";
 import { encrypt, generateToken, verified } from "../../utils/validations";
 import { UserOutput, UserInput } from "../../models/User";
+import { UserNotFoundError, UserAlreadyExistsError } from "../../utils/error";
 
 export const getUser = async (id: number): Promise<UserOutput> => {
   try {
@@ -12,7 +13,7 @@ export const getUser = async (id: number): Promise<UserOutput> => {
     });
     return user;
   } catch (error) {
-    throw new Error("User not found");
+ throw new UserNotFoundError(`User with id ${id} not found`);
   }
 };
 
@@ -32,7 +33,7 @@ export const createUser = async (
 ): Promise<UserOutput> => {
   const findUser = await db.User.findOne({ where: { email } });
   if (findUser) {
-    throw new Error("User already exists");
+ throw new UserAlreadyExistsError(`User with email ${email} already exists`);
   }
 
   password = await encrypt(password);
@@ -76,12 +77,12 @@ export const loginUser = async (
     ]
   });
   if (!user) {
-    throw new Error("User not found");
+ throw new UserNotFoundError(`User with email ${email} not found`);
   }
 
   const isCorrect = await verified(password, user.password);
   if (!isCorrect) {
-    throw new Error("Incorrect password");
+ throw new Error("Incorrect password"); // You might want a more specific error here too, like InvalidCredentialsError
   }
 
   const token = generateToken(user.id, user.roleId, user.role.id); // ahora pasas el roleId también
