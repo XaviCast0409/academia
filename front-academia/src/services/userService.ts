@@ -15,3 +15,8 @@ export const getUserById = async (id: string): Promise<User> => {
   const response = await api.get<User>(`/users/byId/${id}`);
   return response.data;
 }
+
+export const updateUser = async (id: string, data: Partial<CreateUserDTO>) => {
+  const response = await api.put<CreateUserDTO>(`/users/${id}`, data);
+  return response.data;
+};

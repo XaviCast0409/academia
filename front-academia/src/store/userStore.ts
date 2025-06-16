@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { User } from '../types/user';
-import { getUsers, getUserById } from '../services/userService';
+import { getUsers, getUserById, updateUser } from '../services/userService';
 
 interface UserState {
   users: User[];
@@ -8,6 +8,7 @@ interface UserState {
   getUserById: (id: string) => Promise<User | undefined>;
   addUser: (user: User) => void;
   getAllUsers: () => Promise<void>;
+  updateUser: (id: string, data: Partial<User>) => Promise<void>;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -27,5 +28,15 @@ export const useUserStore = create<UserState>((set) => ({
     const user = await getUserById(id);
     set({ user });
     return user;
+  },
+  // actualizar un usuario
+  updateUser: async (id, data) => {
+    const updatedUser = await updateUser(id, data);
+    set((state) => ({
+      users: state.users.map((user) =>
+        user.id === id ? { ...user, ...updatedUser } : user
+      ),
+      user: { ...state.user, ...updatedUser }, // Actualizar el usuario actual si es necesario
+    }));
   }
 }));

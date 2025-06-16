@@ -10,6 +10,7 @@ export interface UserAttributes {
   xavicoints?: number; // Xavicoints del usuario
   createdAt?: Date;
   updatedAt?: Date;
+  section?: string
 }
 
 export interface UserInput extends Optional<UserAttributes, "id"> { }
@@ -25,6 +26,7 @@ export class User
   public roleId!: number;
   public pokemonId!: number; // <-- NUEVO
   public xavicoints!: number; // Xavicoints del usuario
+  public section?: string;
   
 
   public readonly createdAt!: Date;
@@ -110,6 +112,11 @@ export class User
           type: DataTypes.INTEGER,
           allowNull: true,
           defaultValue: 0, // Valor por defecto para xavicoints
+        },
+        section: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          defaultValue: "default", // Valor por defecto para la sección
         },
       },
       {

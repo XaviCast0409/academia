@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Container } from "@mui/material";
 import { useUserStore } from "../../store/userStore";
 import { UserProfileCard } from "./UserProfileCard";
+import { UpdateSectionAlert } from './UpdateSectionAlert';
 
 export const UserProfilePage = () => {
   const { user, getUserById } = useUserStore();
@@ -16,6 +17,7 @@ export const UserProfilePage = () => {
 
   return (
     <Container sx={{ mt: 6 }}>
+      <UpdateSectionAlert />
       <UserProfileCard user={user} />
     </Container>
   );

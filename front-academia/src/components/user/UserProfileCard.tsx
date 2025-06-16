@@ -92,6 +92,10 @@ export const UserProfileCard = ({ user }: Props) => {
                 Rol: <strong>{user.role?.name || "Sin rol"}</strong>
               </Typography>
 
+              <Typography variant="body1" sx={{ mb: 2, fontFamily: "'Press Start 2P', cursive", fontSize: isMobile ? "0.9rem" : "1rem" }}>
+                Sección: <strong>{user.section || "Sin sección"}</strong>
+              </Typography>
+
               <Typography variant="body1" sx={{ mb: 2, fontFamily: "'Press Start 2P', cursive" , fontSize: isMobile ? "0.9rem" : "1rem", }}>
                 <MonetizationOnIcon sx={{ mr: 1 }} />
                 Xavicoins: <strong>{user.xavicoints ?? 0}</strong>
