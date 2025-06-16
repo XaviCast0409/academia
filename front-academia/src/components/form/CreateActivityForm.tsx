@@ -1,14 +1,18 @@
-// src/components/activity/ActivityForm.tsx
 import { useForm, Controller } from "react-hook-form";
-import { TextField, Button, Typography, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import { useActivityStore } from "../../store/activityStore";
 import ImageCloudinary from "../cloudinary/Image";
 import { useState } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Swal from "sweetalert2";
-
-
 
 interface FormValues {
   title: string;
@@ -27,6 +31,9 @@ const schema = yup.object().shape({
 });
 
 const ActivityForm = ({ professorId }: { professorId: number }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const { addActivity } = useActivityStore();
   const [uploaderKey, setUploaderKey] = useState<number>(0);
   const { control, handleSubmit, reset } = useForm<FormValues>({
@@ -43,7 +50,6 @@ const ActivityForm = ({ professorId }: { professorId: number }) => {
 
     await addActivity(payload);
 
-    // Mostrar alerta de éxito
     Swal.fire({
       title: "¡Actividad creada!",
       text: "La actividad se ha creado exitosamente.",
@@ -53,7 +59,7 @@ const ActivityForm = ({ professorId }: { professorId: number }) => {
     }).then(() => {
       reset();
       setImageLinks([]);
-      setUploaderKey(prev => prev + 1); // Forzar el reinicio del uploader
+      setUploaderKey((prev) => prev + 1);
     });
   };
 
@@ -61,16 +67,27 @@ const ActivityForm = ({ professorId }: { professorId: number }) => {
     <Box
       sx={{
         backgroundColor: "rgb(13, 55, 69)",
-        padding: 4,
-        borderRadius: 2,
+        padding: isMobile ? 3 : 5,
+        borderRadius: 3,
         color: "white",
         maxWidth: "600px",
         margin: "0 auto",
+        boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.3)",
       }}
     >
-      <Typography variant="h5" mb={2} sx={{ color: "rgb(224, 127, 63)" }}>
-        Crear nueva actividad
+      <Typography
+        variant="h5"
+        mb={3}
+        sx={{
+          color: "rgb(224, 127, 63)",
+          textAlign: "center",
+          fontSize: isMobile ? "1.1rem" : "1.5rem",
+          fontFamily: `'Press Start 2P', cursive`,
+        }}
+      >
+        Crear Nueva Actividad
       </Typography>
+
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Controller
           name="title"
@@ -162,15 +179,23 @@ const ActivityForm = ({ professorId }: { professorId: number }) => {
           )}
         />
 
-        <Box mt={2} mb={2}>
-          <ImageCloudinary setImageLinks={setImageLinks} resetUploader={uploaderKey} />
+        <Box mt={3} mb={3}>
+          <ImageCloudinary
+            setImageLinks={setImageLinks}
+            resetUploader={uploaderKey}
+          />
         </Box>
 
         <Button
           type="submit"
           variant="contained"
+          fullWidth
           sx={{
             backgroundColor: "rgb(224, 127, 63)",
+            fontSize: isMobile ? "0.8rem" : "1rem",
+            padding: isMobile ? "0.6rem" : "0.8rem",
+            fontWeight: "bold",
+            fontFamily: `'Press Start 2P', cursive`,
             "&:hover": {
               backgroundColor: "rgb(132, 52, 28)",
             },

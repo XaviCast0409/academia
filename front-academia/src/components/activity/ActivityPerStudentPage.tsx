@@ -20,7 +20,7 @@ export const AvailableActivities = () => {
     totalPages,
     pageSize,
     setPage,
-  } = useActivityStore(); 
+  } = useActivityStore();
 
   const [studentId, setStudentId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,6 +42,10 @@ export const AvailableActivities = () => {
 
     fetchActivities();
   }, [studentId, page, pageSize]);
+
+  useEffect(() => {
+    localStorage.setItem('actividadActualPage', String(page));
+  }, [page]);
 
   const handlePageChange = (_: any, value: number) => {
     setPage(value);

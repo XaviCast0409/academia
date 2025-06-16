@@ -16,4 +16,27 @@ export const getEvidencesByActivity = async (
 export const createEvidence = async (data: EvidenceImput): Promise<any> => {
   const res = await api.post(`/evidences`, data);
   return res.data;
-};
+}
+export const getEvidencePerProfessor = async (
+  professorId: number,
+  page: number = 1,
+  limit: number = 10
+): Promise<EvidencePaginated> => {
+  const res = await api.get(`/evidences/professor/${professorId}`, {
+    params: { page, limit },
+  });
+
+  return res.data;
+}
+
+export const getEvidencePerStudent = async (
+  studentId: number,
+  page: number = 1,
+  limit: number = 10
+): Promise<EvidencePaginated> => {
+  const res = await api.get(`/evidences/student/${studentId}`, {
+    params: { page, limit },
+  });
+
+  return res.data;
+}

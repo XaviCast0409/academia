@@ -82,5 +82,7 @@ export const loginUser = async (
   }
 
   const token = generateToken(user.id, user.roleId, user.role.id); // ahora pasas el roleId también
+  console.log(`User ${user.name}`);
+  
   return { token, user: user.toJSON() }; // Devuelve el token y el usuario como JSON
 };

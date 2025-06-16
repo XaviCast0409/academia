@@ -8,6 +8,19 @@ export interface Evidence {
   studentEmail?: string; // Email del alumno
   createdAt?: Date | string ; // Fecha de creación
   updatedAt?: Date;
+  activity?: {
+    id: number;
+    title: string;
+    professor: {
+      id: number;
+      name: string;
+    }; // Información del profesor
+  }
+  student?:{
+    id: number;
+    name: string;
+    email?: string; // Email del alumno
+  }
 }
 
 export interface EvidenceImput {
