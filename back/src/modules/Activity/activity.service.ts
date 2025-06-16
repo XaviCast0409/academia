@@ -3,6 +3,7 @@ import { ActivityInput, ActivityOutput } from "../../models/Activity";
 import Evidence from "../../models/Evidence";
 
 export const getActivity = async (id: number): Promise<ActivityOutput> => {
+  console.log(id);
   const activity = await db.Activity.findByPk(id, {
     include: [
       {
