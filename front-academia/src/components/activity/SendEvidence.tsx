@@ -7,6 +7,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Alert,
 } from '@mui/material';
 import { useState } from 'react';
 import ImageCloudinary from '../../components/cloudinary/Image';
@@ -21,6 +22,7 @@ interface FormValues {
 export const SendEvidence = () => {
   const { id } = useParams();
   const [imageLinks, setImageLinks] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const { control, handleSubmit } = useForm<FormValues>();
   const [uploaderKey] = useState<number>(0);
   const navigate = useNavigate();
@@ -29,7 +31,22 @@ export const SendEvidence = () => {
 
   const addEvidence = useEvidenceStore((state) => state.addEvidence);
 
+  const handleImageUpload = (urls: string[]) => {
+    setImageLinks(urls);
+    setIsUploading(false);
+  };
+
   const onSubmit = async () => {
+    if (imageLinks.length === 0) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Debes subir al menos una imagen como evidencia.',
+        icon: 'error',
+        confirmButtonColor: '#E07F3F',
+      });
+      return;
+    }
+
     const token = localStorage.getItem('token');
     if (!token) return;
 
@@ -58,7 +75,7 @@ export const SendEvidence = () => {
           navigate('/users/actividades');
           setTimeout(() => {
             useActivityStore.getState().setPage(lastPage);
-          }, 100); // pequeño delay para garantizar el montaje
+          }, 100);
         }, 100);
       });
     } catch (error) {
@@ -127,15 +144,25 @@ export const SendEvidence = () => {
           control={control}
           render={() => (
             <ImageCloudinary
-              setImageLinks={setImageLinks}
+              setImageLinks={handleImageUpload}
               resetUploader={uploaderKey}
+              maxFiles={5}
+              maxFileSize={2 * 1024 * 1024}
+              title="Evidencias de la Actividad"
             />
           )}
         />
 
+        {imageLinks.length === 0 && !isUploading && (
+          <Alert severity="warning" sx={{ mt: 2 }}>
+            Debes subir al menos una imagen como evidencia
+          </Alert>
+        )}
+
         <Button
           type="submit"
           variant="contained"
+          disabled={imageLinks.length === 0 || isUploading}
           sx={{
             backgroundColor: '#E07F3F',
             fontFamily: `'Press Start 2P', cursive`,
@@ -146,9 +173,13 @@ export const SendEvidence = () => {
             '&:hover': {
               backgroundColor: '#84341c',
             },
+            '&.Mui-disabled': {
+              backgroundColor: '#cccccc',
+              color: '#666666',
+            },
           }}
         >
-          Enviar Evidencia
+          {isUploading ? 'Subiendo...' : 'Enviar Evidencia'}
         </Button>
       </Box>
     </Container>

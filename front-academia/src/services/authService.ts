@@ -1,11 +1,42 @@
 import { api } from '../utils/api';
 
-interface LoginDTO {
-  email: string;
-  password: string;
-}
+export const authService = {
+  async register(userData: {
+    name: string;
+    email: string;
+    password: string;
+    roleId: number;
+    section: string;
+  }) {
+    const response = await api.post(`/users/create`, userData);
+    return response.data;
+  },
 
-export const loginUser = async (data: LoginDTO): Promise<string> => {
-  const response = await api.post('/users/login', data);
-  return response.data.token.token; // debe ser el token JWT string
+  async verifyCode(email: string, code: string) {
+    const response = await api.post(`/users/verify-code`, {
+      email,
+      code,
+    });
+    return response.data;
+  },
+
+  async login(email: string, password: string) {
+    try {
+      const response = await api.post(`/users/login`, {
+        email,
+        password,
+      });
+      
+      if (!response.data || !response.data.token) {
+        throw new Error('No se recibió un token válido del servidor');
+      }
+      
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error('Error al intentar iniciar sesión');
+    }
+  },
 };

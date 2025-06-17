@@ -2,6 +2,22 @@ import db from "../../config/database";
 import { encrypt, generateToken, verified } from "../../utils/validations";
 import { UserOutput, UserInput } from "../../models/User";
 import { UserNotFoundError, UserAlreadyExistsError } from "../../utils/error";
+import { emailVerificationService } from "../../services/emailVerificationService";
+import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: true,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+
+const generateVerificationCode = (): string => {
+  return Math.floor(10000 + Math.random() * 90000).toString();
+};
 
 export const getUser = async (id: number): Promise<UserOutput> => {
   try {
@@ -28,18 +44,45 @@ export const createUser = async (
   email: string,
   password: string,
   roleId: number,
-  pokemonId: number, // opcional si no se requiere al crear
-  section?: string // opcional si no se requiere al crear
+  pokemonId: number,
+  section?: string
 ): Promise<UserOutput> => {
   const findUser = await db.User.findOne({ where: { email } });
   if (findUser) {
- throw new UserAlreadyExistsError(`User with email ${email} already exists`);
+    throw new UserAlreadyExistsError(`User with email ${email} already exists`);
   }
 
+  // Generar código de verificación
+  const verificationCode = generateVerificationCode();
+
+  // Enviar código por email
+  await transporter.sendMail({
+    from: process.env.SMTP_USER,
+    to: email,
+    subject: "Código de verificación - Academia",
+    html: `
+      <h1>Verificación de correo electrónico</h1>
+      <p>Tu código de verificación es: <strong>${verificationCode}</strong></p>
+      <p>Este código expirará en 15 minutos.</p>
+      <p>Si no solicitaste este código, por favor ignora este correo.</p>
+    `,
+  });
+
+  // Crear usuario con el código de verificación
   password = await encrypt(password);
   const user = await db.User.create(
-    { name, email, password, roleId, pokemonId, section },
+    { 
+      name, 
+      email, 
+      password, 
+      roleId, 
+      pokemonId, 
+      section,
+      verificationCode,
+      verificationCodeExpires: new Date(Date.now() + 15 * 60 * 1000) // 15 minutos
+    },
   );
+
   return user;
 };
 

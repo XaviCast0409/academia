@@ -12,7 +12,7 @@ import {
   Link,
   CircularProgress,
 } from "@mui/material";
-import { loginUser } from "../../services/authService";
+import { authService } from "../../services/authService";
 import { useAuthStore } from "../../store/authStore";
 import { useState } from "react";
 
@@ -34,8 +34,15 @@ export const Login = () => {
   const onSubmit = async (data: LoginFormInputs) => {
     try {
       setLoading(true);
-      const token = await loginUser(data);
-      login(token);
+      const response = await authService.login(data.email, data.password);
+      console.log(response);
+      const token = response.token.token;
+      
+      if (typeof token !== 'string' || !token) {
+        throw new Error('Token inválido recibido del servidor');
+      }
+
+      await login(token);
       const decoded = jwtDecode<{ roleId: number }>(token);
       const roleId = decoded.roleId;
 

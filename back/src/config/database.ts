@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize";
 import dataConfig from "./environment";
 import fs from "fs";
 import path from "path";
+import { VerificationCode } from "../models/VerificationCode";
 
 const db: any = {}
 export const sequelize = new Sequelize({
@@ -58,6 +59,9 @@ Object.keys(db).forEach((modelName) => {
     console.error("Error al conectar a la base de datos:", error);
   }
 })();
+
+// Add VerificationCode to db object
+db.VerificationCode = VerificationCode;
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

@@ -2,72 +2,64 @@ import {
   TextField,
   MenuItem
 } from '@mui/material';
-import type { TextFieldProps } from '@mui/material';
 import { Controller } from 'react-hook-form';
-import type { Control, FieldError } from 'react-hook-form';
+import type { Control, FieldValues, Path } from 'react-hook-form';
+import type { TextFieldProps } from '@mui/material';
 
-interface CustomTextFieldProps
-  extends Omit<TextFieldProps, 'name' | 'select' | 'defaultValue' | 'error'> {
-  name: string;
-  control: Control<any>;
-  fieldError?: FieldError;
+interface CustomTextFieldProps<T extends FieldValues> extends Omit<TextFieldProps, 'name'> {
+  name: Path<T>;
+  control: Control<T>;
+  label: string;
   select?: boolean;
-  options?: { label: string; value: any }[];
-  helperText?: string;
-  error?: boolean;
+  options?: { value: string | number; label: string }[];
 }
 
-export const CustomTextField = ({
+const CustomTextField = <T extends FieldValues>({
   name,
   control,
-  fieldError,
+  label,
   select = false,
   options = [],
-  helperText,
   ...props
-}: CustomTextFieldProps) => (
-  <Controller
-    name={name}
-    control={control}
-    defaultValue={select ? '' : ''}
-    render={({ field }) => (
-      <TextField
-        {...field}
-        {...props}
-        select={select}
-        fullWidth
-        margin="normal"
-        error={!!fieldError}
-        helperText={fieldError?.message || helperText}
-        slotProps={{
-          input: {
-            style: {
-              fontFamily: "'Press Start 2P'",
-              fontSize: '0.6rem'
-            }
-          },
-          inputLabel: {
-            style: {
-              fontFamily: "'Press Start 2P'",
-              fontSize: '0.6rem'
-            }
-          }
-        }}
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            backgroundColor: '#fff',
-            '& fieldset': { borderColor: '#84341C' },
-            '&:hover fieldset': { borderColor: '#E07F3F' },
-          },
-        }}
-      >
-        {select &&
-          options.map((opt) => (
-            <MenuItem key={String(opt.value)} value={opt.value}>
-              {opt.label}
+}: CustomTextFieldProps<T>) => {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState }) => (
+        <TextField
+          {...field}
+          {...props}
+          select={select}
+          fullWidth
+          label={label}
+          variant="outlined"
+          margin="normal"
+          error={!!fieldState.error}
+          helperText={fieldState.error?.message}
+          InputLabelProps={{ style: { color: 'white' } }}
+          InputProps={{ style: { color: 'white' } }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'rgb(224, 127, 63)',
+              },
+              '&:hover fieldset': {
+                borderColor: 'rgb(132, 52, 28)',
+              },
+            },
+            ...props.sx,
+          }}
+        >
+          {select && options.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
             </MenuItem>
           ))}
-      </TextField>
-    )}
-  />
-);
+        </TextField>
+      )}
+    />
+  );
+};
+
+export default CustomTextField;

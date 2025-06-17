@@ -6,13 +6,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-import { CustomTextField } from '../shared/CustomTextField';
+import CustomTextField from '../shared/CustomTextField';
 import { PokemonSelector } from '../pokemon/PokemonSelector';
 import { useRoleStore } from '../../store/roleStore';
 import { createUser } from '../../services/userService';
 import { userSchema } from '../../schemas/userSchema';
 import { formBoxStyles, titleStyles, submitButtonStyles } from '../../styles/formStyles';
 import type { CreateUserDTO } from '../../types/user';
+import { VerifyCodeForm } from '../auth/VerifyCodeForm';
 
 const sectionOptions = [
   { label: "1ro Sec", value: "1ro Sec" },
@@ -26,6 +27,8 @@ export const CreateUserForm = () => {
   const { getAllRoles } = useRoleStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
   const {
     control,
@@ -52,14 +55,14 @@ export const CreateUserForm = () => {
     setLoading(true);
     try {
       await createUser(data);
+      setRegisteredEmail(data.email);
+      setShowVerification(true);
       await Swal.fire({
         icon: 'success',
         title: '¡Usuario creado!',
-        text: 'Cuenta registrada correctamente.',
+        text: 'Por favor, verifica tu correo electrónico.',
         confirmButtonColor: '#e07f3f'
       });
-      reset();
-      navigate('/');
     } catch {
       Swal.fire({
         icon: 'error',
@@ -71,6 +74,25 @@ export const CreateUserForm = () => {
       setLoading(false);
     }
   };
+
+  const handleVerificationSuccess = () => {
+    reset();
+    navigate('/');
+  };
+
+  if (showVerification) {
+    return (
+      <Box sx={formBoxStyles}>
+        <Typography variant="h5" align="center" mb={4} sx={titleStyles}>
+          VERIFICAR CORREO
+        </Typography>
+        <VerifyCodeForm 
+          email={registeredEmail} 
+          onVerificationSuccess={handleVerificationSuccess} 
+        />
+      </Box>
+    );
+  }
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={formBoxStyles}>

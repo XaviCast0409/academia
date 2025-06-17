@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Container } from "@mui/material";
 import { useUserStore } from "../../store/userStore";
-import { UserProfileCard } from "./UserProfileCard";
+import  {UserProfileCard}  from "./UserProfileCard"
 import { UpdateSectionAlert } from './UpdateSectionAlert';
 
 export const UserProfilePage = () => {
