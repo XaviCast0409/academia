@@ -10,6 +10,7 @@ import CustomTextField from '../shared/CustomTextField';
 import { PokemonSelector } from '../pokemon/PokemonSelector';
 import { useRoleStore } from '../../store/roleStore';
 import { createUser } from '../../services/userService';
+import { emailVerificationService } from '../../services/emailVerificationService';
 import { userSchema } from '../../schemas/userSchema';
 import { formBoxStyles, titleStyles, submitButtonStyles } from '../../styles/formStyles';
 import type { CreateUserDTO } from '../../types/user';
@@ -29,12 +30,14 @@ export const CreateUserForm = () => {
   const [loading, setLoading] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
+  const [formData, setFormData] = useState<CreateUserDTO | null>(null);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    getValues
   } = useForm<CreateUserDTO>({
     resolver: yupResolver(userSchema),
     defaultValues: {
@@ -51,23 +54,24 @@ export const CreateUserForm = () => {
     getAllRoles();
   }, [getAllRoles]);
 
-  const onSubmit = async (data: CreateUserDTO) => {
+  const onRequestVerification = async (data: CreateUserDTO) => {
     setLoading(true);
     try {
-      await createUser(data);
+      await emailVerificationService.sendVerificationCode(data.email);
       setRegisteredEmail(data.email);
+      setFormData(data);
       setShowVerification(true);
       await Swal.fire({
         icon: 'success',
-        title: '¡Usuario creado!',
+        title: '¡Código enviado!',
         text: 'Por favor, verifica tu correo electrónico.',
         confirmButtonColor: '#e07f3f'
       });
-    } catch {
+    } catch (error: any) {
       Swal.fire({
         icon: 'error',
-        title: 'Error al crear usuario',
-        text: 'Verifica los datos o intenta más tarde.',
+        title: 'Error al enviar código',
+        text: error.response?.data?.message || 'Verifica los datos o intenta más tarde.',
         confirmButtonColor: '#e07f3f'
       });
     } finally {
@@ -75,9 +79,30 @@ export const CreateUserForm = () => {
     }
   };
 
-  const handleVerificationSuccess = () => {
-    reset();
-    navigate('/');
+  const onVerificationSuccess = async () => {
+    if (!formData) return;
+    
+    setLoading(true);
+    try {
+      await createUser(formData);
+      await Swal.fire({
+        icon: 'success',
+        title: '¡Usuario creado!',
+        text: 'Tu cuenta ha sido registrada exitosamente.',
+        confirmButtonColor: '#e07f3f'
+      });
+      reset();
+      navigate('/');
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al crear usuario',
+        text: error.response?.data?.message || 'Verifica los datos o intenta más tarde.',
+        confirmButtonColor: '#e07f3f'
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (showVerification) {
@@ -88,14 +113,14 @@ export const CreateUserForm = () => {
         </Typography>
         <VerifyCodeForm 
           email={registeredEmail} 
-          onVerificationSuccess={handleVerificationSuccess} 
+          onVerificationSuccess={onVerificationSuccess} 
         />
       </Box>
     );
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={formBoxStyles}>
+    <Box component="form" onSubmit={handleSubmit(onRequestVerification)} sx={formBoxStyles}>
       <Typography variant="h5" align="center" mb={4} sx={titleStyles}>
         CREAR USUARIO
       </Typography>
@@ -146,7 +171,7 @@ export const CreateUserForm = () => {
       <Controller name="pokemonId" control={control} render={({ field }) => <PokemonSelector field={field} />} />
 
       <Button type="submit" fullWidth variant="contained" disabled={loading} sx={submitButtonStyles}>
-        {loading ? <CircularProgress size={24} color="inherit" /> : 'CREAR USUARIO'}
+        {loading ? <CircularProgress size={24} color="inherit" /> : 'SOLICITAR CÓDIGO DE VERIFICACIÓN'}
       </Button>
     </Box>
   );

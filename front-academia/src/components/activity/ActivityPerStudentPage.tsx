@@ -26,7 +26,7 @@ export const AvailableActivities = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth-storage');
     if (!token) return;
     const payload = JSON.parse(atob(token.split('.')[1]));
     setStudentId(payload.id);

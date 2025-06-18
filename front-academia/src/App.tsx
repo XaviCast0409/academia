@@ -17,8 +17,11 @@ import { UserTransactionsList } from "./components/transaction/TransactionPage";
 import { ViewActivityPage } from "./components/activity/ViewActivityPage";
 import { ProfessorEvidenceList } from "./components/evidence/EvidencePerProfessor";
 import { EvidencePerStudents } from "./components/evidence/EvidencePerStudents";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { useTokenExpiration } from "./hooks/useTokenExpiration";
 
 function App() {
+  useTokenExpiration(); // Verificar expiración del token
 
   return (
     <>
@@ -27,7 +30,11 @@ function App() {
         <Route path="/roles" element={<RolesPage />} />
         <Route path="/create-user" element={<CreateUserForm />} />
         {/* Rutas de usuario */}
-        <Route path="/users" element={<UserLayout />}>
+        <Route path="/users" element={
+          <ProtectedRoute allowedRoles={[2]}>
+            <UserLayout />
+          </ProtectedRoute>
+        }>
           <Route path="actividades" element={<AvailableActivities />} />
           <Route path="actividades/evidence/:id" element={<SendEvidence />} />
           <Route path="profile" element={<UserProfilePage />} />
@@ -37,7 +44,11 @@ function App() {
           <Route path="evidences" element={<EvidencePerStudents />} />
         </Route>
         {/* profesor */}
-        <Route path="/admin" element={<AdminLayout />} >
+        <Route path="/admin" element={
+          <ProtectedRoute allowedRoles={[1]}>
+            <AdminLayout />
+          </ProtectedRoute>
+        }>
           <Route path="actividad" element={<PageAdmin />} />
           <Route path="recompensa" element={<ProductsPage />} />
           <Route path="actividad-list" element={<ActivityPage />} />

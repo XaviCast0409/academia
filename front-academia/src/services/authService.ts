@@ -1,4 +1,10 @@
 import { api } from '../utils/api';
+import type { User } from '../types/user';
+
+interface LoginResponse {
+  token: string;
+  user: User;
+}
 
 export const authService = {
   async register(userData: {
@@ -20,19 +26,20 @@ export const authService = {
     return response.data;
   },
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await api.post(`/users/login`, {
+      const response = await api.post<LoginResponse>(`/users/login`, {
         email,
         password,
       });
       
-      if (!response.data || !response.data.token) {
-        throw new Error('No se recibió un token válido del servidor');
+      if (!response.data || !response.data.token || !response.data.user) {
+        throw new Error('No se recibió una respuesta válida del servidor');
       }
       
       return response.data;
     } catch (error) {
+      console.error('Error en authService.login:', error);
       if (error instanceof Error) {
         throw new Error(error.message);
       }

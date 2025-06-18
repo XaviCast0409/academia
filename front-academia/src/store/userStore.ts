@@ -34,9 +34,9 @@ export const useUserStore = create<UserState>((set) => ({
     const updatedUser = await updateUser(id, data);
     set((state) => ({
       users: state.users.map((user) =>
-        user.id === id ? { ...user, ...updatedUser } : user
+        user.id === Number(id) ? { ...user, ...updatedUser } : user
       ),
-      user: { ...state.user, ...updatedUser }, // Actualizar el usuario actual si es necesario
+      user: { ...state.user, ...updatedUser },
     }));
   }
 }));

@@ -34,7 +34,7 @@ export const getUsersController = async (_req: Request, res: Response) => {
 
 export const createUserController = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, roleId, pokemonId, section } = req.body as UserInput;
+    const { name, email, password, roleId, pokemonId, section } = req.body;
     const user = await createUser(name, email, password, roleId, pokemonId, section);
     res.json(user);
   } catch (error: any) {
@@ -45,14 +45,9 @@ export const createUserController = async (req: Request, res: Response) => {
 export const updateUserController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
-    const updatedUser = await updateUser(parseInt(id), req.body); // ahora acepta cualquier campo parcial
-
-    if (!updatedUser) {
-      res.status(404).json({ message: "Usuario no encontrado" });
-    }
-
-    res.json(updatedUser);
+    const userData = req.body;
+    const user = await updateUser(parseInt(id), userData);
+    res.json(user);
   } catch (error: any) {
     errorHelper(error, res);
   }
@@ -71,8 +66,8 @@ export const deleteUserController = async (req: Request, res: Response) => {
 export const loginUserController = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const token = await loginUser(email, password);
-    res.json({ token });
+    const { token, user } = await loginUser(email, password);
+    res.json({ token, user });
   } catch (error: any) {
     errorHelper(error, res);
   }

@@ -9,6 +9,7 @@ import {
   Box,
   Chip,
   Divider,
+  Tooltip,
 } from "@mui/material";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import EmailIcon from "@mui/icons-material/Email";
@@ -29,14 +30,13 @@ export const UserProfileCard = ({ user }: Props) => {
       sx={{
         background: "linear-gradient(135deg, #E07F3F, #84341C)",
         color: "#fff",
-        borderRadius: 6,
+        borderRadius: { xs: 2, sm: 4, md: 6 },
         boxShadow: "0 8px 30px rgba(0,0,0,0.5)",
-        maxWidth: isMobile ? 360 : isTablet ? 800 : 1000,
+        maxWidth: isMobile ? "100%" : isTablet ? 800 : 1000,
         mx: "auto",
-        mt: { xs: 3, sm: 4, md: 6 },
-        px: { xs: 2, sm: 4, md: 6 },
+        px: { xs: 1, sm: 3, md: 4 },
         py: { xs: 2, sm: 3, md: 4 },
-        border: "5px solid #FFCC00",
+        border: "4px solid #FFCC00",
         transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
         "&:hover": {
           transform: "translateY(-5px)",
@@ -44,10 +44,10 @@ export const UserProfileCard = ({ user }: Props) => {
         },
       }}
     >
-      <CardContent>
+      <CardContent sx={{ p: { xs: 1, sm: 2 } }}>
         <Grid
           container
-          spacing={{ xs: 3, sm: 4, md: 6 }}
+          spacing={{ xs: 2, sm: 3, md: 4 }}
           direction={isMobile ? "column" : "row"}
           alignItems="center"
           justifyContent="center"
@@ -58,10 +58,10 @@ export const UserProfileCard = ({ user }: Props) => {
                 src={user.pokemon?.highResImageUrl}
                 alt={user.name}
                 sx={{
-                  width: { xs: 150, sm: 200, md: 280 },
-                  height: { xs: 150, sm: 200, md: 280 },
+                  width: { xs: 100, sm: 150, md: 200 },
+                  height: { xs: 100, sm: 150, md: 200 },
                   mx: "auto",
-                  border: "6px solid #FFCC00",
+                  border: "4px solid #FFCC00",
                   boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
                   transition: "transform 0.3s ease-in-out",
                   "&:hover": {
@@ -77,8 +77,8 @@ export const UserProfileCard = ({ user }: Props) => {
                   bgcolor: "#0D3745",
                   color: "#fff",
                   fontWeight: "bold",
-                  fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
-                  height: { xs: 32, sm: 36, md: 40 },
+                  fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.8rem" },
+                  height: { xs: 24, sm: 28, md: 32 },
                   "& .MuiChip-icon": {
                     color: "#FFCC00",
                   },
@@ -91,9 +91,10 @@ export const UserProfileCard = ({ user }: Props) => {
             <Box 
               sx={{ 
                 textAlign: isMobile ? "center" : "left",
-                p: { sm: 2 },
+                p: { xs: 1, sm: 2 },
                 bgcolor: "rgba(13, 55, 69, 0.1)",
                 borderRadius: 2,
+                mt: { xs: 1, sm: 0 },
               }}
             >
               <Typography
@@ -103,34 +104,50 @@ export const UserProfileCard = ({ user }: Props) => {
                   color: "#FFCC00",
                   textShadow: "2px 2px #0D3745",
                   fontFamily: "'Press Start 2P', cursive",
-                  fontSize: { xs: "1.2rem", sm: "1.5rem", md: "1.8rem" },
+                  fontSize: { xs: "0.9rem", sm: "1.1rem", md: "1.3rem" },
                   mb: 2,
                 }}
               >
                 {user.name}
               </Typography>
 
-              <Divider sx={{ my: 2, borderColor: "#FFCC00", opacity: 0.7 }} />
+              <Divider sx={{ my: 1.5, borderColor: "#FFCC00", opacity: 0.7 }} />
 
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                 <Typography 
                   variant="body1" 
                   sx={{ 
                     fontFamily: "'Press Start 2P', cursive", 
-                    fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+                    fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.8rem" },
                     display: "flex",
                     alignItems: "center",
                     gap: 1,
+                    justifyContent: isMobile ? "center" : "flex-start"
                   }}
                 >
-                  <EmailIcon sx={{ color: "#FFCC00" }} /> {user.email}
+                  <EmailIcon sx={{ color: "#FFCC00", fontSize: { xs: "0.9rem", sm: "1rem" } }} /> 
+                  <Tooltip title={user.email} arrow placement="top">
+                    <Box
+                      component="span"
+                      sx={{
+                        maxWidth: { xs: "150px", sm: "200px", md: "250px" },
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        display: "inline-block"
+                      }}
+                    >
+                      {user.email}
+                    </Box>
+                  </Tooltip>
                 </Typography>
 
                 <Typography 
                   variant="body1" 
                   sx={{ 
                     fontFamily: "'Press Start 2P', cursive", 
-                    fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+                    fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.8rem" },
+                    textAlign: isMobile ? "center" : "left",
                   }}
                 >
                   Rol: <strong style={{ color: "#FFCC00" }}>{user.role?.name || "Sin rol"}</strong>
@@ -140,7 +157,8 @@ export const UserProfileCard = ({ user }: Props) => {
                   variant="body1" 
                   sx={{ 
                     fontFamily: "'Press Start 2P', cursive", 
-                    fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+                    fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.8rem" },
+                    textAlign: isMobile ? "center" : "left",
                   }}
                 >
                   Sección: <strong style={{ color: "#FFCC00" }}>{user.section || "Sin sección"}</strong>
@@ -150,13 +168,14 @@ export const UserProfileCard = ({ user }: Props) => {
                   variant="body1" 
                   sx={{ 
                     fontFamily: "'Press Start 2P', cursive",
-                    fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+                    fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.8rem" },
                     display: "flex",
                     alignItems: "center",
                     gap: 1,
+                    justifyContent: isMobile ? "center" : "flex-start",
                   }}
                 >
-                  <MonetizationOnIcon sx={{ color: "#FFCC00" }} />
+                  <MonetizationOnIcon sx={{ color: "#FFCC00", fontSize: { xs: "0.9rem", sm: "1rem" } }} />
                   Xavicoins: <strong style={{ color: "#FFCC00" }}>{user.xavicoints ?? 0}</strong>
                 </Typography>
               </Box>

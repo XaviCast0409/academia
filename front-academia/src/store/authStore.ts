@@ -1,69 +1,35 @@
 // src/store/authStore.ts
 import { create } from 'zustand';
-import { jwtDecode } from 'jwt-decode';
-import type { AuthUser } from '../types/user';
-import { getUserById } from '../services/userService';
+import { persist } from 'zustand/middleware';
+import type { User } from '../types/user';
 
 interface AuthState {
-  user: AuthUser | null;
   token: string | null;
-  login: (token: string) => Promise<void>;
+  user: User | null;
+  isAuthenticated: boolean;
+  login: (token: string, user: User) => void;
   logout: () => void;
-  initAuth: () => Promise<void>;
+  setUser: (user: User) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  token: null,
-
-  login: async (token: string) => {
-    try {
-      if (typeof token !== 'string' || !token) {
-        throw new Error('Token inválido');
-      }
-
-      const decoded = jwtDecode<AuthUser>(token);
-      if (!decoded || !decoded.id) {
-        throw new Error('Token malformado');
-      }
-
-      localStorage.setItem('token', token);
-      const userData = await getUserById(decoded.id);
-      
-      set({ 
-        token, 
-        user: { ...decoded, ...userData }
-      });
-    } catch (error) {
-      localStorage.removeItem('token');
-      set({ token: null, user: null });
-      throw error;
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      token: null,
+      user: null,
+      isAuthenticated: false,
+      login: (token: string, user: User) => {
+        set({ token, user, isAuthenticated: true });
+      },
+      logout: () => {
+        set({ token: null, user: null, isAuthenticated: false });
+      },
+      setUser: (user: User) => {
+        set({ user });
+      },
+    }),
+    {
+      name: 'auth-storage',
     }
-  },
-
-  logout: () => {
-    localStorage.removeItem('token');
-    set({ token: null, user: null });
-  },
-
-  initAuth: async () => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decoded = jwtDecode<AuthUser>(token);
-        if (!decoded || !decoded.id) {
-          throw new Error('Token malformado');
-        }
-
-        const userData = await getUserById(decoded.id);
-        set({ 
-          token, 
-          user: { ...decoded, ...userData }
-        });
-      } catch (error) {
-        localStorage.removeItem('token');
-        set({ token: null, user: null });
-      }
-    }
-  }
-}));
+  )
+);

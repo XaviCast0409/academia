@@ -1,4 +1,4 @@
-import { Model, DataTypes, Sequelize } from "sequelize";
+import { Model, DataTypes, Sequelize, Optional } from "sequelize";
 
 export interface VerificationCodeAttributes {
   id: number;
@@ -10,7 +10,10 @@ export interface VerificationCodeAttributes {
   updatedAt?: Date;
 }
 
-export class VerificationCode extends Model<VerificationCodeAttributes> implements VerificationCodeAttributes {
+export interface VerificationCodeInput extends Optional<VerificationCodeAttributes, "id"> {}
+export interface VerificationCodeOutput extends Required<VerificationCodeAttributes> {}
+
+export class VerificationCode extends Model<VerificationCodeAttributes, VerificationCodeInput> implements VerificationCodeAttributes {
   public id!: number;
   public email!: string;
   public code!: string;
@@ -58,3 +61,5 @@ export class VerificationCode extends Model<VerificationCodeAttributes> implemen
     );
   }
 } 
+
+export default VerificationCode;  

@@ -7,7 +7,7 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { authService } from '../../services/authService';
+import { emailVerificationService } from '../../services/emailVerificationService';
 
 interface VerifyCodeFormProps {
   email: string;
@@ -24,11 +24,12 @@ export const VerifyCodeForm: React.FC<VerifyCodeFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return; // Prevent multiple submissions
     setError('');
     setLoading(true);
 
     try {
-      await authService.verifyCode(email, code);
+      await emailVerificationService.verifyCode(email, code);
       onVerificationSuccess();
     } catch (error: any) {
       setError(error.response?.data?.message || 'Error al verificar el código');
@@ -70,7 +71,7 @@ export const VerifyCodeForm: React.FC<VerifyCodeFormProps> = ({
         sx={{ mt: 3, mb: 2 }}
         disabled={loading || code.length !== 5}
       >
-        {loading ? <CircularProgress size={24} /> : 'Verificar código'}
+        {loading ? <CircularProgress size={24} color="inherit" /> : 'Verificar código'}
       </Button>
     </Box>
   );

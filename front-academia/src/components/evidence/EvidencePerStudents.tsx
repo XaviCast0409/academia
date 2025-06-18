@@ -15,7 +15,7 @@ import { useEvidenceStore } from '../../store/evidenceStore';
 import PersonIcon from '@mui/icons-material/Person';
 
 export const EvidencePerStudents = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('auth-storage');
   const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
   const studentId = user?.id;
 
@@ -23,8 +23,6 @@ export const EvidencePerStudents = () => {
   const [loading, setLoading] = useState(true);
 
   const { evidences, totalPages, getEvidencePerStudent, cleanEvidences } = useEvidenceStore();
-	console.log('evidences', evidences);
-	
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));

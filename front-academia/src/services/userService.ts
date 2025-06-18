@@ -20,3 +20,19 @@ export const updateUser = async (id: string, data: Partial<CreateUserDTO>) => {
   const response = await api.put<CreateUserDTO>(`/users/${id}`, data);
   return response.data;
 };
+
+export const userService = {
+  getCurrentUser: async (): Promise<User> => {
+    const response = await api.get<User>("/users/me");
+    return response.data;
+  },
+
+  updateUser: async (userId: number, userData: Partial<User>): Promise<User> => {
+    const response = await api.put<User>(`/users/${userId}`, userData);
+    return response.data;
+  },
+
+  deleteUser: async (userId: number): Promise<void> => {
+    await api.delete(`/users/${userId}`);
+  },
+};

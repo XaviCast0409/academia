@@ -1,6 +1,5 @@
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 import {
   Box,
@@ -35,29 +34,19 @@ export const Login = () => {
     try {
       setLoading(true);
       const response = await authService.login(data.email, data.password);
-      console.log(response);
-      const token = response.token.token;
       
-      if (typeof token !== 'string' || !token) {
-        throw new Error('Token inválido recibido del servidor');
-      }
-
-      await login(token);
-      const decoded = jwtDecode<{ roleId: number }>(token);
-      const roleId = decoded.roleId;
-
-      switch (roleId) {
-        case 2:
-        case 3:
-          navigate("/users/profile");
-          break;
-        case 1:
-          navigate("/admin");
-          break;
-        default:
-          navigate("/");
+      login(response.token, response.user);
+      
+      // La redirección se maneja en el ProtectedRoute basado en el rol
+      if (response.user.roleId === 1) {
+        navigate("/admin");
+      } else if (response.user.roleId === 2) {
+        navigate("/users/profile");
+      } else {
+        navigate("/");
       }
     } catch (error) {
+      console.error('Error durante el login:', error);
       Swal.fire({
         icon: "error",
         title: "Error",

@@ -29,10 +29,9 @@ export const getUser = async (id: number): Promise<UserOutput> => {
     });
     return user;
   } catch (error) {
- throw new UserNotFoundError(`User with id ${id} not found`);
+    throw new UserNotFoundError(`User with id ${id} not found`);
   }
 };
-
 
 export const getUsers = async (): Promise<UserOutput[]> => {
   const users = await db.User.findAll({ include: db.Role });
@@ -86,21 +85,21 @@ export const createUser = async (
   return user;
 };
 
-
 export const updateUser = async (
   id: number,
-  updateData: Partial<UserInput>
-): Promise<UserOutput | null> => {
-  // Si incluye password, la encriptamos
-  if (updateData.password) {
-    updateData.password = await encrypt(updateData.password);
+  userData: Partial<UserInput>
+): Promise<UserOutput> => {
+  const user = await db.User.findByPk(id);
+  if (!user) {
+    throw new UserNotFoundError(`User with id ${id} not found`);
   }
 
-  await db.User.update(updateData, { where: { id } });
+  if (userData.password) {
+    userData.password = await encrypt(userData.password);
+  }
 
-  // Retornamos el usuario actualizado
-  const updatedUser = await db.User.findByPk(id);
-  return updatedUser;
+  await user.update(userData);
+  return user;
 };
 
 export const deleteUser = async (id: number): Promise<number> => {
@@ -111,7 +110,7 @@ export const deleteUser = async (id: number): Promise<number> => {
 export const loginUser = async (
   email: string,
   password: string
-): Promise<{ token: string; user: any }> => {
+): Promise<{ token: string; user: UserOutput }> => {
   const user = await db.User.findOne({ 
     where: { email },
     include: [
@@ -119,17 +118,21 @@ export const loginUser = async (
       { model: db.Pokemon, as: "pokemon" }
     ]
   });
+  
   if (!user) {
- throw new UserNotFoundError(`User with email ${email} not found`);
+    throw new UserNotFoundError(`User with email ${email} not found`);
   }
 
   const isCorrect = await verified(password, user.password);
   if (!isCorrect) {
- throw new Error("Incorrect password"); // You might want a more specific error here too, like InvalidCredentialsError
+    throw new Error("Incorrect password");
   }
 
-  const token = generateToken(user.id, user.roleId, user.role.id); // ahora pasas el roleId también
-  console.log(`User ${user.name}`);
+  const token = generateToken(user.id, user.roleId, user.role.id);
+  console.log(`User ${user.name} logged in successfully`);
   
-  return { token, user: user.toJSON() }; // Devuelve el token y el usuario como JSON
+  return { 
+    token, 
+    user: user.toJSON() 
+  };
 };

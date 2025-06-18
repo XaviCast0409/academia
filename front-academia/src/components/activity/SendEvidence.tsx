@@ -47,7 +47,7 @@ export const SendEvidence = () => {
       return;
     }
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth-storage');
     if (!token) return;
 
     const payload = JSON.parse(atob(token.split('.')[1]));

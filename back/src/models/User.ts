@@ -9,9 +9,6 @@ export interface UserAttributes {
   pokemonId: number; // <-- NUEVO
   xavicoints?: number; // Xavicoints del usuario
   section?: string;
-  verificationCode?: string;
-  verificationCodeExpires?: Date;
-  isVerified?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -30,9 +27,6 @@ export class User
   public pokemonId!: number; // <-- NUEVO
   public xavicoints!: number; // Xavicoints del usuario
   public section?: string;
-  public verificationCode?: string;
-  public verificationCodeExpires?: Date;
-  public isVerified?: boolean;
   
 
   public readonly createdAt!: Date;
@@ -123,20 +117,7 @@ export class User
           type: DataTypes.STRING,
           allowNull: false,
           defaultValue: "default", // Valor por defecto para la sección
-        },
-        verificationCode: {
-          type: DataTypes.STRING(5),
-          allowNull: true,
-        },
-        verificationCodeExpires: {
-          type: DataTypes.DATE,
-          allowNull: true,
-        },
-        isVerified: {
-          type: DataTypes.BOOLEAN,
-          allowNull: false,
-          defaultValue: false,
-        },
+        }
       },
       {
         sequelize,
