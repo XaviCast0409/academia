@@ -37,7 +37,6 @@ export const CreateUserForm = () => {
     handleSubmit,
     formState: { errors },
     reset,
-    getValues
   } = useForm<CreateUserDTO>({
     resolver: yupResolver(userSchema),
     defaultValues: {
