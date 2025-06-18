@@ -7,33 +7,24 @@ export interface CreateUserDTO {
   section: string; // Sección del usuario, opcional
 }
 
-export interface User {
-  id: string;
+export type User = {
+  id: number;
   name: string;
   email: string;
-  password: string;
   roleId: number;
-  pokemonId: number;
-  section?: string; // Sección del usuario, opcional
-  pokemon: {
-    id: number;
-    name: string;
-    imageUrl: string; // Asegúrate de que este campo coincida con tu modelo
-    highResImageUrl?: string; // Campo opcional para imagen de alta resolución
-  };
-  role: {
-    id: number;
-    name: string;
-  };
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  xavicoints: number; // Xavicoints del usuario
-}
-
-export interface AuthUser extends User {
-  id: string;
-  token: string;
-  roleId: number;
-  pokemonId: number; // 👈 nuevo camp
-  exp: number; // Tiempo de expiración del token
-}
+  xavicoints: number;
+  section?: string;
+  role?: {
+    id: number;
+    name: string;
+  };
+  pokemon?: {
+    id: number;
+    name: string;
+    imageUrl: string;
+    highResImageUrl?: string;
+  };
+};

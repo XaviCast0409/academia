@@ -24,7 +24,7 @@ export const ProductsUserPage = () => {
   const { purchaseProduct } = useTransactionStore();
   const { products, totalPages, fetchProducts } = useProductStore();
 
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('auth-storage');
   const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
   const isProfessor = user?.roleId === 1;
   const professorId = isProfessor ? String(user.id) : undefined;

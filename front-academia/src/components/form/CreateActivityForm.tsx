@@ -1,6 +1,5 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
-  TextField,
   Button,
   Typography,
   Box,
@@ -13,6 +12,7 @@ import { useState } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Swal from "sweetalert2";
+import CustomTextField from "../shared/CustomTextField";
 
 interface FormValues {
   title: string;
@@ -30,7 +30,11 @@ const schema = yup.object().shape({
     .min(0, "Debe ser mayor o igual a 0"),
 });
 
-const ActivityForm = ({ professorId }: { professorId: number }) => {
+interface CreateActivityFormProps {
+  professorId: number;
+}
+
+const CreateActivityForm = ({ professorId }: CreateActivityFormProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -38,8 +42,17 @@ const ActivityForm = ({ professorId }: { professorId: number }) => {
   const [uploaderKey, setUploaderKey] = useState<number>(0);
   const { control, handleSubmit, reset } = useForm<FormValues>({
     resolver: yupResolver(schema),
+    defaultValues: {
+      title: "",
+      description: "",
+      xavicoints: 0,
+    },
   });
   const [imageLinks, setImageLinks] = useState<string[]>([]);
+
+  const handleImageUpload = (urls: string[]) => {
+    setImageLinks(urls);
+  };
 
   const onSubmit = async (data: FormValues) => {
     const payload = {
@@ -48,19 +61,29 @@ const ActivityForm = ({ professorId }: { professorId: number }) => {
       professorId,
     };
 
-    await addActivity(payload);
-
-    Swal.fire({
-      title: "¡Actividad creada!",
-      text: "La actividad se ha creado exitosamente.",
-      icon: "success",
-      confirmButtonColor: "rgb(224, 127, 63)",
-      confirmButtonText: "Aceptar",
-    }).then(() => {
-      reset();
-      setImageLinks([]);
-      setUploaderKey((prev) => prev + 1);
-    });
+    try {
+      await addActivity(payload);
+      
+      Swal.fire({
+        title: "¡Actividad creada!",
+        text: "La actividad se ha creado exitosamente.",
+        icon: "success",
+        confirmButtonColor: "rgb(224, 127, 63)",
+        confirmButtonText: "Aceptar",
+      }).then(() => {
+        reset();
+        setImageLinks([]);
+        setUploaderKey((prev) => prev + 1);
+      });
+    } catch (error) {
+      console.error("Error al crear la actividad:", error);
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo crear la actividad. Intenta nuevamente.",
+        icon: "error",
+        confirmButtonColor: "rgb(224, 127, 63)",
+      });
+    }
   };
 
   return (
@@ -89,100 +112,34 @@ const ActivityForm = ({ professorId }: { professorId: number }) => {
       </Typography>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <Controller
+        <CustomTextField
           name="title"
           control={control}
-          defaultValue=""
-          render={({ field, fieldState }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="Título"
-              variant="outlined"
-              margin="normal"
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
-              InputLabelProps={{ style: { color: "white" } }}
-              InputProps={{ style: { color: "white" } }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "rgb(224, 127, 63)",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "rgb(132, 52, 28)",
-                  },
-                },
-              }}
-            />
-          )}
+          label="Título"
         />
 
-        <Controller
+        <CustomTextField
           name="description"
           control={control}
-          defaultValue=""
-          render={({ field, fieldState }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="Descripción"
-              multiline
-              rows={4}
-              variant="outlined"
-              margin="normal"
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
-              InputLabelProps={{ style: { color: "white" } }}
-              InputProps={{ style: { color: "white" } }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "rgb(224, 127, 63)",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "rgb(132, 52, 28)",
-                  },
-                },
-              }}
-            />
-          )}
+          label="Descripción"
+          multiline
+          rows={4}
         />
 
-        <Controller
+        <CustomTextField
           name="xavicoints"
           control={control}
-          defaultValue={0}
-          render={({ field, fieldState }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="XaviCoins"
-              type="number"
-              variant="outlined"
-              margin="normal"
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
-              InputLabelProps={{ style: { color: "white" } }}
-              InputProps={{ style: { color: "white" } }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "rgb(224, 127, 63)",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "rgb(132, 52, 28)",
-                  },
-                },
-              }}
-            />
-          )}
+          label="XaviCoins"
+          type="number"
         />
 
         <Box mt={3} mb={3}>
           <ImageCloudinary
-            setImageLinks={setImageLinks}
+            setImageLinks={handleImageUpload}
             resetUploader={uploaderKey}
+            maxFiles={5}
+            maxFileSize={5 * 1024 * 1024}
+            title="Imágenes de la Actividad"
           />
         </Box>
 
@@ -208,4 +165,4 @@ const ActivityForm = ({ professorId }: { professorId: number }) => {
   );
 };
 
-export default ActivityForm;
+export default CreateActivityForm;

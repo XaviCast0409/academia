@@ -16,7 +16,7 @@ export const ProductsPage = () => {
 	const [selectedId, setSelectedId] = useState<number | null>(null);
 	const [page, setPage] = useState(1);
 
-	const token = localStorage.getItem('token');
+	const token = localStorage.getItem('auth-storage');
 	const user = token ? JSON.parse(atob(token.split('.')[1])) : null; // decodifica el token JWT para obtener el usuario
 	
 	const isProfessor = user?.roleId === 2;

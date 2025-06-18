@@ -18,7 +18,7 @@ import EventIcon from '@mui/icons-material/Event';
 import Pagination from '@mui/material/Pagination';
 
 export const UserTransactionsList = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('auth-storage');
   const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
 
   const userId = user?.id || null;

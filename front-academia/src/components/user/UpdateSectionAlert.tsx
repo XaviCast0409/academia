@@ -33,7 +33,7 @@ export const UpdateSectionAlert = () => {
 
   const handleSubmit = async () => {
     if (selectedSection) {
-      await updateUser(user.id, { section: selectedSection });
+      await updateUser(user.id.toString(), { section: selectedSection });
       setOpen(false);
     }
   };

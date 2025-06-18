@@ -1,6 +1,5 @@
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 import {
   Box,
@@ -12,7 +11,7 @@ import {
   Link,
   CircularProgress,
 } from "@mui/material";
-import { loginUser } from "../../services/authService";
+import { authService } from "../../services/authService";
 import { useAuthStore } from "../../store/authStore";
 import { useState } from "react";
 
@@ -34,23 +33,20 @@ export const Login = () => {
   const onSubmit = async (data: LoginFormInputs) => {
     try {
       setLoading(true);
-      const token = await loginUser(data);
-      login(token);
-      const decoded = jwtDecode<{ roleId: number }>(token);
-      const roleId = decoded.roleId;
-
-      switch (roleId) {
-        case 2:
-        case 3:
-          navigate("/users/profile");
-          break;
-        case 1:
-          navigate("/admin");
-          break;
-        default:
-          navigate("/");
+      const response = await authService.login(data.email, data.password);
+      
+      login(response.token, response.user);
+      
+      // La redirección se maneja en el ProtectedRoute basado en el rol
+      if (response.user.roleId === 1) {
+        navigate("/admin");
+      } else if (response.user.roleId === 2) {
+        navigate("/users/profile");
+      } else {
+        navigate("/");
       }
     } catch (error) {
+      console.error('Error durante el login:', error);
       Swal.fire({
         icon: "error",
         title: "Error",

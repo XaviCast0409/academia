@@ -8,9 +8,9 @@ export interface UserAttributes {
   roleId: number; // Relación con Role
   pokemonId: number; // <-- NUEVO
   xavicoints?: number; // Xavicoints del usuario
+  section?: string;
   createdAt?: Date;
   updatedAt?: Date;
-  section?: string
 }
 
 export interface UserInput extends Optional<UserAttributes, "id"> { }
@@ -117,7 +117,7 @@ export class User
           type: DataTypes.STRING,
           allowNull: false,
           defaultValue: "default", // Valor por defecto para la sección
-        },
+        }
       },
       {
         sequelize,

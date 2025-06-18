@@ -23,7 +23,7 @@ import { EvidenceModal } from '../registro/EvidenceModal';
 import { EvidenceStatusModal } from '../registro/EvidenceStatusModal';
 
 export const ProfessorEvidenceList = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('auth-storage');
   const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
   const professorId = user?.id;
 

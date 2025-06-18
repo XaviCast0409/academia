@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const ProductModal = ({ open, onClose, onSave, productToEdit }: Props) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("auth-storage");
     const user = parseJwt(token || "");
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
