@@ -15,7 +15,7 @@ interface Props {
   currentPage: number;
 }
 
-export const TransactionCard = ({ transaction, currentPage }: Props) => {
+export const TransactionCard = ({ transaction }: Props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
