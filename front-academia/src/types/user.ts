@@ -3,8 +3,8 @@ export interface CreateUserDTO {
   email: string;
   password: string;
   roleId: number;
-  pokemonId: number; // 👈 nuevo campo
-  section: string; // Sección del usuario, opcional
+  pokemonId: number;
+  section: string;
 }
 
 export interface User {
@@ -15,6 +15,7 @@ export interface User {
   experience?: number;
   experienceToNextLevel?: number;
   xavicoints?: number;
+  roleId: number;
   role?: {
     id: number;
     name: string;
@@ -30,4 +31,7 @@ export interface User {
     updatedAt: string;
   };
   section?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  isActive?: boolean;
 }
