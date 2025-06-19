@@ -1,9 +1,9 @@
 import db from "../../config/database";
 import { ActivityInput, ActivityOutput } from "../../models/Activity";
 import Evidence from "../../models/Evidence";
+import { addExperience } from "../Level/level.service";
 
 export const getActivity = async (id: number): Promise<ActivityOutput> => {
-  console.log(id);
   const activity = await db.Activity.findByPk(id, {
     include: [
       {
@@ -210,13 +210,34 @@ export const changeEvidenceStatusAndAddXavicoints = async (
       const student = await db.User.findByPk(evidence.studentId, { transaction });
       if (!student) throw new Error("Student not found.");
 
+      // Añadir xavicoints
       student.xavicoints = (student.xavicoints || 0) + activity.xavicoints;
       await student.save({ transaction });
+
+      // Añadir experiencia y actualizar nivel
+      await addExperience(student.id, activity.difficulty, transaction);
     }
 
-    // 🟢 Aquí retornamos el activity actualizado con sus evidencias
+    // Obtener actividad actualizada con sus evidencias
     const updatedActivity = await db.Activity.findByPk(actividadId, {
-      include: [{ model: db.Evidence, as: "evidences" }], // Asegúrate de tener la asociación configurada
+      include: [
+        { 
+          model: db.Evidence, 
+          as: "evidences",
+          include: [ 
+            {
+              model: db.Activity,
+              as: "activity",
+              attributes: ["id", "title", "xavicoints", "difficulty"]
+            },
+            {
+              model: db.User,
+              as: "student",
+              attributes: ["id", "name", "level", "experience", "xavicoints"]
+            }
+          ]
+        }
+      ],
       transaction,
     });
 

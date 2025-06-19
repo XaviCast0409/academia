@@ -7,24 +7,27 @@ export interface CreateUserDTO {
   section: string; // Sección del usuario, opcional
 }
 
-export type User = {
+export interface User {
   id: number;
   name: string;
   email: string;
-  roleId: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  xavicoints: number;
-  section?: string;
+  level?: number;
+  experience?: number;
+  experienceToNextLevel?: number;
+  xavicoints?: number;
   role?: {
     id: number;
     name: string;
+    createdAt: string;
+    updatedAt: string;
   };
   pokemon?: {
     id: number;
     name: string;
     imageUrl: string;
-    highResImageUrl?: string;
+    highResImageUrl: string;
+    createdAt: string;
+    updatedAt: string;
   };
-};
+  section?: string;
+}

@@ -88,14 +88,18 @@ export const ProfessorEvidenceList = () => {
       const updatedActivity = await changeStatusAndAddPoints(selectedEvidence.activityId, {
         evidenceId: selectedEvidence.id,
         status: newStatus,
-      });
+      }) as any;
 
-      const updatedEvidence = Array.isArray((updatedActivity as any).evidences)
-        ? (updatedActivity as any).evidences.find((ev: any) => ev.id === selectedEvidence.id)
-        : undefined;
-
-      if (updatedEvidence) {
-        updateEvidenceStatus(updatedEvidence);
+      if (updatedActivity && Array.isArray(updatedActivity.evidences)) {
+        const updatedEvidence = updatedActivity.evidences.find((ev: any) => ev.id === selectedEvidence.id);
+        if (updatedEvidence) {
+          // Update the evidence in the store with the complete data
+          updateEvidenceStatus({
+            ...updatedEvidence,
+            activity: updatedActivity,
+            student: updatedEvidence.student
+          });
+        }
       }
 
       setStatusModalOpen(false);
@@ -165,6 +169,19 @@ export const ProfessorEvidenceList = () => {
                         <Typography sx={{ fontSize: isMobile ? '0.75rem' : '0.85rem', color: '#777' }}>
                           Enviado el: {ev.createdAt ? new Date(ev.createdAt).toLocaleString() : 'Fecha no disponible'}
                         </Typography>
+                      </Box>
+
+                      <Box display="flex" alignItems="center" gap={1} mt={1}>
+                        <Chip
+                          label={`Dificultad: ${ev.activity?.difficulty || 'N/A'}`}
+                          size="small"
+                          sx={{ backgroundColor: '#f0f0f0', color: '#555' }}
+                        />
+                        <Chip
+                          label={`${ev.activity?.xavicoints || 0} Xavicoints`}
+                          size="small"
+                          sx={{ backgroundColor: '#FFD700', color: '#000' }}
+                        />
                       </Box>
 
                       <Box mt={1}>

@@ -9,6 +9,9 @@ export interface UserAttributes {
   pokemonId: number; // <-- NUEVO
   xavicoints?: number; // Xavicoints del usuario
   section?: string;
+  level?: number;
+  experience?: number;
+  isActive?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -27,6 +30,9 @@ export class User
   public pokemonId!: number; // <-- NUEVO
   public xavicoints!: number; // Xavicoints del usuario
   public section?: string;
+  public level?: number;
+  public experience?: number;
+  public isActive?: boolean;
   
 
   public readonly createdAt!: Date;
@@ -117,7 +123,22 @@ export class User
           type: DataTypes.STRING,
           allowNull: false,
           defaultValue: "default", // Valor por defecto para la sección
-        }
+        },
+        level: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          defaultValue: 1, // Valor por defecto para el nivel
+        },
+        experience: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          defaultValue: 0, // Valor por defecto para la experiencia
+        },
+        isActive: {
+          type: DataTypes.BOOLEAN,
+          allowNull: true,
+          defaultValue: true, // Valor por defecto para el estado activo
+        },
       },
       {
         sequelize,

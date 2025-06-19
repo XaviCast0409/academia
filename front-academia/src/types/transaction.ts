@@ -8,7 +8,9 @@ export interface TransactionInput {
 
 export interface TransactionOutput {
   transactions: Transaction[];
-  total: number; // Total amount for the transaction
+  total: number;
+  currentPage: number;
+  totalPages: number;
 }
 
 export interface Transaction {
@@ -20,4 +22,15 @@ export interface Transaction {
   description: string;
   createdAt: Date;
   updatedAt: Date;
+  product: {
+    id: number;
+    name: string;
+    price: number;
+    description: string;
+  };
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }

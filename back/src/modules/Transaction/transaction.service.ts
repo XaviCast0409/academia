@@ -107,3 +107,44 @@ export const purchaseProductService = async ({ userId, productId }: PurchaseInpu
     throw new Error(error.message || 'Error al procesar la compra');
   }
 };
+
+export const getProfessorProductTransactions = async (
+  professorId: number,
+  page: number = 1,
+  limit: number = 10
+): Promise<{ transactions: TransactionOutput[]; total: number; currentPage: number; totalPages: number }> => {
+  const offset = (page - 1) * limit;
+
+  const { rows: transactions, count: total } = await db.Transaction.findAndCountAll({
+    include: [
+      {
+        model: db.Product,
+        as: 'product',
+        where: {
+          professorId: professorId
+        },
+        required: true,
+        attributes: ['id', 'name', 'price', 'description']
+      },
+      {
+        model: db.User,
+        as: 'user',
+        required: true,
+        attributes: ['id', 'name', 'email']
+      }
+    ],
+    where: {
+      type: 'purchase'
+    },
+    order: [['createdAt', 'DESC']],
+    limit,
+    offset
+  });
+
+  return { 
+    currentPage: page,
+    totalPages: Math.ceil(total / limit),
+    total,
+    transactions
+   };
+};

@@ -38,6 +38,9 @@ export const MobileDrawer = ({ open, onClose }: MobileDrawerProps) => {
         <ListItemButton onClick={() => { navigate('/admin/evidences'); onClose(); }}>
           <ListItemText primary="Evidencias" />
         </ListItemButton>
+        <ListItemButton onClick={() => { navigate('/admin/transactions'); onClose(); }}>
+          <ListItemText primary="Transacciones" />
+        </ListItemButton>
       </List>
     </Drawer>
   );

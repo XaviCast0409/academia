@@ -1,15 +1,18 @@
 import { Model, DataTypes, Sequelize, Optional } from "sequelize";
+import db from "../config/database";
 
 export interface ActivityAttributes {
   id: number;
   title: string;
   description: string;
-  images: Array<string>; // Cambiado a Array<string> para almacenar múltiples imágenes
+  images: Array<string>; // Array de strings para múltiples imágenes
   xavicoints: number;
   professorId: number; // Relación con el profesor (User)
+  difficulty?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
+
 export interface ActivityInput extends Optional<ActivityAttributes, "id"> {}
 export interface ActivityOutput extends Required<ActivityAttributes> {}
 
@@ -20,6 +23,7 @@ export class Activity extends Model<ActivityAttributes> implements ActivityAttri
   public images!: Array<string>; // Cambiado a Array<string> para almacenar múltiples imágenes
   public xavicoints!: number;
   public professorId!: number;
+  public difficulty?: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -66,6 +70,11 @@ export class Activity extends Model<ActivityAttributes> implements ActivityAttri
             model: "users",
             key: "id",
           },
+        },
+        difficulty: {
+          type: DataTypes.ENUM("beginner", "intermediate", "advanced", "expert"),
+          allowNull: true, // Valor por defecto para la dificultad
+          defaultValue: "beginner", // Valor por defecto para la dificultad
         },
       },
       {
