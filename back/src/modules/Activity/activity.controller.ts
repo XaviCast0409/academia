@@ -33,13 +33,14 @@ export const getActivitiesController = async (_req: Request, res: Response) => {
 
 export const createActivityController = async (req: Request, res: Response) => {
   try {
-    const { title, description, xavicoints, images, professorId } = req.body as ActivityInput;
+    const { title, description, xavicoints, images, professorId, difficulty } = req.body as ActivityInput;
     const activity = await createActivity({
       title,
       description,
       images,
       xavicoints,
       professorId,
+      difficulty
     });
     res.status(201).json(activity);
   } catch (error) {

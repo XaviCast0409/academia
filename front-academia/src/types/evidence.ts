@@ -11,6 +11,8 @@ export interface Evidence {
   activity?: {
     id: number;
     title: string;
+    xavicoints?: number;
+    difficulty?: string;
     professor: {
       id: number;
       name: string;
@@ -20,7 +22,7 @@ export interface Evidence {
     id: number;
     name: string;
     email?: string; // Email del alumno
-  }
+  },
 }
 
 export interface EvidenceImput {

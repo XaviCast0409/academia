@@ -19,6 +19,7 @@ import { ProfessorEvidenceList } from "./components/evidence/EvidencePerProfesso
 import { EvidencePerStudents } from "./components/evidence/EvidencePerStudents";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useTokenExpiration } from "./hooks/useTokenExpiration";
+import { TransactionPerProfessor } from "./components/transaction/TransactionPerProfessor";
 
 function App() {
   useTokenExpiration(); // Verificar expiración del token
@@ -54,6 +55,7 @@ function App() {
           <Route path="actividad-list" element={<ActivityPage />} />
           <Route path="actividad/registroEvidence/:id" element={<RegistroPerActivityPage />} />
           <Route path="evidences" element={<ProfessorEvidenceList />} />
+          <Route path="transactions" element={<TransactionPerProfessor />} />
         </Route>
 
         {/* <Route path="/evidences" element={<ImageCloudinary />} /> */}

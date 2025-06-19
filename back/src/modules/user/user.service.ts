@@ -2,7 +2,6 @@ import db from "../../config/database";
 import { encrypt, generateToken, verified } from "../../utils/validations";
 import { UserOutput, UserInput } from "../../models/User";
 import { UserNotFoundError, UserAlreadyExistsError } from "../../utils/error";
-import { emailVerificationService } from "../../services/emailVerificationService";
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
@@ -22,6 +21,7 @@ const generateVerificationCode = (): string => {
 export const getUser = async (id: number): Promise<UserOutput> => {
   try {
     const user = await db.User.findByPk(id, {
+      attributes: ["id", "name", "level", "experience", "xavicoints", "section", "email"],
       include: [
         { model: db.Role, as: "role" },
         { model: db.Pokemon, as: "pokemon" }
@@ -51,22 +51,6 @@ export const createUser = async (
     throw new UserAlreadyExistsError(`User with email ${email} already exists`);
   }
 
-  // Generar código de verificación
-  const verificationCode = generateVerificationCode();
-
-  // Enviar código por email
-  await transporter.sendMail({
-    from: process.env.SMTP_USER,
-    to: email,
-    subject: "Código de verificación - Academia",
-    html: `
-      <h1>Verificación de correo electrónico</h1>
-      <p>Tu código de verificación es: <strong>${verificationCode}</strong></p>
-      <p>Este código expirará en 15 minutos.</p>
-      <p>Si no solicitaste este código, por favor ignora este correo.</p>
-    `,
-  });
-
   // Crear usuario con el código de verificación
   password = await encrypt(password);
   const user = await db.User.create(
@@ -77,8 +61,6 @@ export const createUser = async (
       roleId, 
       pokemonId, 
       section,
-      verificationCode,
-      verificationCodeExpires: new Date(Date.now() + 15 * 60 * 1000) // 15 minutos
     },
   );
 

@@ -163,7 +163,7 @@ export const getProfessorEvidences = async (
       {
         model: db.Activity,
         as: "activity",
-        attributes: ["id", "title"],
+        attributes: ["id", "title", "xavicoints", "difficulty"],
       },
     ],
     order: [

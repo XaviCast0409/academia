@@ -33,7 +33,16 @@ export const deleteTransaction = async (id: number): Promise<void> => {
 
 export const purchaseProduct = async (userId: number, productId: number): Promise<Transaction> => {
   const response = await api.post('/transactions/purchase', { userId, productId });
-  console.log(`Purchase product response:`, response.data);
   
+  return response.data;
+};
+
+export const getProfessorProductTransactions = async (professorId: number, page: number, limit: number): Promise<TransactionOutput> => {
+  const response = await api.get(`/transactions/professor/${professorId}`, {
+    params: {
+      page,
+      limit
+    }
+  });
   return response.data;
 };

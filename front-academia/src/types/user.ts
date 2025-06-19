@@ -3,28 +3,35 @@ export interface CreateUserDTO {
   email: string;
   password: string;
   roleId: number;
-  pokemonId: number; // 👈 nuevo campo
-  section: string; // Sección del usuario, opcional
+  pokemonId: number;
+  section: string;
 }
 
-export type User = {
+export interface User {
   id: number;
   name: string;
   email: string;
+  level?: number;
+  experience?: number;
+  experienceToNextLevel?: number;
+  xavicoints?: number;
   roleId: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  xavicoints: number;
-  section?: string;
   role?: {
     id: number;
     name: string;
+    createdAt: string;
+    updatedAt: string;
   };
   pokemon?: {
     id: number;
     name: string;
     imageUrl: string;
-    highResImageUrl?: string;
+    highResImageUrl: string;
+    createdAt: string;
+    updatedAt: string;
   };
-};
+  section?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  isActive?: boolean;
+}

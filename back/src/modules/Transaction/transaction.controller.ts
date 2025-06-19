@@ -5,7 +5,8 @@ import {
   createTransaction,
   updateTransaction,
   deleteTransaction,
-  purchaseProductService
+  purchaseProductService,
+  getProfessorProductTransactions
 } from "./transaction.service";
 import { errorHelper } from "../../utils/error";
 
@@ -73,6 +74,19 @@ export const purchaseProductController = async (req: Request, res: Response) => 
   try {
     const result = await purchaseProductService({ userId, productId });
     res.status(200).json(result);
+  } catch (error: any) {
+    errorHelper(error, res);
+  }
+};
+
+export const getProfessorProductTransactionsController = async (req: Request, res: Response) => {
+  try {
+    const { professorId } = req.params;
+    const { page, limit } = req.query;
+    const pageNumber = parseInt(page as string);
+    const limitNumber = parseInt(limit as string);
+    const transactions = await getProfessorProductTransactions(parseInt(professorId), pageNumber, limitNumber);
+    res.status(200).json(transactions);
   } catch (error: any) {
     errorHelper(error, res);
   }

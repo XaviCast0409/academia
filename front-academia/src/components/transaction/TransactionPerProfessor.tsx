@@ -16,30 +16,31 @@ import { useTransactionStore } from '../../store/transactionStore';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EventIcon from '@mui/icons-material/Event';
+import PersonIcon from '@mui/icons-material/Person';
 
-export const UserTransactionsList = () => {
+
+export const TransactionPerProfessor = () => {
   const token = localStorage.getItem('auth-storage');
   const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
+  const professorId = user?.id;
 
-  const userId = user?.id || null;
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [loading, setLoading] = useState(true);
 
-  const { transactions, totalPages, getAllTransactions } = useTransactionStore();
+  const { transactions, totalPages, getProfessorProductTransactions } = useTransactionStore();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      if (!userId) return;
       setLoading(true);
-      await getAllTransactions(page, limit, userId);
+      await getProfessorProductTransactions(professorId, page, limit);
       setLoading(false);
     };
 
     fetchTransactions();
-  }, [page, userId, getAllTransactions, limit]);
+  }, [page, professorId, getProfessorProductTransactions, limit]);
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
@@ -57,7 +58,7 @@ export const UserTransactionsList = () => {
           color: '#0D3745',
         }}
       >
-        🧾 Lista de Transacciones
+        🎓 Transacciones de Mis Productos
       </Typography>
 
       {loading ? (
@@ -109,6 +110,15 @@ export const UserTransactionsList = () => {
                     </Typography>
                   </Box>
 
+                  <Box display="flex" alignItems="center" gap={1} mb={1}>
+                    <ListItemIcon sx={{ minWidth: '30px', color: '#0D3745' }}>
+                      <PersonIcon />
+                    </ListItemIcon>
+                    <Typography sx={{ fontSize: isMobile ? '0.5rem' : '0.65rem', color: '#0D3745', fontFamily: `'Press Start 2P', cursive` }}>
+                      Comprador: {tx.user.name}
+                    </Typography>
+                  </Box>
+
                   <Box display="flex" alignItems="center" gap={1}>
                     <ListItemIcon sx={{ minWidth: '30px', color: '#0D3745' }}>
                       <EventIcon />
@@ -144,10 +154,10 @@ export const UserTransactionsList = () => {
       ) : (
         <Box mt={6} textAlign="center">
           <Typography variant="h6" sx={{ color: '#84341c' }}>
-            No se encontraron transacciones.
+            No se encontraron transacciones de tus productos.
           </Typography>
         </Box>
       )}
     </Container>
   );
-};
+}; 
