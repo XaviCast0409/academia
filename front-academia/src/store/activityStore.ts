@@ -93,7 +93,6 @@ export const useActivityStore = create<ActivityState>((set) => ({
           a.id === updatedActivity.id ? updatedActivity : a
         ),
       }));
-      console.log("Updated activity after changing evidence status:", updatedActivity);
       
       return updatedActivity; // 👈 importante
     } catch (error) {

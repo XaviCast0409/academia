@@ -7,6 +7,7 @@ import routerProduct from "../modules/Product/product.routes";
 import transactionRouter from "../modules/Transaction/transaction.routes";
 import routerPokemon from "../modules/Pokemon/pokemon.routes";
 import routerEmailVerification from "../modules/emailVerification/emailVerification.routes";
+import missionRoutes from '../modules/mission/mission.router';
 
 
 const router = Router();
@@ -22,5 +23,7 @@ router.use("/pokemons", routerPokemon);
 
 // Email verification routes
 router.use("/email-verification", routerEmailVerification);
+
+router.use("/missions", missionRoutes);
 
 export default router;

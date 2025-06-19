@@ -23,7 +23,7 @@ export const EvidencePerStudents = () => {
   const [loading, setLoading] = useState(true);
 
   const { evidences, totalPages, getEvidencePerStudent, cleanEvidences } = useEvidenceStore();
-
+  console.log(evidences);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
