@@ -3,13 +3,14 @@ import {
   getActiveMissionsForUser,
   updateMissionProgress,
   claimMissionReward,
-  getUserMissionHistory
+  getUserMissionHistory,
+  generateMissions
 } from './mission.service';
 import { errorHelper } from '../../utils/error';
 
 export const getActiveMissionsController = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.query.userId;
     const missions = await getActiveMissionsForUser(Number(userId));
     res.status(200).json(missions);
   } catch (error) {
@@ -31,8 +32,9 @@ export const updateMissionProgressController = async (req: Request, res: Respons
 
 export const claimMissionRewardController = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
+    const { userId } = req.body;
     const missionId = Number(req.params.id);
+    console.log(userId, missionId);
     const result = await claimMissionReward(Number(userId), missionId);
     res.status(200).json(result);
   } catch (error) {
@@ -42,9 +44,18 @@ export const claimMissionRewardController = async (req: Request, res: Response) 
 
 export const getMissionHistoryController = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.query.userId;
     const history = await getUserMissionHistory(Number(userId));
     res.status(200).json(history);
+  } catch (error) {
+    errorHelper(error, res);
+  }
+};
+
+export const generateMissionsController = async (req: Request, res: Response) => {
+  try {
+    await generateMissions();
+    res.status(200).json({ message: 'Misiones generadas correctamente' });
   } catch (error) {
     errorHelper(error, res);
   }

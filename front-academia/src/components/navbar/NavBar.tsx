@@ -51,7 +51,7 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
       >
         <Toolbar sx={{ flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <Box display="flex" alignItems="center">
-            {admin && isMobile && (
+            {isMobile && user && (
               <IconButton 
                 edge="start" 
                 color="inherit" 
@@ -91,10 +91,11 @@ const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
           )}
         </Toolbar>
       </AppBar>
-      {admin && (
+      {user && (
         <MobileDrawer 
           open={mobileMenuOpen} 
-          onClose={() => setMobileMenuOpen(false)} 
+          onClose={() => setMobileMenuOpen(false)}
+          isAdmin={admin}
         />
       )}
     </>

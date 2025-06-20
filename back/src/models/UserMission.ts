@@ -7,6 +7,8 @@ export interface UserMissionAttributes {
   progress: number;
   isCompleted: boolean;
   completedAt?: Date | null;
+  rewardClaimed?: boolean;
+  claimedAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -21,6 +23,8 @@ export class UserMission extends Model<UserMissionAttributes, UserMissionInput> 
   public progress!: number;
   public isCompleted!: boolean;
   public completedAt?: Date | null;
+  public rewardClaimed?: boolean;
+  public claimedAt?: Date | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -56,6 +60,15 @@ export class UserMission extends Model<UserMissionAttributes, UserMissionInput> 
           defaultValue: false,
         },
         completedAt: {
+          type: DataTypes.DATE,
+          allowNull: true,
+        },
+        rewardClaimed: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+        },
+        claimedAt: {
           type: DataTypes.DATE,
           allowNull: true,
         },

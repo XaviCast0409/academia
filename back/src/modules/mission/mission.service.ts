@@ -2,12 +2,12 @@ import db from '../../config/database';
 
 export const getActiveMissionsForUser = async (userId: number): Promise<any> => {
   return await db.UserMission.findAll({
-    where: { userId },
+    where: { userId, isCompleted: false },
     include: [{ model: db.Mission, as: 'mission', where: { isActive: true } }],
   });
 };
 
-export const assignActiveMissionsToUser = async (userId: number): Promise<any>  => {
+export const assignActiveMissionsToUser = async (userId: number): Promise<any> => {
   const activeMissions = await db.Mission.findAll({ where: { isActive: true } });
   for (const mission of activeMissions) {
     const exists = await db.UserMission.findOne({ where: { userId, missionId: mission.id } });
@@ -22,7 +22,7 @@ export const assignActiveMissionsToUser = async (userId: number): Promise<any>  
   }
 };
 
-export const updateMissionProgress = async (userId: number, missionId: number, increment: number = 1): Promise<any>  => {
+export const updateMissionProgress = async (userId: number, missionId: number, increment: number = 1): Promise<any> => {
   const userMission = await db.UserMission.findOne({ where: { userId, missionId } });
   if (!userMission) return null;
   if (userMission.isCompleted) return userMission;
@@ -41,15 +41,31 @@ export const updateMissionProgress = async (userId: number, missionId: number, i
   return userMission;
 };
 
-export const claimMissionReward = async (userId: number, missionId: number): Promise<any>  => {
+export const claimMissionReward = async (userId: number, missionId: number): Promise<any> => {
   const userMission = await db.UserMission.findOne({ where: { userId, missionId } });
-  if (!userMission || !userMission.isCompleted) return null;
+  if (!userMission || !userMission.isCompleted || userMission.rewardClaimed) return null;
 
-  // Aquí puedes marcar la recompensa como reclamada si deseas
+  // Buscar la misión para obtener la recompensa
+  const mission = await db.Mission.findByPk(missionId);
+  if (mission && mission.rewardType === 'COINS') {
+    // Buscar el usuario y sumarle las monedas
+    const user = await db.User.findByPk(userId);
+    console.log(user);
+    if (user) {
+      user.xavicoints = (user.xavicoints || 0) + mission.rewardAmount;
+      await user.save();
+    }
+  }
+
+  // Marcar la recompensa como reclamada
+  userMission.rewardClaimed = true;
+  userMission.claimedAt = new Date();
+  await userMission.save();
+
   return userMission;
 };
 
-export const getUserMissionHistory = async (userId: number): Promise<any>  => {
+export const getUserMissionHistory = async (userId: number): Promise<any> => {
   return await db.UserMission.findAll({
     where: { userId, isCompleted: true },
     include: [{ model: db.Mission, as: 'mission' }],
@@ -57,14 +73,14 @@ export const getUserMissionHistory = async (userId: number): Promise<any>  => {
   });
 };
 
-export const generateDailyMissions = async (): Promise<any>  => {
+export const generateDailyMissions = async (): Promise<any> => {
   await db.Mission.create({
-    title: 'Completa 3 actividades hoy',
-    description: 'Realiza 3 actividades diferentes en el día.',
+    title: 'Completa y aprueba 5 actividades hoy',
+    description: 'Realiza y aprueba 5 actividades diferentes en el día.',
     type: 'DAILY',
-    requiredCount: 3,
+    requiredCount: 5,
     rewardType: 'COINS',
-    rewardAmount: 50,
+    rewardAmount: 10,
     isActive: true,
     startDate: new Date(),
     endDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
@@ -72,23 +88,73 @@ export const generateDailyMissions = async (): Promise<any>  => {
 };
 
 export const updateMissionProgressForActivity = async (userId: number): Promise<void> => {
-  // Busca todas las misiones activas del usuario de tipo DAILY, WEEKLY, SPECIAL, etc. que sean de completar actividades
+  // Busca todas las misiones activas del usuario que sean de completar actividades
   const userMissions = await db.UserMission.findAll({
     where: { userId, isCompleted: false },
-    include: [{ model: db.Mission, as: 'mission', where: { isActive: true } }],
+    include: [{
+      model: db.Mission,
+      as: 'mission',
+      where: {
+        isActive: true,
+        // Filtrar misiones que sean de completar actividades
+        title: {
+          [db.Sequelize.Op.or]: [
+            { [db.Sequelize.Op.like]: '%actividad%' },
+            { [db.Sequelize.Op.like]: '%activity%' },
+            { [db.Sequelize.Op.like]: '%completar%' },
+            { [db.Sequelize.Op.like]: '%complete%' }
+          ]
+        }
+      }
+    }],
   });
 
   for (const userMission of userMissions) {
-    // Aquí puedes filtrar por tipo de misión si lo deseas (ej: sólo misiones de completar actividades)
-    // if (userMission.mission.type === 'DAILY' && userMission.mission.title.includes('actividad')) {
-    //   ...
-    // }
+    // Incrementar progreso en 1
     userMission.progress += 1;
+
+    // Verificar si la misión se completó
     if (userMission.progress >= userMission.mission.requiredCount) {
       userMission.isCompleted = true;
       userMission.completedAt = new Date();
-      // Otorgar recompensa si es necesario
+      // Aquí puedes agregar lógica para otorgar recompensa
+      // await userService.addCoins(userId, userMission.mission.rewardAmount);
     }
+
     await userMission.save();
   }
+};
+
+export const generateWeeklyMissions = async (): Promise<any> => {
+  await db.Mission.create({
+    title: 'Completa y aprueba 30 actividades esta semana',
+    description: 'Realiza y aprueba 30 actividades diferentes en la semana.',
+    type: 'WEEKLY',
+    requiredCount: 30,
+    rewardType: 'COINS',
+    rewardAmount: 50,
+    isActive: true,
+    startDate: new Date(),
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  });
+};
+
+export const generateSpecialMissions = async (): Promise<any> => {
+  await db.Mission.create({
+    title: 'Completa y aprueba 100 actividades en un mes',
+    description: 'Realiza y aprueba 100 actividades diferentes en un mes.',
+    type: 'SPECIAL',
+    requiredCount: 100,
+    rewardType: 'COINS',
+    rewardAmount: 100,
+    isActive: true,
+    startDate: new Date(),
+    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+  });
+};
+
+export const generateMissions = async (): Promise<any> => {
+  await generateDailyMissions();
+  await generateWeeklyMissions();
+  await generateSpecialMissions();
 };

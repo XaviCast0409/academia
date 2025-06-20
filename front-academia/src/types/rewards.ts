@@ -12,12 +12,14 @@ export interface Mission {
   id: number;
   title: string;
   description: string;
-  type: 'DAILY' | 'WEEKLY' | 'SPECIAL' | 'ACHIEVEMENT';
+  type: 'DAILY' | 'WEEKLY' | 'GROUP' | 'SPECIAL';
+  groupId?: number | null;
   requiredCount: number;
-  currentCount: number;
-  reward: Reward;
-  isCompleted: boolean;
-  expiresAt?: string;
+  rewardType: 'COINS' | 'BADGE' | 'ITEM';
+  rewardAmount: number;
+  isActive: boolean;
+  startDate?: string | null;
+  endDate?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -36,7 +38,9 @@ export interface UserMission {
   missionId: number;
   progress: number;
   isCompleted: boolean;
-  completedAt?: string;
+  completedAt?: string | null;
+  rewardClaimed?: boolean;
+  claimedAt?: string | null;
   mission: Mission;
   createdAt: string;
   updatedAt: string;
