@@ -72,6 +72,7 @@ export const AvailableActivities = () => {
                     description={activity.description}
                     image={activity.images?.[0] || 'https://via.placeholder.com/300'}
                     xavicoints={activity.xavicoints}
+                    difficulty={activity.difficulty}
                   />
                 </Grid>
               ))}
@@ -82,7 +83,12 @@ export const AvailableActivities = () => {
                 count={totalPages}
                 page={page}
                 onChange={handlePageChange}
-                color="secondary"
+                color="primary"
+                sx={{
+                  '& .MuiPaginationItem-root': {
+                    color: '#FFCC00',
+                  },
+                }}
               />
             </Box>
           </>

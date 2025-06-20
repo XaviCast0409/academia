@@ -18,6 +18,7 @@ interface FormValues {
   title: string;
   description: string;
   xavicoints: number;
+  difficulty: "beginner" | "intermediate" | "advanced" | "expert";
 }
 
 const schema = yup.object().shape({
@@ -28,6 +29,10 @@ const schema = yup.object().shape({
     .typeError("Debe ser un número")
     .required("Los XaviCoins son obligatorios")
     .min(0, "Debe ser mayor o igual a 0"),
+  difficulty: yup
+    .string()
+    .oneOf(["beginner", "intermediate", "advanced", "expert"], "Selecciona una dificultad válida")
+    .required("La dificultad es obligatoria"),
 });
 
 interface CreateActivityFormProps {
@@ -46,6 +51,7 @@ const CreateActivityForm = ({ professorId }: CreateActivityFormProps) => {
       title: "",
       description: "",
       xavicoints: 0,
+      difficulty: "beginner",
     },
   });
   const [imageLinks, setImageLinks] = useState<string[]>([]);
@@ -124,6 +130,19 @@ const CreateActivityForm = ({ professorId }: CreateActivityFormProps) => {
           label="Descripción"
           multiline
           rows={4}
+        />
+
+        <CustomTextField
+          name="difficulty"
+          control={control}
+          label="Dificultad"
+          select
+          options={[
+            { value: "beginner", label: "Principiante" },
+            { value: "intermediate", label: "Intermedio" },
+            { value: "advanced", label: "Avanzado" },
+            { value: "expert", label: "Experto" }
+          ]}
         />
 
         <CustomTextField

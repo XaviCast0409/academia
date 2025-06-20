@@ -2,6 +2,7 @@ import db from "../../config/database";
 import { ActivityInput, ActivityOutput } from "../../models/Activity";
 import Evidence from "../../models/Evidence";
 import { addExperience } from "../Level/level.service";
+import { updateMissionProgressForActivity } from '../mission/mission.service';
 
 export const getActivity = async (id: number): Promise<ActivityOutput> => {
   const activity = await db.Activity.findByPk(id, {
@@ -216,6 +217,12 @@ export const changeEvidenceStatusAndAddXavicoints = async (
 
       // Añadir experiencia y actualizar nivel
       await addExperience(student.id, activity.difficulty, transaction);
+
+      // Actualizar progreso de misiones relacionadas (no bloqueante)
+      setImmediate(() => {
+        updateMissionProgressForActivity(student.id)
+          .catch((err: any) => console.error('Error updating mission progress:', err));
+      });
     }
 
     // Obtener actividad actualizada con sus evidencias

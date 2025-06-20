@@ -2,21 +2,7 @@ import db from "../../config/database";
 import { encrypt, generateToken, verified } from "../../utils/validations";
 import { UserOutput, UserInput } from "../../models/User";
 import { UserNotFoundError, UserAlreadyExistsError } from "../../utils/error";
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: true,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
-
-const generateVerificationCode = (): string => {
-  return Math.floor(10000 + Math.random() * 90000).toString();
-};
+import { assignActiveMissionsToUser } from '../mission/mission.service';
 
 export const getUser = async (id: number): Promise<UserOutput> => {
   try {
@@ -109,6 +95,9 @@ export const loginUser = async (
   if (!isCorrect) {
     throw new Error("Incorrect password");
   }
+
+  // Asignar misiones activas automáticamente al usuario
+  await assignActiveMissionsToUser(user.id);
 
   const token = generateToken(user.id, user.roleId, user.role.id);
   console.log(`User ${user.name} logged in successfully`);

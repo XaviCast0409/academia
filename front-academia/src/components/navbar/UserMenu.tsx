@@ -10,7 +10,7 @@ interface UserMenuProps {
   isMobile: boolean;
 }
 
-export const UserMenu = ({ user, onLogout, isMobile }: UserMenuProps) => {
+export const UserMenu = ({ user, onLogout }: UserMenuProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
@@ -27,25 +27,11 @@ export const UserMenu = ({ user, onLogout, isMobile }: UserMenuProps) => {
   };
 
   const menuItems = [
-    ...(user.roleId === 2 ? [
+    (user.roleId === 2 && [
       <MenuItem key="profile" onClick={goToProfile} sx={{ fontFamily: "inherit" }}>
         Perfil
-      </MenuItem>
-    ] : []),
-    ...(user.roleId === 2 && isMobile ? [
-      <MenuItem key="activities" onClick={() => {navigate('/users/actividades'); handleClose()}} sx={{ fontFamily: "inherit" }}>
-        Actividades
       </MenuItem>,
-      <MenuItem key="shop" onClick={() => {navigate('/users/shop'); handleClose()}} sx={{ fontFamily: "inherit" }}>
-        Productos
-      </MenuItem>,
-      <MenuItem key="transactions" onClick={() => {navigate('/users/transactions'); handleClose()}} sx={{ fontFamily: "inherit" }}>
-        Transacciones
-      </MenuItem>,
-      <MenuItem key="evidences" onClick={() => {navigate('/users/evidences'); handleClose()}} sx={{ fontFamily: "inherit" }}>
-        Evidencias
-      </MenuItem>
-    ] : []),
+    ]),
     <MenuItem key="logout" onClick={handleLogout} sx={{ fontFamily: "inherit" }}>
       Cerrar sesión
     </MenuItem>

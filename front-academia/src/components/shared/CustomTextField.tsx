@@ -37,16 +37,31 @@ const CustomTextField = <T extends FieldValues>({
           margin="normal"
           error={!!fieldState.error}
           helperText={fieldState.error?.message}
-          InputLabelProps={{ style: { color: 'black' } }}
-          InputProps={{ style: { color: 'black' } }}
+          InputLabelProps={{ style: { color: 'white' } }}
+          InputProps={{ style: { color: 'white' } }}
           sx={{
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
-                borderColor: 'rgb(224, 127, 63)',
+                borderColor: 'rgba(255, 255, 255, 0.23)',
               },
               '&:hover fieldset': {
-                borderColor: 'rgb(132, 52, 28)',
+                borderColor: 'rgba(255, 255, 255, 0.5)',
               },
+              '&.Mui-focused fieldset': {
+                borderColor: 'rgb(224, 127, 63)',
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: 'white',
+            },
+            '& .MuiOutlinedInput-input': {
+              color: 'white',
+            },
+            '& .MuiSelect-icon': {
+              color: 'white',
+            },
+            '& .MuiFormHelperText-root': {
+              color: 'rgba(255, 255, 255, 0.7)',
             },
             ...props.sx,
           }}

@@ -8,6 +8,7 @@ export interface ActivityInput {
         id: number;
         name: string;
     }
+    difficulty: string;
 }
 export interface Activity extends ActivityInput {
     id: number;
