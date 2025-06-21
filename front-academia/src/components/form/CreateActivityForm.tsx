@@ -19,6 +19,7 @@ interface FormValues {
   description: string;
   xavicoints: number;
   difficulty: "beginner" | "intermediate" | "advanced" | "expert";
+  section: string;
 }
 
 const schema = yup.object().shape({
@@ -33,6 +34,7 @@ const schema = yup.object().shape({
     .string()
     .oneOf(["beginner", "intermediate", "advanced", "expert"], "Selecciona una dificultad válida")
     .required("La dificultad es obligatoria"),
+  section: yup.string().required("La sección es obligatoria"),
 });
 
 interface CreateActivityFormProps {
@@ -52,6 +54,7 @@ const CreateActivityForm = ({ professorId }: CreateActivityFormProps) => {
       description: "",
       xavicoints: 0,
       difficulty: "beginner",
+      section: "",
     },
   });
   const [imageLinks, setImageLinks] = useState<string[]>([]);
@@ -69,7 +72,7 @@ const CreateActivityForm = ({ professorId }: CreateActivityFormProps) => {
 
     try {
       await addActivity(payload);
-      
+
       Swal.fire({
         title: "¡Actividad creada!",
         text: "La actividad se ha creado exitosamente.",
@@ -150,6 +153,20 @@ const CreateActivityForm = ({ professorId }: CreateActivityFormProps) => {
           control={control}
           label="XaviCoins"
           type="number"
+        />
+
+        <CustomTextField
+          name="section"
+          control={control}
+          label="Sección"
+          select
+          options={[
+            { value: "1ro Secundaria", label: "1ro Secundaria" },
+            { value: "2do Secundaria", label: "2do Secundaria" },
+            { value: "3ro Secundaria", label: "3ro Secundaria" },
+            { value: "4to Secundaria", label: "4to Secundaria" },
+            { value: "5to Secundaria", label: "5to Secundaria" }
+          ]}
         />
 
         <Box mt={3} mb={3}>

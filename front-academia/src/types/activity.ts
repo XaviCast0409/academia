@@ -9,6 +9,7 @@ export interface ActivityInput {
         name: string;
     }
     difficulty: string;
+    section?: string;
 }
 export interface Activity extends ActivityInput {
     id: number;

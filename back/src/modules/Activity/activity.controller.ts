@@ -6,7 +6,8 @@ import {
   updateActivity,
   deleteActivity,
   getAvailableActivitiesForStudentPaginated,
-  changeEvidenceStatusAndAddXavicoints
+  changeEvidenceStatusAndAddXavicoints,
+  getActivityByProfessor
 } from "./activity.service";
 
 import { ActivityInput } from "../../models/Activity";
@@ -33,14 +34,15 @@ export const getActivitiesController = async (_req: Request, res: Response) => {
 
 export const createActivityController = async (req: Request, res: Response) => {
   try {
-    const { title, description, xavicoints, images, professorId, difficulty } = req.body as ActivityInput;
+    const { title, description, xavicoints, images, professorId, difficulty, section } = req.body as ActivityInput;
     const activity = await createActivity({
       title,
       description,
       images,
       xavicoints,
       professorId,
-      difficulty
+      difficulty,
+      section
     });
     res.status(201).json(activity);
   } catch (error) {
@@ -83,11 +85,13 @@ export const getAvailableActivitiesForStudentPaginatedController = async (
   try {
     const { page = 1, limit = 10 } = req.query;
     const studentId = req.params.studentId;
+    const section = req.query.section as string;
 
     const activities = await getAvailableActivitiesForStudentPaginated(
       Number(studentId),
       parseInt(page as string),
-      parseInt(limit as string)
+      parseInt(limit as string),
+      section
     );
     res.status(200).json(activities);
   } catch (error) {
@@ -108,6 +112,26 @@ export const changeEvidenceStatusAndAddXavicointsController = async (
       parseInt(activityId)
     );
     res.status(200).json(updatedEvidence);
+  } catch (error) {
+    errorHelper(error, res);
+  }
+};
+
+export const getActivityByProfessorController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { professorId } = req.params;
+    const { page = 1, pageSize = 10, section } = req.query;
+
+    const result = await getActivityByProfessor(
+      Number(professorId),
+      parseInt(page as string),
+      parseInt(pageSize as string),
+      section as string
+    );
+    res.status(200).json(result);
   } catch (error) {
     errorHelper(error, res);
   }

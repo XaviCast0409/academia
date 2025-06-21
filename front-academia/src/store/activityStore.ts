@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { Activity, ActivityInput } from "../types/activity";
-import { createActivity, getActivities, updateActivity, deleteActivity, getAvailableActivitiesForStudentPaginated, changeEvidenceStatusAndAddXavicoints, getActivity } from "../services/activityService";
+import { createActivity, getActivities, updateActivity, deleteActivity, getAvailableActivitiesForStudentPaginated, changeEvidenceStatusAndAddXavicoints, getActivity, getActivityByProfessor } from "../services/activityService";
+
 interface ActivityState {
   activities: Activity[];
   activity: Activity | undefined; // 👈 para manejar la actividad por ID
@@ -13,7 +14,8 @@ interface ActivityState {
   addActivity: (activity: ActivityInput) => Promise<void>;
   editActivity: (id: number, activity: Activity) => Promise<void>;
   removeActivity: (id: number) => Promise<void>;
-  getAvailableActivitiesForStudentPaginated: (studentId: number, page: number, limit: number) => Promise<void>;
+  getAvailableActivitiesForStudentPaginated: (studentId: number, page: number, limit: number, section: string) => Promise<void>;
+  getActivityByProfessorPaginated: (professorId: number, page: number, pageSize: number, section?: string) => Promise<void>;
   changeEvidenceStatusAndAddXavicoints: (activityId: number, data: any) => Promise<Activity>;
   setPage: (page: number) => void;
   setTotalPages: (totalPages: number) => void;
@@ -77,12 +79,25 @@ export const useActivityStore = create<ActivityState>((set) => ({
     }
   },
 
-  getAvailableActivitiesForStudentPaginated: async (studentId: number, page: number, limit: number) => {
+  getAvailableActivitiesForStudentPaginated: async (studentId: number, page: number, limit: number, section: string) => {
     try {
-      const activities = await getAvailableActivitiesForStudentPaginated(studentId, page, limit);
+      const activities = await getAvailableActivitiesForStudentPaginated(studentId, page, limit, section);
       set({ activities: activities.activities, page: activities.currentPage, totalPages: activities.totalPages });
     } catch (error) {
       console.error("Error fetching activities:", error);
+    }
+  },
+  getActivityByProfessorPaginated: async (professorId: number, page: number, pageSize: number, section?: string) => {
+    try {
+      const result = await getActivityByProfessor(professorId, page, pageSize, section);
+      set({ 
+        activities: result.activities, 
+        page: result.currentPage, 
+        totalPages: result.totalPages,
+        pageSize: result.pageSize 
+      });
+    } catch (error) {
+      console.error("Error fetching activities by professor:", error);
     }
   },
   changeEvidenceStatusAndAddXavicoints: async (activityId: number, data: any) => {

@@ -9,6 +9,7 @@ interface ActivityCardProps {
   image: string;
   xavicoints?: number;
   difficulty?: string;
+  section?: string;
 }
 
 const difficultyColors: Record<string, string> = {
@@ -18,7 +19,7 @@ const difficultyColors: Record<string, string> = {
   expert: '#84341c',
 };
 
-const ActivityCardStudent = ({ id, title, description, image, xavicoints, difficulty }: ActivityCardProps) => {
+const ActivityCardStudent = ({ id, title, description, image, xavicoints, difficulty, section }: ActivityCardProps) => {
   const { activityById, page } = useActivityStore();
   const navigate = useNavigate();
 
@@ -77,6 +78,11 @@ const ActivityCardStudent = ({ id, title, description, image, xavicoints, diffic
         <Typography variant="body2" color="white" sx={{ mb: 2, fontFamily: 'inherit', fontSize: '0.85rem' }}>
           {description}
         </Typography>
+        {section && (
+          <Typography variant="body2" color="white" sx={{ mb: 2, fontFamily: 'inherit', fontSize: '0.85rem' }}>
+            {section}
+          </Typography>
+        )}
         {xavicoints && (
           <Typography variant="body2" sx={{ mt: 2, fontFamily: 'inherit', fontSize: '0.85rem' }}>
             💰 <strong>Xavicoints:</strong> {xavicoints}

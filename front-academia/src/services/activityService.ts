@@ -28,8 +28,8 @@ export const deleteActivity = async (id: number): Promise<any> => {
   return response.data;
 };
 
-export const getAvailableActivitiesForStudentPaginated = async (studentId: number, page: number, limit: number): Promise<any> => {
-  const response = await api.get(`/activities/available/${studentId}`, {
+export const getAvailableActivitiesForStudentPaginated = async (studentId: number, page: number, limit: number, section: string): Promise<any> => {
+  const response = await api.get(`/activities/available/${studentId}?section=${section}`, {
     params: { page, limit }
   });
   return response.data;
@@ -37,5 +37,14 @@ export const getAvailableActivitiesForStudentPaginated = async (studentId: numbe
 
 export const changeEvidenceStatusAndAddXavicoints = async (activityId: number, data: any): Promise<Activity> => {
   const response = await api.post(`/activities/change/evidence/${activityId}`, data);
+  return response.data;
+};
+
+export const getActivityByProfessor = async (professorId: number, page: number = 1, pageSize: number = 10, section?: string): Promise<any> => {
+  const params: any = { page, pageSize };
+  if (section) {
+    params.section = section;
+  }
+  const response = await api.get(`/activities/professor/${professorId}`, { params });
   return response.data;
 };

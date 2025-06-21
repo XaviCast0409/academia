@@ -10,6 +10,7 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import DescriptionIcon from '@mui/icons-material/Description';
 import StarsIcon from '@mui/icons-material/Stars';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import SchoolIcon from '@mui/icons-material/School';
 import { useNavigate } from "react-router-dom";
 
 import type { Activity } from "../../types/activity";
@@ -124,6 +125,19 @@ export const ActivityCard = ({ activity, onDelete, currentPage }: Props) => {
               {difficultyLabels[activity.difficulty || 'beginner']}
             </Typography>
           </Box>
+
+          {activity.section && (
+            <Box display="flex" alignItems="center" gap={1} mb={1}>
+              <SchoolIcon sx={{ color: "#1976d2" }} />
+              <Typography
+                fontSize={isMobile ? "0.85rem" : "0.95rem"}
+                fontWeight={600}
+                color="#1976d2"
+              >
+                {activity.section}
+              </Typography>
+            </Box>
+          )}
 
           <Box display="flex" alignItems="center" gap={1}>
             <MonetizationOnIcon sx={{ color: "#E07F3F" }} />
