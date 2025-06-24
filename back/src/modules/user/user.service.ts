@@ -19,8 +19,18 @@ export const getUser = async (id: number): Promise<UserOutput> => {
   }
 };
 
-export const getUsers = async (): Promise<UserOutput[]> => {
-  const users = await db.User.findAll({ include: db.Role });
+export const getUsers = async (section?: string): Promise<UserOutput[]> => {
+  const whereClause = section ? { section, roleId: 2 } : { roleId: 2 };
+  
+  const users = await db.User.findAll({
+    where: whereClause,
+    attributes: ["id", "name", "level", "experience", "section", "xavicoints"],
+    include: [
+      { model: db.Pokemon, as: "pokemon" }
+    ],
+    order: [["level", "DESC"], ["experience", "DESC"]],
+    limit: 20,
+  });
   return users;
 };
 

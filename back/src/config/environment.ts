@@ -1,4 +1,3 @@
-import { url } from "inspector";
 
 process.loadEnvFile();
 

@@ -11,6 +11,12 @@ export const getUsers = async (): Promise<User[]> => {
   return response.data;
 };
 
+export const getUsersRanking = async (section?: string): Promise<User[]> => {
+  const params = section ? { section } : {};
+  const response = await api.get<User[]>('/users', { params });
+  return response.data;
+};
+
 export const getUserById = async (id: string): Promise<User> => {
   const response = await api.get<User>(`/users/byId/${id}`);
   return response.data;
