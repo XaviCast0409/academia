@@ -21,6 +21,7 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useTokenExpiration } from "./hooks/useTokenExpiration";
 import { TransactionPerProfessor } from "./components/transaction/TransactionPerProfessor";
 import { MissionsPage } from "./components/mission/MissionsPage";
+import RankingPage from "./components/ranking/RankingPage";
 
 function App() {
   useTokenExpiration(); // Verificar expiración del token
@@ -45,7 +46,7 @@ function App() {
           <Route path="actividades/ver/:id" element={<ViewActivityPage />} />
           <Route path="evidences" element={<EvidencePerStudents />} />
           <Route path="misiones" element={<MissionsPage />} />
-          <Route path="ranking" element={<div>Página de Ranking (Próximamente)</div>} />
+          <Route path="ranking" element={<RankingPage />} />
         </Route>
         {/* profesor */}
         <Route path="/admin" element={

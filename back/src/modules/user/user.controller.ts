@@ -23,9 +23,10 @@ export const getUserController = async (req: Request, res: Response) => {
   }
 };
 
-export const getUsersController = async (_req: Request, res: Response) => {
+export const getUsersController = async (req: Request, res: Response) => {
   try {
-    const users = await getUsers();
+    const { section } = req.query;
+    const users = await getUsers(section as string);
     res.json(users);
   } catch (error: any) {
     errorHelper(error, res);

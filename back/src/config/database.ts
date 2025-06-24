@@ -31,7 +31,7 @@ const modelsDir = path.join(__dirname, "../models");
 fs.readdirSync(modelsDir)
   .filter((file: string) => {
     return (
-      file.indexOf(".") !== 0 && file.slice(-3) === ".js" && !file.includes("index")
+      file.indexOf(".") !== 0 && file.slice(-3) === ".ts" && !file.includes("index")
     );
   })
   .forEach((file: string) => {

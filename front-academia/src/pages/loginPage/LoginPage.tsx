@@ -140,7 +140,7 @@ export const Login = () => {
             }}
           />
 
-          <Box
+{/*           <Box
             display="flex"
             justifyContent="flex-end"
             mt={1}
@@ -154,7 +154,7 @@ export const Login = () => {
             >
               ¿Olvidaste tu contraseña?
             </Link>
-          </Box>
+          </Box> */}
 
           <Button
             variant="contained"

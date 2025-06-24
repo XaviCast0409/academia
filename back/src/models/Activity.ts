@@ -9,6 +9,7 @@ export interface ActivityAttributes {
   xavicoints: number;
   professorId: number; // Relación con el profesor (User)
   difficulty?: string;
+  section?: string; // Campo opcional para la sección
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -24,6 +25,7 @@ export class Activity extends Model<ActivityAttributes> implements ActivityAttri
   public xavicoints!: number;
   public professorId!: number;
   public difficulty?: string;
+  public section?: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -75,6 +77,10 @@ export class Activity extends Model<ActivityAttributes> implements ActivityAttri
           type: DataTypes.ENUM("beginner", "intermediate", "advanced", "expert"),
           allowNull: true, // Valor por defecto para la dificultad
           defaultValue: "beginner", // Valor por defecto para la dificultad
+        },
+        section: {
+          type: DataTypes.STRING,
+          allowNull: true,
         },
       },
       {

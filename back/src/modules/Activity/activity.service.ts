@@ -66,11 +66,35 @@ export const deleteActivity = async (id: number): Promise<number> => {
   const activity = await db.Activity.destroy({ where: { id } });
   return activity;
 };
+
 export const getActivityByProfessor = async (
-  professorId: number
-): Promise<ActivityOutput[]> => {
+  professorId: number,
+  page: number = 1,
+  pageSize: number = 10,
+  section?: string
+): Promise<{
+  activities: ActivityOutput[];
+  total: number;
+  currentPage: number;
+  totalPages: number;
+  pageSize: number;
+}> => {
+  const offset = (page - 1) * pageSize;
+  
+  // Construir las condiciones de where
+  const whereConditions: any = { professorId };
+  if (section) {
+    whereConditions.section = section;
+  }
+
+  // Obtener el total de actividades que coinciden con los filtros
+  const total = await db.Activity.count({
+    where: whereConditions,
+  });
+
+  // Obtener las actividades paginadas y ordenadas por fecha de creación
   const activities = await db.Activity.findAll({
-    where: { professorId },
+    where: whereConditions,
     include: [
       {
         model: db.User,
@@ -78,8 +102,18 @@ export const getActivityByProfessor = async (
         attributes: ["id", "name"],
       },
     ],
+    order: [['createdAt', 'DESC']], // Ordenar por fecha de creación descendente (más recientes primero)
+    limit: pageSize,
+    offset: offset,
   });
-  return activities;
+
+  return {
+    activities,
+    total,
+    currentPage: page,
+    totalPages: Math.ceil(total / pageSize),
+    pageSize,
+  };
 };
 
 export const getActivityByStudent = async (
@@ -146,7 +180,8 @@ export const getActivityById = async (
 export const getAvailableActivitiesForStudentPaginated = async (
   studentId: number,
   page: number = 1,
-  pageSize: number = 10
+  pageSize: number = 10,
+  section?: string
 ) => {
   const offset = (page - 1) * pageSize;
 
@@ -167,14 +202,22 @@ export const getAvailableActivitiesForStudentPaginated = async (
         attributes: ["id", "name", "email"],
       },
     ],
+    order: [["createdAt", "DESC"]]
   });
 
   // 3. Filtrar manualmente (porque no usaremos Op)
-  const filteredActivities = allAvailableActivities.filter((activity: ActivityInput) => {
+  let filteredActivities = allAvailableActivities.filter((activity: ActivityInput) => {
     return !respondedActivityIds.includes(activity.id);
   });
 
-  // 4. Paginar manualmente
+  // 4. Aplicar filtro por sección si se proporciona
+  if (section) {
+    filteredActivities = filteredActivities.filter((activity: ActivityInput) => {
+      return activity.section === section;
+    });
+  }
+
+  // 5. Paginar manualmente
   const paginatedActivities = filteredActivities.slice(offset, offset + pageSize);
 
   return {
