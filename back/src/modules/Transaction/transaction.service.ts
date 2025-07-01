@@ -130,7 +130,7 @@ export const getProfessorProductTransactions = async (
         model: db.User,
         as: 'user',
         required: true,
-        attributes: ['id', 'name', 'email']
+        attributes: ['id', 'name', 'email', 'section']
       }
     ],
     where: {
