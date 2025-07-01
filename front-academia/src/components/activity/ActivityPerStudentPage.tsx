@@ -126,6 +126,7 @@ export const AvailableActivities = () => {
                     xavicoints={activity.xavicoints}
                     difficulty={activity.difficulty}
                     section={activity.section}
+                    createdAt={activity.createdAt}
                   />
                 </Grid>
               ))}

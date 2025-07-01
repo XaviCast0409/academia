@@ -117,6 +117,9 @@ export const TransactionPerProfessor = () => {
                     <Typography sx={{ fontSize: isMobile ? '0.5rem' : '0.65rem', color: '#0D3745', fontFamily: `'Press Start 2P', cursive` }}>
                       Comprador: {tx.user.name}
                     </Typography>
+                    <Typography sx={{ fontSize: isMobile ? '0.5rem' : '0.65rem', color: '#0D3745', fontFamily: `'Press Start 2P', cursive` }}>
+                      Seccion: {tx.user.section}
+                    </Typography>
                   </Box>
 
                   <Box display="flex" alignItems="center" gap={1}>

@@ -10,6 +10,7 @@ interface ActivityCardProps {
   xavicoints?: number;
   difficulty?: string;
   section?: string;
+  createdAt?: string;
 }
 
 const difficultyColors: Record<string, string> = {
@@ -19,9 +20,21 @@ const difficultyColors: Record<string, string> = {
   expert: '#84341c',
 };
 
-const ActivityCardStudent = ({ id, title, description, image, xavicoints, difficulty, section }: ActivityCardProps) => {
+const ActivityCardStudent = ({ id, title, description, image, xavicoints, difficulty, section, createdAt }: ActivityCardProps) => {
   const { activityById, page } = useActivityStore();
   const navigate = useNavigate();
+
+  // Función para verificar si la actividad es nueva (creada en los últimos 4 días)
+  const isNewActivity = () => {
+    if (!createdAt) return false;
+    
+    const activityDate = new Date(createdAt);
+    const currentDate = new Date();
+    const timeDifference = currentDate.getTime() - activityDate.getTime();
+    const daysDifference = timeDifference / (1000 * 3600 * 24);
+    
+    return daysDifference <= 4;
+  };
 
   const handleViewActivity = async () => {
     localStorage.setItem('actividadActualPage', String(page));
@@ -70,6 +83,48 @@ const ActivityCardStudent = ({ id, title, description, image, xavicoints, diffic
           {difficulty}
         </Box>
       )}
+      
+      {/* Indicador de actividad nueva */}
+      {isNewActivity() && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 12,
+            left: 12,
+            bgcolor: '#FF1744',
+            color: '#fff',
+            px: 1.5,
+            py: 0.5,
+            borderRadius: 2,
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+            letterSpacing: 1,
+            textTransform: 'uppercase',
+            zIndex: 2,
+            minWidth: 60,
+            textAlign: 'center',
+            animation: 'pulse 2s infinite',
+            '@keyframes pulse': {
+              '0%': {
+                transform: 'scale(1)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+              },
+              '50%': {
+                transform: 'scale(1.05)',
+                boxShadow: '0 4px 12px rgba(255, 23, 68, 0.5)',
+              },
+              '100%': {
+                transform: 'scale(1)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+              },
+            },
+          }}
+        >
+          ¡NUEVO!
+        </Box>
+      )}
+      
       <CardMedia component="img" height="180" image={image} alt={title} />
       <CardContent>
         <Typography gutterBottom variant="h6" sx={{ color: '#FFEB3B', fontFamily: 'inherit', fontSize: '1rem' }}>
