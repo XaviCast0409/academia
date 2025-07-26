@@ -3,7 +3,7 @@ import {
   MenuItem
 } from '@mui/material';
 import { Controller } from 'react-hook-form';
-import type { Control, FieldValues, Path } from 'react-hook-form';
+import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import type { TextFieldProps } from '@mui/material';
 
 interface CustomTextFieldProps<T extends FieldValues> extends Omit<TextFieldProps, 'name'> {
@@ -12,6 +12,7 @@ interface CustomTextFieldProps<T extends FieldValues> extends Omit<TextFieldProp
   label: string;
   select?: boolean;
   options?: { value: string | number; label: string }[];
+  rules?: RegisterOptions<T, Path<T>>;
 }
 
 const CustomTextField = <T extends FieldValues>({
@@ -20,12 +21,14 @@ const CustomTextField = <T extends FieldValues>({
   label,
   select = false,
   options = [],
+  rules,
   ...props
 }: CustomTextFieldProps<T>) => {
   return (
     <Controller
       name={name}
       control={control}
+      rules={rules}
       render={({ field, fieldState }) => (
         <TextField
           {...field}
@@ -37,31 +40,32 @@ const CustomTextField = <T extends FieldValues>({
           margin="normal"
           error={!!fieldState.error}
           helperText={fieldState.error?.message}
-          InputLabelProps={{ style: { color: 'black' } }}
-          InputProps={{ style: { color: 'black' } }}
+          InputLabelProps={{ style: { fontFamily: "'Press Start 2P', cursive" } }}
+          inputProps={{ style: { fontFamily: "'Press Start 2P', cursive" } }}
           sx={{
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: 'rgba(255, 255, 255, 0.23)',
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: "#84341C",
               },
-              '&:hover fieldset': {
-                borderColor: 'rgba(255, 255, 255, 0.5)',
+              "&:hover fieldset": {
+                borderColor: "#E07F3F",
               },
-              '&.Mui-focused fieldset': {
-                borderColor: 'rgb(224, 127, 63)',
+              "&.Mui-focused fieldset": {
+                borderColor: "#E07F3F",
               },
             },
-            '& .MuiInputLabel-root': {
-              color: 'black',
+            "& .MuiInputLabel-root": {
+              fontFamily: "'Press Start 2P', cursive",
             },
-            '& .MuiOutlinedInput-input': {
-              color: 'black',
+            "& .MuiOutlinedInput-input": {
+              fontFamily: "'Press Start 2P', cursive",
             },
-            '& .MuiSelect-icon': {
-              color: 'black',
+            "& .MuiSelect-icon": {
+              color: "#84341C",
             },
-            '& .MuiFormHelperText-root': {
-              color: 'black',
+            "& .MuiFormHelperText-root": {
+              fontFamily: "'Press Start 2P', cursive",
+              fontSize: "0.6rem",
             },
             ...props.sx,
           }}

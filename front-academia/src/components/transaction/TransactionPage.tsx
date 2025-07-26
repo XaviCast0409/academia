@@ -1,34 +1,29 @@
 import {
   Box,
-  Container,
   Typography,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  CircularProgress,
-  useMediaQuery,
-  useTheme,
-  Pagination,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTransactionStore } from '../../store/transactionStore';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EventIcon from '@mui/icons-material/Event';
+import { PageHeader, LoadingSpinner, Pagination } from '../common';
+import { getCurrentUser } from '../../utils/common';
+import { useResponsive } from '../../shared';
 
-export const UserTransactionsList = () => {
-  const token = localStorage.getItem('auth-storage');
-  const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
-
+export const TransactionPage = () => {
+  const user = getCurrentUser();
   const userId = user?.id || null;
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [loading, setLoading] = useState(true);
+  const { isMobile } = useResponsive();
 
   const { transactions, totalPages, getAllTransactions } = useTransactionStore();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -41,30 +36,17 @@ export const UserTransactionsList = () => {
     fetchTransactions();
   }, [page, userId, getAllTransactions, limit]);
 
-  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
-  };
+  if (loading) {
+    return <LoadingSpinner message="Cargando transacciones..." />;
+  }
 
   return (
-    <Container maxWidth="md" sx={{ py: 5, fontFamily: `'Press Start 2P', cursive` }}>
-      <Typography
-        variant="h4"
-        sx={{
-          textAlign: 'center',
-          mb: 4,
-          fontSize: isMobile ? '1.2rem' : '1.8rem',
-          fontFamily: `'Press Start 2P', cursive`,
-          color: '#0D3745',
-        }}
-      >
-        🧾 Lista de Transacciones
-      </Typography>
-
-      {loading ? (
-        <Box display="flex" justifyContent="center" mt={6}>
-          <CircularProgress sx={{ color: '#E07F3F' }} />
-        </Box>
-      ) : transactions.length > 0 ? (
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, maxWidth: 'md', mx: 'auto' }}>
+      <PageHeader 
+        title="🧾 Lista de Transacciones"
+        subtitle="Historial de compras realizadas"
+      />
+      {transactions.length > 0 ? (
         <>
           <List disablePadding>
             {transactions.map((tx: any) => (
@@ -123,31 +105,20 @@ export const UserTransactionsList = () => {
           </List>
 
           {totalPages > 1 && (
-            <Box mt={4} display="flex" justifyContent="center">
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handlePageChange}
-                color="primary"
-                shape="rounded"
-                size="large"
-                sx={{
-                  '& .MuiPaginationItem-root': {
-                    fontFamily: `'Press Start 2P', cursive`,
-                    color: '#0D3745',
-                  },
-                }}
-              />
-            </Box>
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
           )}
         </>
       ) : (
         <Box mt={6} textAlign="center">
-          <Typography variant="h6" sx={{ color: '#84341c' }}>
+          <Typography variant="h6" sx={{ color: '#84341c', fontFamily: `'Press Start 2P', cursive` }}>
             No se encontraron transacciones.
           </Typography>
         </Box>
       )}
-    </Container>
+    </Box>
   );
-};
+};;

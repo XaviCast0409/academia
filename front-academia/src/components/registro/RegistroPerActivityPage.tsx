@@ -1,11 +1,13 @@
-// RegistroPerActivityPage.tsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Typography, List, Pagination, useMediaQuery, Button, useTheme } from "@mui/material";
+import { Box, List, Button } from "@mui/material";
 import { useEvidenceStore } from "../../store/evidenceStore";
 import { EvidenceItem } from "./EvidenceItem";
 import { EvidenceModal } from "./EvidenceModal";
 import { useNavigate, useLocation } from "react-router-dom";
+
+import { PageHeader, Pagination } from '../common';
+import { useResponsive } from '../../shared';
 
 export const RegistroPerActivityPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,9 +16,7 @@ export const RegistroPerActivityPage = () => {
   const location = useLocation();
 
   const fromPage = location.state?.fromPage || 1;
-
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isMobile } = useResponsive();
 
   const {
     evidences,
@@ -43,7 +43,7 @@ export const RegistroPerActivityPage = () => {
     setOpenModal(false);
   };
 
-  const handlePageChange = (_: any, value: number) => {
+  const handlePageChange = (value: number) => {
     fetchEvidencesByActivity(activityId, value, limit);
   };
 
@@ -52,34 +52,35 @@ export const RegistroPerActivityPage = () => {
   };
 
   return (
-    <Box p={3} sx={{ backgroundColor: "#fefefe" }}>
-      <Typography
-        variant="h5"
-        mb={4}
-        sx={{
-          color: "rgb(13, 55, 69)",
-          fontWeight: "bold",
-          borderBottom: "2px solid rgb(224, 127, 63)",
-          pb: 1,
-        }}
-      >
-        Registro de Evidencias por Actividad
-      </Typography>
+    <Box
+      sx={{
+        py: 5,
+        px: 2,
+        maxWidth: 'md',
+        mx: 'auto',
+        fontFamily: 'Press Start 2P'
+      }}
+    >
+      <PageHeader
+        title="Registro de Evidencias por Actividad"
+        subtitle="Revisa y gestiona las evidencias enviadas"
+      />
 
       <Button
         variant="outlined"
-        onClick={handleBack} // 👈 aquí
+        onClick={handleBack}
         sx={{
           mb: 4,
-          border: '4px solid #84341c',
-          color: '#84341c',
-          fontSize: isMobile ? '0.7rem' : '1rem',
+          backgroundColor: 'transparent',
+          borderColor: 'primary.main',
+          color: 'primary.main',
+          fontSize: isMobile ? '0.6rem' : '0.8rem',
           px: 3,
           py: 1.5,
-          fontFamily: `'Press Start 2P', cursive`,
+          fontFamily: 'Press Start 2P',
           '&:hover': {
-            backgroundColor: 'rgba(132, 52, 28, 0.1)',
-            borderColor: '#E07F3F',
+            backgroundColor: 'primary.main',
+            color: 'white',
           },
         }}
       >
@@ -94,10 +95,9 @@ export const RegistroPerActivityPage = () => {
 
       <Box display="flex" justifyContent="center" mt={4}>
         <Pagination
-          count={totalPages}
-          page={page}
-          onChange={handlePageChange}
-          color="primary"
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
         />
       </Box>
 

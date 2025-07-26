@@ -4,9 +4,6 @@ import {
   Box,
   Button,
   Container,
-  Typography,
-  useMediaQuery,
-  useTheme,
   Alert,
 } from '@mui/material';
 import { useState } from 'react';
@@ -14,6 +11,8 @@ import ImageCloudinary from '../../components/cloudinary/Image';
 import { useEvidenceStore } from '../../store/evidenceStore';
 import Swal from 'sweetalert2';
 import { useActivityStore } from '../../store/activityStore';
+import { PageHeader, GameCard } from '../common';
+import { useResponsive, getCurrentUser } from '../../shared';
 
 interface FormValues {
   filePath: string[];
@@ -21,13 +20,14 @@ interface FormValues {
 
 export const SendEvidence = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isMobile } = useResponsive();
+  const user = getCurrentUser();
+  
   const [imageLinks, setImageLinks] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const { control, handleSubmit } = useForm<FormValues>();
   const [uploaderKey] = useState<number>(0);
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const addEvidence = useEvidenceStore((state) => state.addEvidence);
 
@@ -47,17 +47,20 @@ export const SendEvidence = () => {
       return;
     }
 
-    const token = localStorage.getItem('auth-storage');
-    if (!token) return;
-
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const studentId = payload.id;
-    const studentName = payload.name || payload.studentName || "";
+    if (!user?.id) {
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo identificar al usuario.',
+        icon: 'error',
+        confirmButtonColor: '#E07F3F',
+      });
+      return;
+    }
 
     try {
       await addEvidence({
-        studentId,
-        studentName,
+        studentId: user.id,
+        studentName: user.name || user.studentName || "",
         activityId: Number(id),
         filePath: imageLinks,
         status: 'pending',
@@ -90,98 +93,64 @@ export const SendEvidence = () => {
   };
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        mt: 4,
-        p: 3,
-        bgcolor: '#fffefc',
-        border: '4px solid #0D3745',
-        borderRadius: 4,
-        boxShadow: '6px 6px 0 #E07F3F',
-        fontFamily: `'Press Start 2P', cursive`,
-      }}
-    >
-      <Button
-        variant="outlined"
-        onClick={() => navigate(-1)}
-        sx={{
-          mb: 3,
-          border: '3px solid #84341c',
-          color: '#84341c',
-          fontSize: isMobile ? '0.5rem' : '0.65rem',
-          fontFamily: `'Press Start 2P', cursive`,
-          px: 2,
-          py: 1,
-          '&:hover': {
-            backgroundColor: 'rgba(132, 52, 28, 0.1)',
-            borderColor: '#E07F3F',
-          },
-        }}
-      >
-        ← Volver
-      </Button>
-      <Typography
-        variant="h5"
-        sx={{
-          color: '#0D3745',
-          fontSize: isMobile ? '0.9rem' : '1.1rem',
-          textAlign: 'center',
-          mb: 3,
-          fontFamily: `'Press Start 2P', cursive`,
-        }}
-      >
-        Subir Evidencia para Actividad #{id}
-      </Typography>
+    <Container maxWidth="sm" sx={{ py: 5 }}>
+      <PageHeader
+        title={`Subir Evidencia para Actividad #${id}`}
+        subtitle="Sube las imágenes que demuestren tu trabajo en esta actividad"
+        showBackButton
+      />
 
-      <Box
-        component="form"
-        onSubmit={handleSubmit(onSubmit)}
-        sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
-      >
-        <Controller
-          name="filePath"
-          control={control}
-          render={() => (
-            <ImageCloudinary
-              setImageLinks={handleImageUpload}
-              resetUploader={uploaderKey}
-              maxFiles={5}
-              maxFileSize={2 * 1024 * 1024}
-              title="Evidencias de la Actividad"
-            />
-          )}
-        />
-
-        {imageLinks.length === 0 && !isUploading && (
-          <Alert severity="warning" sx={{ mt: 2 }}>
-            Debes subir al menos una imagen como evidencia
-          </Alert>
-        )}
-
-        <Button
-          type="submit"
-          variant="contained"
-          disabled={imageLinks.length === 0 || isUploading}
-          sx={{
-            backgroundColor: '#E07F3F',
-            fontFamily: `'Press Start 2P', cursive`,
-            fontSize: '0.6rem',
-            px: 3,
-            py: 1.5,
-            borderRadius: 2,
-            '&:hover': {
-              backgroundColor: '#84341c',
-            },
-            '&.Mui-disabled': {
-              backgroundColor: '#cccccc',
-              color: '#666666',
-            },
-          }}
+      <GameCard>
+        <Box
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
         >
-          {isUploading ? 'Subiendo...' : 'Enviar Evidencia'}
-        </Button>
-      </Box>
+          <Controller
+            name="filePath"
+            control={control}
+            render={() => (
+              <ImageCloudinary
+                setImageLinks={handleImageUpload}
+                resetUploader={uploaderKey}
+                maxFiles={5}
+                maxFileSize={2 * 1024 * 1024}
+                title="Evidencias de la Actividad"
+              />
+            )}
+          />
+
+          {imageLinks.length === 0 && !isUploading && (
+            <Alert severity="warning" sx={{ mt: 2 }}>
+              Debes subir al menos una imagen como evidencia
+            </Alert>
+          )}
+
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={imageLinks.length === 0 || isUploading}
+            size="large"
+            sx={{
+              backgroundColor: '#E07F3F',
+              fontFamily: `'Press Start 2P', cursive`,
+              fontSize: isMobile ? '0.6rem' : '0.8rem',
+              px: 3,
+              py: 1.5,
+              borderRadius: 2,
+              '&:hover': {
+                backgroundColor: '#84341c',
+              },
+              '&.Mui-disabled': {
+                backgroundColor: '#cccccc',
+                color: '#666666',
+              },
+            }}
+          >
+            {isUploading ? 'Subiendo...' : 'Enviar Evidencia'}
+          </Button>
+        </Box>
+      </GameCard>
     </Container>
   );
 };

@@ -1,10 +1,7 @@
 import { useForm } from "react-hook-form";
 import {
   Button,
-  Typography,
   Box,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import { useActivityStore } from "../../store/activityStore";
 import ImageCloudinary from "../cloudinary/Image";
@@ -12,7 +9,10 @@ import { useState } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Swal from "sweetalert2";
+
 import CustomTextField from "../shared/CustomTextField";
+import { PageHeader, GameCard } from '../common';
+import { useResponsive } from '../../shared';
 
 interface FormValues {
   title: string;
@@ -42,11 +42,10 @@ interface CreateActivityFormProps {
 }
 
 const CreateActivityForm = ({ professorId }: CreateActivityFormProps) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const { addActivity } = useActivityStore();
   const [uploaderKey, setUploaderKey] = useState<number>(0);
+  const { isMobile } = useResponsive();
+  
   const { control, handleSubmit, reset } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -98,105 +97,97 @@ const CreateActivityForm = ({ professorId }: CreateActivityFormProps) => {
   return (
     <Box
       sx={{
-        backgroundColor: "rgb(13, 55, 69)",
-        padding: isMobile ? 3 : 5,
-        borderRadius: 3,
-        color: "white",
-        maxWidth: "600px",
-        margin: "0 auto",
-        boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.3)",
+        py: 5,
+        px: 2,
+        maxWidth: 'md',
+        mx: 'auto',
+        fontFamily: 'Press Start 2P'
       }}
     >
-      <Typography
-        variant="h5"
-        mb={3}
-        sx={{
-          color: "rgb(224, 127, 63)",
-          textAlign: "center",
-          fontSize: isMobile ? "1.1rem" : "1.5rem",
-          fontFamily: `'Press Start 2P', cursive`,
-        }}
-      >
-        Crear Nueva Actividad
-      </Typography>
-
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <CustomTextField
-          name="title"
-          control={control}
-          label="Título"
-        />
-
-        <CustomTextField
-          name="description"
-          control={control}
-          label="Descripción"
-          multiline
-          rows={4}
-        />
-
-        <CustomTextField
-          name="difficulty"
-          control={control}
-          label="Dificultad"
-          select
-          options={[
-            { value: "beginner", label: "Principiante" },
-            { value: "intermediate", label: "Intermedio" },
-            { value: "advanced", label: "Avanzado" },
-            { value: "expert", label: "Experto" }
-          ]}
-        />
-
-        <CustomTextField
-          name="xavicoints"
-          control={control}
-          label="XaviCoins"
-          type="number"
-        />
-
-        <CustomTextField
-          name="section"
-          control={control}
-          label="Sección"
-          select
-          options={[
-            { value: "1ro Secundaria", label: "1ro Secundaria" },
-            { value: "2do Secundaria", label: "2do Secundaria" },
-            { value: "3ro Secundaria", label: "3ro Secundaria" },
-            { value: "4to Secundaria", label: "4to Secundaria" },
-            { value: "5to Secundaria", label: "5to Secundaria" }
-          ]}
-        />
-
-        <Box mt={3} mb={3}>
-          <ImageCloudinary
-            setImageLinks={handleImageUpload}
-            resetUploader={uploaderKey}
-            maxFiles={5}
-            maxFileSize={5 * 1024 * 1024}
-            title="Imágenes de la Actividad"
+      <PageHeader
+        title="Crear Nueva Actividad"
+        subtitle="Define una nueva actividad para los estudiantes"
+      />
+      
+      <GameCard>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <CustomTextField
+            name="title"
+            control={control}
+            label="Título"
           />
-        </Box>
 
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          sx={{
-            backgroundColor: "rgb(224, 127, 63)",
-            fontSize: isMobile ? "0.8rem" : "1rem",
-            padding: isMobile ? "0.6rem" : "0.8rem",
-            fontWeight: "bold",
-            fontFamily: `'Press Start 2P', cursive`,
-            "&:hover": {
-              backgroundColor: "rgb(132, 52, 28)",
-            },
-          }}
-        >
-          Crear Actividad
-        </Button>
-      </form>
+          <CustomTextField
+            name="description"
+            control={control}
+            label="Descripción"
+            multiline
+            rows={4}
+          />
+
+          <CustomTextField
+            name="difficulty"
+            control={control}
+            label="Dificultad"
+            select
+            options={[
+              { value: "beginner", label: "Principiante" },
+              { value: "intermediate", label: "Intermedio" },
+              { value: "advanced", label: "Avanzado" },
+              { value: "expert", label: "Experto" }
+            ]}
+          />
+
+          <CustomTextField
+            name="xavicoints"
+            control={control}
+            label="XaviCoins"
+            type="number"
+          />
+
+          <CustomTextField
+            name="section"
+            control={control}
+            label="Sección"
+            select
+            options={[
+              { value: "1ro Secundaria", label: "1ro Secundaria" },
+              { value: "2do Secundaria", label: "2do Secundaria" },
+              { value: "3ro Secundaria", label: "3ro Secundaria" },
+              { value: "4to Secundaria", label: "4to Secundaria" },
+              { value: "5to Secundaria", label: "5to Secundaria" }
+            ]}
+          />
+
+          <Box mt={3} mb={3}>
+            <ImageCloudinary
+              setImageLinks={handleImageUpload}
+              resetUploader={uploaderKey}
+              maxFiles={5}
+              maxFileSize={5 * 1024 * 1024}
+              title="Imágenes de la Actividad"
+            />
+          </Box>
+
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{
+              mt: 3,
+              py: 2,
+              backgroundColor: 'primary.main',
+              fontFamily: 'Press Start 2P',
+              fontSize: isMobile ? '0.7rem' : '0.9rem',
+              '&:hover': {
+                backgroundColor: 'primary.dark',
+              }
+            }}
+          >
+            Crear Actividad
+          </Button>
+        </Box>
+      </GameCard>
     </Box>
   );
 };

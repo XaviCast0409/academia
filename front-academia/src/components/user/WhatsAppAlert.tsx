@@ -3,18 +3,16 @@ import {
   AlertTitle,
   Box,
   Button,
-  useMediaQuery,
-  useTheme,
   Collapse,
   IconButton
 } from "@mui/material";
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import CloseIcon from '@mui/icons-material/Close';
 import { useState } from "react";
+import { useResponsive } from '../../shared';
 
 export const WhatsAppAlert = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isMobile } = useResponsive();
   const [isVisible, setIsVisible] = useState(true);
 
   const handleJoinWhatsApp = () => {

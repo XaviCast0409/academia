@@ -1,4 +1,7 @@
 import "./App.css";
+import { ThemeProvider } from '@mui/material/styles';
+import { CssBaseline } from '@mui/material';
+import { theme } from './theme';
 import { RolesPage } from "./pages/RolePage/RolePage";
 import { Login } from "./pages/loginPage/LoginPage";
 import { Routes, Route } from "react-router-dom";
@@ -13,7 +16,7 @@ import { AvailableActivities } from "./components/activity/ActivityPerStudentPag
 import { SendEvidence } from "./components/activity/SendEvidence";
 import { UserProfilePage } from "./components/user/UserProfilePage";
 import { ProductsUserPage } from "./components/productsUser/ProductUserPage"
-import { UserTransactionsList } from "./components/transaction/TransactionPage";
+import { TransactionPage } from "./components/transaction/TransactionPage";
 import { ViewActivityPage } from "./components/activity/ViewActivityPage";
 import { ProfessorEvidenceList } from "./components/evidence/EvidencePerProfessor";
 import { EvidencePerStudents } from "./components/evidence/EvidencePerStudents";
@@ -27,7 +30,8 @@ function App() {
   useTokenExpiration(); // Verificar expiración del token
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/roles" element={<RolesPage />} />
@@ -42,7 +46,7 @@ function App() {
           <Route path="actividades/evidence/:id" element={<SendEvidence />} />
           <Route path="profile" element={<UserProfilePage />} />
           <Route path="shop" element={<ProductsUserPage />} />
-          <Route path="transactions" element={<UserTransactionsList />} />
+          <Route path="transactions" element={<TransactionPage />} />
           <Route path="actividades/ver/:id" element={<ViewActivityPage />} />
           <Route path="evidences" element={<EvidencePerStudents />} />
           <Route path="misiones" element={<MissionsPage />} />
@@ -65,7 +69,7 @@ function App() {
         {/* <Route path="/evidences" element={<ImageCloudinary />} /> */}
         {/* Puedes agregar más rutas aquí */}
       </Routes>
-    </>
+    </ThemeProvider>
   );
 }
 

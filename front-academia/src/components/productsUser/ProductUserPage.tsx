@@ -1,9 +1,6 @@
 import {
   Box,
-  Container,
-  Grid,
-  Typography,
-  Pagination
+  Grid
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { ProductUserCard } from './ProductUserCard';
@@ -13,6 +10,8 @@ import { useProductStore } from '../../store/productsStore';
 import type { Product } from '../../types/products';
 import { useTransactionStore } from '../../store/transactionStore';
 import { BuyConfirmDialog } from './BuyConfirmDialog';
+import { PageHeader, Pagination } from '../common';
+import { getCurrentUser } from '../../utils/common';
 
 const MySwal = withReactContent(Swal);
 
@@ -24,18 +23,13 @@ export const ProductsUserPage = () => {
   const { purchaseProduct } = useTransactionStore();
   const { products, totalPages, fetchProducts } = useProductStore();
 
-  const token = localStorage.getItem('auth-storage');
-  const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
+  const user = getCurrentUser();
   const isProfessor = user?.roleId === 1;
   const professorId = isProfessor ? String(user.id) : undefined;
 
   useEffect(() => {
     fetchProducts(page, professorId);
   }, [page, fetchProducts, professorId]);
-
-  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
-  };
 
   const handleBuyClick = (product: Product) => {
     setSelectedProduct(product);
@@ -69,35 +63,17 @@ export const ProductsUserPage = () => {
   };
 
   return (
-    <Container
+    <Box
       sx={{
         py: 4,
+        px: { xs: 2, sm: 3, md: 4 },
         bgcolor: '#fff3e6',
         minHeight: '100vh',
         borderRadius: 2,
         boxShadow: '0 0 15px rgba(0, 0, 0, 0.1)',
       }}
     >
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={3}
-        flexWrap="wrap"
-      >
-        <Typography
-          variant="h4"
-          sx={{
-            fontFamily: `'Press Start 2P', cursive`,
-            color: '#0D3745',
-            fontSize: '1.1rem',
-            mb: 4,
-            textAlign: 'center',
-          }}
-        >
-          Productos
-        </Typography>
-      </Box>
+      <PageHeader title="Productos" />
 
       <Grid container spacing={3} justifyContent="center">
         {products.map((product) => (
@@ -112,28 +88,11 @@ export const ProductsUserPage = () => {
       </Grid>
 
       {totalPages > 1 && (
-        <Box mt={4} display="flex" justifyContent="center">
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={handlePageChange}
-            color="primary"
-            size="large"
-            shape="rounded"
-            sx={{
-              '& .MuiPaginationItem-root': {
-                fontFamily: `'Press Start 2P', cursive`,
-                fontSize: '0.6rem',
-                color: '#0D3745',
-                border: '2px solid #0D3745',
-              },
-              '& .Mui-selected': {
-                bgcolor: '#E07F3F !important',
-                color: '#fff !important',
-              },
-            }}
-          />
-        </Box>
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       )}
 
       <BuyConfirmDialog
@@ -142,6 +101,6 @@ export const ProductsUserPage = () => {
         onConfirm={confirmPurchase}
         product={selectedProduct ?? undefined}
       />
-    </Container>
+    </Box>
   );
 };

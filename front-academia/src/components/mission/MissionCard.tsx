@@ -3,8 +3,6 @@ import {
 	Typography,
 	Button,
 	LinearProgress,
-	useMediaQuery,
-	useTheme,
 	Chip
 } from "@mui/material";
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -16,6 +14,9 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useState } from "react";
 import { claimMissionReward } from "../../services/missionService";
 import type { UserMission } from "../../types/rewards";
+import { GameCard } from '../common';
+import { getCurrentUser } from '../../utils/common';
+import { useResponsive } from '../../shared';
 
 interface Props {
 	userMission: UserMission;
@@ -23,11 +24,9 @@ interface Props {
 }
 
 export const MissionCard = ({ userMission, onMissionUpdate }: Props) => {
-	const token = localStorage.getItem('auth-storage');
-	const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
+	const user = getCurrentUser();
 	const userId = user?.id;
-	const theme = useTheme();
-	const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+	const { isMobile } = useResponsive();
 	const [isClaiming, setIsClaiming] = useState(false);
 
 	const mission = userMission.mission;
@@ -80,23 +79,8 @@ export const MissionCard = ({ userMission, onMissionUpdate }: Props) => {
 	};
 
 	return (
-		<Box
-			sx={{
-				px: isMobile ? 1 : 3,
-				py: isMobile ? 1.5 : 2.5,
-				mb: 2,
-				bgcolor: '#fdfdfd',
-				border: '2px solid #E07F3F',
-				borderRadius: 3,
-				boxShadow: '0px 4px 16px rgba(13,55,69,0.10)',
-				transition: 'transform 0.15s',
-				'&:hover': {
-					backgroundColor: '#f8f8f8',
-					transform: 'scale(1.02)',
-				},
-				position: 'relative',
-				overflow: 'hidden',
-			}}
+		<GameCard
+			hover={true}
 		>
 			{/* Indicador de completado */}
 			{isCompleted && (
@@ -120,6 +104,10 @@ export const MissionCard = ({ userMission, onMissionUpdate }: Props) => {
 
 			<Box
 				sx={{
+					px: isMobile ? 1 : 3,
+					py: isMobile ? 1.5 : 2.5,
+					position: 'relative',
+					overflow: 'hidden',
 					display: "flex",
 					flexDirection: isMobile ? "column" : "row",
 					alignItems: isMobile ? "flex-start" : "center",
@@ -262,6 +250,6 @@ export const MissionCard = ({ userMission, onMissionUpdate }: Props) => {
 					)}
 				</Box>
 			</Box>
-		</Box>
+		</GameCard>
 	);
 }; 

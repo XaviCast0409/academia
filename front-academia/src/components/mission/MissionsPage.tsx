@@ -1,19 +1,18 @@
 import {
 	Box,
-	Typography,
-	Container,
-	CircularProgress,
 	Alert,
-	useMediaQuery,
-	useTheme,
 	Tabs,
 	Tab,
-	Paper
+	Paper,
+	Typography
 } from "@mui/material";
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useState, useEffect } from "react";
 import { MissionCard } from "./MissionCard";
 import { useMissionStore } from "../../store/missionStore";
+import { PageHeader, LoadingSpinner } from '../common';
+import { getCurrentUser } from '../../utils/common';
+import { useResponsive } from '../../shared';
 
 interface TabPanelProps {
 	children?: React.ReactNode;
@@ -38,11 +37,9 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export const MissionsPage = () => {
-	const token = localStorage.getItem('auth-storage');
-	const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
+	const user = getCurrentUser();
 	const userId = user?.id;
-	const theme = useTheme();
-	const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+	const { isMobile } = useResponsive();
 	const [activeTab, setActiveTab] = useState(0);
 
 	const {
@@ -55,14 +52,10 @@ export const MissionsPage = () => {
 	} = useMissionStore();
 
 	useEffect(() => {
-		// Aquí necesitarías el userId del usuario actual
-		// Por ahora usamos un valor temporal
 		loadMissions(userId);
-	}, [loadMissions]);
+	}, [loadMissions, userId]);
 
 	const handleMissionUpdate = () => {
-		// Recargar misiones cuando se actualice una
-		// Esto debería venir del contexto de autenticación
 		loadMissions(userId);
 	};
 
@@ -75,36 +68,12 @@ export const MissionsPage = () => {
 	};
 
 	if (loading) {
-		return (
-			<Container maxWidth="lg" sx={{ py: 4 }}>
-				<Box
-					display="flex"
-					flexDirection="column"
-					alignItems="center"
-					justifyContent="center"
-					minHeight="400px"
-				>
-					<CircularProgress size={60} sx={{ color: '#E07F3F', mb: 2 }} />
-					<Typography variant="h6" color="#0D3745">
-						Cargando misiones...
-					</Typography>
-				</Box>
-			</Container>
-		);
+		return <LoadingSpinner message="Cargando misiones..." />;
 	}
 
 	return (
-		<Container maxWidth="lg" sx={{ py: 4 }}>
-			{/* Header */}
-			<Box
-				sx={{
-					display: 'flex',
-					alignItems: 'center',
-					gap: 2,
-					mb: 4,
-					flexDirection: isMobile ? 'column' : 'row',
-				}}
-			>
+		<Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+			<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
 				<Box
 					sx={{
 						display: 'flex',
@@ -119,23 +88,10 @@ export const MissionsPage = () => {
 				>
 					<AssignmentIcon sx={{ color: 'white', fontSize: 30 }} />
 				</Box>
-				<Box>
-					<Typography
-						variant="h4"
-						fontWeight={700}
-						color="#0D3745"
-						sx={{ fontSize: isMobile ? '1.8rem' : '2.5rem' }}
-					>
-						Mis Misiones
-					</Typography>
-					<Typography
-						variant="body1"
-						color="#555"
-						sx={{ fontSize: isMobile ? '0.9rem' : '1rem' }}
-					>
-						Completa misiones para ganar recompensas y subir de nivel
-					</Typography>
-				</Box>
+				<PageHeader 
+					title="Mis Misiones"
+					subtitle="Completa misiones para ganar recompensas y subir de nivel"
+				/>
 			</Box>
 
 			{/* Error Alert */}
@@ -146,16 +102,17 @@ export const MissionsPage = () => {
 			)}
 
 			{/* Tabs */}
-			<Paper sx={{ mb: 3, borderRadius: 3 }}>
+			<Paper sx={{ mb: 3, borderRadius: 3, border: '2px solid #E07F3F' }}>
 				<Tabs
 					value={activeTab}
 					onChange={handleTabChange}
 					sx={{
 						'& .MuiTab-root': {
 							fontWeight: 600,
-							fontSize: isMobile ? '0.9rem' : '1rem',
+							fontSize: isMobile ? '0.8rem' : '1rem',
 							textTransform: 'none',
 							minHeight: 60,
+							fontFamily: "'Press Start 2P', cursive",
 						},
 						'& .Mui-selected': {
 							color: '#E07F3F',
@@ -166,7 +123,7 @@ export const MissionsPage = () => {
 					}}
 				>
 					<Tab
-						label={`Misiones Activas (${activeMissions.length})`}
+						label={`Activas (${activeMissions.length})`}
 						sx={{ flex: 1 }}
 					/>
 					<Tab
@@ -238,6 +195,6 @@ export const MissionsPage = () => {
 					</Box>
 				)}
 			</TabPanel>
-		</Container>
+		</Box>
 	);
 }; 

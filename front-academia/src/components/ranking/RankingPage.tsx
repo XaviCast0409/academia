@@ -8,10 +8,6 @@ import {
   MenuItem,
   Avatar,
   Chip,
-  CircularProgress,
-  Container,
-  useMediaQuery,
-  useTheme,
   Button,
 } from '@mui/material';
 import { 
@@ -25,14 +21,15 @@ import {
 import { getUsersRanking } from '../../services/userService';
 import type { User } from '../../types/user';
 import RewardsModal from './RewardsModal';
+import { PageHeader, LoadingSpinner, GameCard } from '../common';
+import { useResponsive } from '../../shared';
 
 const RankingPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState<string>('');
   const [rewardsModalOpen, setRewardsModalOpen] = useState(false);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isMobile } = useResponsive();
 
   useEffect(() => {
     loadRanking();
@@ -86,53 +83,31 @@ const RankingPage: React.FC = () => {
   ];
 
   if (loading) {
-    return (
-      <Container maxWidth="md" sx={{ py: 5 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-          <CircularProgress sx={{ color: '#0D3745' }} />
-        </Box>
-      </Container>
-    );
+    return <LoadingSpinner message="Cargando ranking..." />;
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 5 }}>
-      {/* Header */}
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        mb={4}
-        flexDirection={isMobile ? 'column' : 'row'}
-        gap={2}
-      >
-        <Typography
-          variant="h5"
-          sx={{ 
-            fontWeight: 600, 
-            color: '#0D3745', 
-            textAlign: isMobile ? 'center' : 'left',
+    <Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, maxWidth: 'md', mx: 'auto' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
+        <Box
+          sx={{
             display: 'flex',
             alignItems: 'center',
-            gap: 1
+            justifyContent: 'center',
+            width: 60,
+            height: 60,
+            bgcolor: '#E07F3F',
+            borderRadius: 3,
+            boxShadow: '0 4px 12px rgba(224,127,63,0.3)',
           }}
         >
-          <TrendingUpIcon sx={{ color: '#E07F3F' }} />
-          🏆 Ranking de Estudiantes
-        </Typography>
+          <TrendingUpIcon sx={{ color: 'white', fontSize: 30 }} />
+        </Box>
+        <PageHeader 
+          title="🏆 Ranking de Estudiantes"
+          subtitle="Los 20 estudiantes con los niveles más altos"
+        />
       </Box>
-
-      <Typography
-        variant="subtitle1"
-        sx={{ 
-          textAlign: 'center', 
-          color: '#84341C',
-          mb: 4,
-          fontWeight: 500
-        }}
-      >
-        Los 20 estudiantes con los niveles más altos
-      </Typography>
 
       {/* Botón de recompensas */}
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center' }}>
@@ -205,26 +180,14 @@ const RankingPage: React.FC = () => {
       {/* Lista de ranking */}
       <Box>
         {users.map((user, index) => (
-          <Box
-            key={user.id}
-            sx={{
-              px: isMobile ? 1 : 3,
-              py: isMobile ? 1.5 : 2.5,
-              mb: 2,
-              bgcolor: '#fdfdfd',
-              border: index < 3 ? `3px solid ${getRankingColor(index + 1)}` : '2px solid #E07F3F',
-              borderRadius: 3,
-              boxShadow: '0px 4px 16px rgba(13,55,69,0.10)',
-              transition: 'transform 0.15s',
-              background: index < 3 ? 'linear-gradient(135deg, #fdfdfd 0%, #f8f8f8 100%)' : '#fdfdfd',
-              '&:hover': {
-                backgroundColor: '#f8f8f8',
-                transform: 'scale(1.02)',
-              },
-            }}
-          >
+          <GameCard key={user.id} hover={true}>
             <Box
               sx={{
+                px: isMobile ? 1 : 3,
+                py: isMobile ? 1.5 : 2.5,
+                border: index < 3 ? `3px solid ${getRankingColor(index + 1)}` : 'none',
+                borderRadius: index < 3 ? 2 : 0,
+                background: index < 3 ? 'linear-gradient(135deg, #fdfdfd 0%, #f8f8f8 100%)' : 'transparent',
                 display: "flex",
                 flexDirection: isMobile ? "column" : "row",
                 alignItems: isMobile ? "flex-start" : "center",
@@ -422,7 +385,7 @@ const RankingPage: React.FC = () => {
                 </Box>
               </Box>
             </Box>
-          </Box>
+          </GameCard>
         ))}
       </Box>
 
@@ -439,7 +402,7 @@ const RankingPage: React.FC = () => {
         open={rewardsModalOpen}
         onClose={() => setRewardsModalOpen(false)}
       />
-    </Container>
+    </Box>
   );
 };
 

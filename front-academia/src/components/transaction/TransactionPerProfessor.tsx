@@ -1,15 +1,10 @@
 import {
   Box,
-  Container,
   Typography,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  CircularProgress,
-  useMediaQuery,
-  useTheme,
-  Pagination,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTransactionStore } from '../../store/transactionStore';
@@ -18,10 +13,12 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EventIcon from '@mui/icons-material/Event';
 import PersonIcon from '@mui/icons-material/Person';
 
+import { PageHeader, LoadingSpinner, Pagination, GameCard } from '../common';
+import { useResponsive, getCurrentUser } from '../../shared';
+
 
 export const TransactionPerProfessor = () => {
-  const token = localStorage.getItem('auth-storage');
-  const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
+  const { user } = getCurrentUser();
   const professorId = user?.id;
 
   const [page, setPage] = useState(1);
@@ -29,8 +26,7 @@ export const TransactionPerProfessor = () => {
   const [loading, setLoading] = useState(true);
 
   const { transactions, totalPages, getProfessorProductTransactions } = useTransactionStore();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isMobile } = useResponsive();
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -42,95 +38,96 @@ export const TransactionPerProfessor = () => {
     fetchTransactions();
   }, [page, professorId, getProfessorProductTransactions, limit]);
 
-  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (value: number) => {
     setPage(value);
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 5, fontFamily: `'Press Start 2P', cursive` }}>
-      <Typography
-        variant="h4"
-        sx={{
-          textAlign: 'center',
-          mb: 4,
-          fontSize: isMobile ? '1.2rem' : '1.8rem',
-          fontFamily: `'Press Start 2P', cursive`,
-          color: '#0D3745',
-        }}
-      >
-        🎓 Transacciones de Mis Productos
-      </Typography>
+    <Box
+      sx={{
+        py: 5,
+        px: 2,
+        maxWidth: 'md',
+        mx: 'auto',
+        fontFamily: 'Press Start 2P'
+      }}
+    >
+      <PageHeader
+        title="🎓 Transacciones de Mis Productos"
+        subtitle="Historial de ventas de tus productos"
+      />
 
       {loading ? (
         <Box display="flex" justifyContent="center" mt={6}>
-          <CircularProgress sx={{ color: '#E07F3F' }} />
+          <LoadingSpinner />
         </Box>
       ) : transactions.length > 0 ? (
         <>
           <List disablePadding>
             {transactions.map((tx: any) => (
-              <Box
-                key={tx.id}
-                sx={{
-                  px: 2,
-                  py: 2,
-                  mb: 2,
-                  bgcolor: '#fffefc',
-                  border: '3px dashed #0D3745',
-                  boxShadow: '4px 4px 0 #FFCC00',
-                  borderRadius: 2,
-                  transition: 'transform 0.2s ease',
-                  '&:hover': {
-                    transform: 'scale(1.02)',
-                    backgroundColor: '#fcf3e3',
-                  },
-                }}
-              >
-                <ListItem disablePadding sx={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <Box display="flex" alignItems="center" gap={1} mb={1}>
-                    <ListItemIcon sx={{ minWidth: '30px', color: '#84341c' }}>
-                      <Inventory2Icon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={tx.product?.name}
-                      primaryTypographyProps={{
-                        fontSize: isMobile ? '0.6rem' : '0.75rem',
-                        fontFamily: `'Press Start 2P', cursive`,
-                        color: '#84341c',
-                      }}
-                    />
-                  </Box>
+              <Box key={tx.id} sx={{ mb: 2 }}>
+                <GameCard>
+                  <ListItem disablePadding sx={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      <ListItemIcon sx={{ minWidth: '30px', color: 'primary.main' }}>
+                        <Inventory2Icon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={tx.product?.name}
+                        primaryTypographyProps={{
+                          fontSize: isMobile ? '0.6rem' : '0.75rem',
+                          fontFamily: 'Press Start 2P',
+                          color: 'primary.main',
+                        }}
+                      />
+                    </Box>
 
-                  <Box display="flex" alignItems="center" gap={1} mb={1}>
-                    <ListItemIcon sx={{ minWidth: '30px', color: '#E07F3F' }}>
-                      <MonetizationOnIcon />
-                    </ListItemIcon>
-                    <Typography sx={{ fontSize: isMobile ? '0.55rem' : '0.7rem', color: '#E07F3F', fontFamily: `'Press Start 2P', cursive` }}>
-                      {tx.product?.price} XaviCoins
-                    </Typography>
-                  </Box>
+                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      <ListItemIcon sx={{ minWidth: '30px', color: '#FFCC00' }}>
+                        <MonetizationOnIcon />
+                      </ListItemIcon>
+                      <Typography 
+                        sx={{ 
+                          fontSize: isMobile ? '0.55rem' : '0.7rem', 
+                          color: '#FFCC00', 
+                          fontFamily: 'Press Start 2P' 
+                        }}
+                      >
+                        {tx.product?.price} XaviCoins
+                      </Typography>
+                    </Box>
 
-                  <Box display="flex" alignItems="center" gap={1} mb={1}>
-                    <ListItemIcon sx={{ minWidth: '30px', color: '#0D3745' }}>
-                      <PersonIcon />
-                    </ListItemIcon>
-                    <Typography sx={{ fontSize: isMobile ? '0.5rem' : '0.65rem', color: '#0D3745', fontFamily: `'Press Start 2P', cursive` }}>
-                      Comprador: {tx.user.name}
-                    </Typography>
-                    <Typography sx={{ fontSize: isMobile ? '0.5rem' : '0.65rem', color: '#0D3745', fontFamily: `'Press Start 2P', cursive` }}>
-                      Seccion: {tx.user.section}
-                    </Typography>
-                  </Box>
+                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      <ListItemIcon sx={{ minWidth: '30px', color: 'text.secondary' }}>
+                        <PersonIcon />
+                      </ListItemIcon>
+                      <Typography 
+                        sx={{ 
+                          fontSize: isMobile ? '0.5rem' : '0.65rem', 
+                          color: 'text.secondary', 
+                          fontFamily: 'Press Start 2P' 
+                        }}
+                      >
+                        Comprador: {tx.user.name} | Sección: {tx.user.section}
+                      </Typography>
+                    </Box>
 
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <ListItemIcon sx={{ minWidth: '30px', color: '#0D3745' }}>
-                      <EventIcon />
-                    </ListItemIcon>
-                    <Typography sx={{ fontSize: isMobile ? '0.5rem' : '0.65rem', color: '#0D3745', fontFamily: `'Press Start 2P', cursive` }}>
-                      {new Date(tx.createdAt).toLocaleString()}
-                    </Typography>
-                  </Box>
-                </ListItem>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <ListItemIcon sx={{ minWidth: '30px', color: 'text.secondary' }}>
+                        <EventIcon />
+                      </ListItemIcon>
+                      <Typography 
+                        sx={{ 
+                          fontSize: isMobile ? '0.5rem' : '0.65rem', 
+                          color: 'text.secondary', 
+                          fontFamily: 'Press Start 2P' 
+                        }}
+                      >
+                        {new Date(tx.createdAt).toLocaleString()}
+                      </Typography>
+                    </Box>
+                  </ListItem>
+                </GameCard>
               </Box>
             ))}
           </List>
@@ -138,29 +135,27 @@ export const TransactionPerProfessor = () => {
           {totalPages > 1 && (
             <Box mt={4} display="flex" justifyContent="center">
               <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handlePageChange}
-                color="primary"
-                shape="rounded"
-                size="large"
-                sx={{
-                  '& .MuiPaginationItem-root': {
-                    fontFamily: `'Press Start 2P', cursive`,
-                    color: '#0D3745',
-                  },
-                }}
+                totalPages={totalPages}
+                currentPage={page}
+                onPageChange={handlePageChange}
               />
             </Box>
           )}
         </>
       ) : (
         <Box mt={6} textAlign="center">
-          <Typography variant="h6" sx={{ color: '#84341c' }}>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              color: 'text.secondary',
+              fontFamily: 'Press Start 2P',
+              fontSize: isMobile ? '0.7rem' : '0.9rem'
+            }}
+          >
             No se encontraron transacciones de tus productos.
           </Typography>
         </Box>
       )}
-    </Container>
+    </Box>
   );
 }; 

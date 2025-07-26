@@ -7,8 +7,6 @@ import {
   Button,
   Box,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material';
 import {
   EmojiEvents as TrophyIcon,
@@ -16,6 +14,7 @@ import {
   School as SchoolIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
+import { useResponsive } from '../../shared';
 
 interface RewardsModalProps {
   open: boolean;
@@ -23,8 +22,7 @@ interface RewardsModalProps {
 }
 
 const RewardsModal: React.FC<RewardsModalProps> = ({ open, onClose }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isMobile } = useResponsive();
 
   return (
     <Dialog
@@ -37,6 +35,8 @@ const RewardsModal: React.FC<RewardsModalProps> = ({ open, onClose }) => {
         sx: {
           borderRadius: isMobile ? 0 : 2,
           bgcolor: '#fdfdfd',
+          border: '3px solid #E07F3F',
+          fontFamily: "'Press Start 2P', cursive",
         }
       }}
     >

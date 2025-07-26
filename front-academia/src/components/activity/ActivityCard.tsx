@@ -1,19 +1,18 @@
 import {
   Box,
   Typography,
-  Button,
-  useMediaQuery,
-  useTheme
+  Button
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import DescriptionIcon from '@mui/icons-material/Description';
-import StarsIcon from '@mui/icons-material/Stars';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SchoolIcon from '@mui/icons-material/School';
 import { useNavigate } from "react-router-dom";
 
 import type { Activity } from "../../types/activity";
+import { GameCard } from '../common';
+import { DifficultyBadge, XavicoinsDisplay } from '../ui';
+import { useResponsive } from '../../shared';
 
 interface Props {
   activity: Activity;
@@ -22,8 +21,7 @@ interface Props {
 }
 
 export const ActivityCard = ({ activity, onDelete, currentPage }: Props) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isMobile } = useResponsive();
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -32,39 +30,15 @@ export const ActivityCard = ({ activity, onDelete, currentPage }: Props) => {
     });
   };
 
-  // Dificultad a color
-  const difficultyColors: Record<string, string> = {
-    beginner: '#4caf50',
-    intermediate: '#1976d2',
-    advanced: '#e07f3f',
-    expert: '#84341c',
-  };
-
-  const difficultyLabels: Record<string, string> = {
-    beginner: 'Principiante',
-    intermediate: 'Intermedio',
-    advanced: 'Avanzado',
-    expert: 'Experto',
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete();
   };
 
   return (
-    <Box
+    <GameCard
       onClick={handleClick}
-      sx={{
-        px: isMobile ? 1 : 3,
-        py: isMobile ? 1.5 : 2.5,
-        mb: 2,
-        bgcolor: '#fdfdfd',
-        border: '2px solid #E07F3F',
-        borderRadius: 3,
-        boxShadow: '0px 4px 16px rgba(13,55,69,0.10)',
-        transition: 'transform 0.15s',
-        '&:hover': {
-          backgroundColor: '#f8f8f8',
-          transform: 'scale(1.02)',
-          cursor: 'pointer',
-        },
-      }}
+      hover={true}
     >
       <Box
         sx={{
@@ -73,7 +47,12 @@ export const ActivityCard = ({ activity, onDelete, currentPage }: Props) => {
           alignItems: isMobile ? "flex-start" : "center",
           justifyContent: "space-between",
           gap: 2,
-          flexWrap: "wrap"
+          flexWrap: "wrap",
+          mb: 2,
+          transition: 'transform 0.15s',
+          '&:hover': {
+            transform: 'scale(1.02)',
+          },
         }}
       >
         {/* Imagen miniatura */}
@@ -116,14 +95,7 @@ export const ActivityCard = ({ activity, onDelete, currentPage }: Props) => {
           </Box>
 
           <Box display="flex" alignItems="center" gap={1} mb={1}>
-            <StarsIcon sx={{ color: difficultyColors[activity.difficulty || 'beginner'] || '#4caf50' }} />
-            <Typography
-              fontSize={isMobile ? "0.85rem" : "0.95rem"}
-              fontWeight={600}
-              color={difficultyColors[activity.difficulty || 'beginner'] || '#4caf50'}
-            >
-              {difficultyLabels[activity.difficulty || 'beginner']}
-            </Typography>
+            <DifficultyBadge difficulty={(activity.difficulty || 'beginner') as 'beginner' | 'intermediate' | 'advanced' | 'expert'} />
           </Box>
 
           {activity.section && (
@@ -140,16 +112,12 @@ export const ActivityCard = ({ activity, onDelete, currentPage }: Props) => {
           )}
 
           <Box display="flex" alignItems="center" gap={1}>
-            <MonetizationOnIcon sx={{ color: "#E07F3F" }} />
-            <Typography fontSize={isMobile ? "0.85rem" : "0.95rem"} color="#E07F3F" fontWeight={600}>
-              {activity.xavicoints} XaviCoins
-            </Typography>
+            <XavicoinsDisplay amount={activity.xavicoints} size="small" />
           </Box>
         </Box>
 
         {/* Botón Eliminar */}
         <Box
-          onClick={(e) => e.stopPropagation()}
           sx={{
             mt: isMobile ? 2 : 0,
             display: "flex",
@@ -162,7 +130,7 @@ export const ActivityCard = ({ activity, onDelete, currentPage }: Props) => {
             color="error"
             size="small"
             startIcon={<DeleteIcon />}
-            onClick={onDelete}
+            onClick={handleDeleteClick}
             sx={{
               borderColor: '#84341c',
               color: '#fff',
@@ -179,6 +147,6 @@ export const ActivityCard = ({ activity, onDelete, currentPage }: Props) => {
           </Button>
         </Box>
       </Box>
-    </Box>
+    </GameCard>
   );
 };

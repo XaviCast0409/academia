@@ -1,14 +1,17 @@
-import { Box, Container, Grid, Typography, Button, Pagination } from '@mui/material';
+import { Box, Grid, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useEffect, useState } from 'react';
 import { useProductStore } from '../../store/productsStore';
 import { ProductModal } from './ProductModal';
-import { ConfirmDialog } from '../../utils/ConfirmDialog';
 import { ProductCard } from './ProductCard';
 import type { Product } from '../../types/products';
+import { ConfirmDialog, Pagination, PageHeader } from '../common';
+import { getCurrentUser } from '../../utils/common';
+import { useResponsive } from '../../shared';
 
 export const ProductsPage = () => {
 	const { products, totalPages, fetchProducts, addProduct, editProduct, removeProduct } = useProductStore();
+	const { isMobile } = useResponsive();
 
 	const [modalOpen, setModalOpen] = useState(false);
 	const [editingProduct, setEditingProduct] = useState<Product | undefined>();
@@ -16,9 +19,7 @@ export const ProductsPage = () => {
 	const [selectedId, setSelectedId] = useState<number | null>(null);
 	const [page, setPage] = useState(1);
 
-	const token = localStorage.getItem('auth-storage');
-	const user = token ? JSON.parse(atob(token.split('.')[1])) : null; // decodifica el token JWT para obtener el usuario
-	
+	const user = getCurrentUser();
 	const isProfessor = user?.roleId === 2;
 	const professorId = isProfessor && user?.id ? String(user.id) : undefined;
 
@@ -49,19 +50,19 @@ export const ProductsPage = () => {
 		}
 	};
 
-	const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
-		setPage(value);
-	};
-
 	return (
-		<Container sx={{ py: 4 }}>
+		<Box sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
 			<Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-				<Typography variant="h4" color="primary.dark">Productos</Typography>
+				<PageHeader title="Productos" />
 				<Button
 					variant="contained"
 					startIcon={<AddIcon />}
 					onClick={handleAddClick}
-					sx={{ bgcolor: '#0D3745' }}
+					sx={{ 
+						bgcolor: '#0D3745',
+						fontSize: { xs: '0.7rem', sm: '0.8rem' }
+					}}
+					size={isMobile ? 'small' : 'medium'}
 				>
 					Agregar
 				</Button>
@@ -80,16 +81,11 @@ export const ProductsPage = () => {
 			</Grid>
 
 			{totalPages > 1 && (
-				<Box mt={4} display="flex" justifyContent="center">
-					<Pagination
-						count={totalPages}
-						page={page}
-						onChange={handlePageChange}
-						color="primary"
-						size="large"
-						shape="rounded"
-					/>
-				</Box>
+				<Pagination
+					currentPage={page}
+					totalPages={totalPages}
+					onPageChange={setPage}
+				/>
 			)}
 
 			<ProductModal
@@ -105,6 +101,6 @@ export const ProductsPage = () => {
 				onConfirm={confirmDelete}
 				message="¿Estás seguro que deseas eliminar este producto?"
 			/>
-		</Container>
+		</Box>
 	);
 };

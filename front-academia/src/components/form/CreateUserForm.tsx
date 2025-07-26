@@ -1,5 +1,4 @@
-// src/components/forms/CreateUserForm.tsx
-import { Box, Button, Typography, CircularProgress } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
@@ -12,9 +11,10 @@ import { useRoleStore } from '../../store/roleStore';
 import { createUser } from '../../services/userService';
 import { emailVerificationService } from '../../services/emailVerificationService';
 import { userSchema } from '../../schemas/userSchema';
-import { formBoxStyles, titleStyles, submitButtonStyles } from '../../styles/formStyles';
 import type { CreateUserDTO } from '../../types/user';
 import { VerifyCodeForm } from '../auth/VerifyCodeForm';
+import { PageHeader, LoadingSpinner, GameCard } from '../common';
+import { useResponsive } from '../../shared';
 
 const sectionOptions = [
   { label: "1ro Sec", value: "1ro Sec" },
@@ -31,6 +31,7 @@ export const CreateUserForm = () => {
   const [showVerification, setShowVerification] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
   const [formData, setFormData] = useState<CreateUserDTO | null>(null);
+  const { isMobile } = useResponsive();
 
   const {
     control,
@@ -106,72 +107,118 @@ export const CreateUserForm = () => {
 
   if (showVerification) {
     return (
-      <Box sx={formBoxStyles}>
-        <Typography variant="h5" align="center" mb={4} sx={titleStyles}>
-          VERIFICAR CORREO
-        </Typography>
-        <VerifyCodeForm 
-          email={registeredEmail} 
-          onVerificationSuccess={onVerificationSuccess} 
+      <Box
+        sx={{
+          py: 5,
+          px: 2,
+          maxWidth: 'sm',
+          mx: 'auto',
+          fontFamily: 'Press Start 2P'
+        }}
+      >
+        <PageHeader
+          title="VERIFICAR CORREO"
+          subtitle="Ingresa el código enviado a tu email"
         />
+        <GameCard>
+          <VerifyCodeForm 
+            email={registeredEmail} 
+            onVerificationSuccess={onVerificationSuccess} 
+          />
+        </GameCard>
       </Box>
     );
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onRequestVerification)} sx={formBoxStyles}>
-      <Typography variant="h5" align="center" mb={4} sx={titleStyles}>
-        CREAR USUARIO
-      </Typography>
+    <Box
+      sx={{
+        py: 5,
+        px: 2,
+        maxWidth: 'sm',
+        mx: 'auto',
+        fontFamily: 'Press Start 2P'
+      }}
+    >
+      <PageHeader
+        title="CREAR USUARIO"
+        subtitle="Completa el formulario para registrarte"
+      />
+      
+      <GameCard>
+        <Box component="form" onSubmit={handleSubmit(onRequestVerification)}>
+          <CustomTextField
+            name="name"
+            control={control}
+            label="Nombre"
+            error={!!errors.name}
+            helperText={errors.name?.message}
+          />
+          <CustomTextField
+            name="email"
+            control={control}
+            label="Email"
+            error={!!errors.email}
+            helperText={errors.email?.message}
+          />
+          <CustomTextField
+            name="password"
+            control={control}
+            label="Contraseña"
+            type="password"
+            error={!!errors.password}
+            helperText={errors.password?.message}
+          />
+          <CustomTextField
+            name="section"
+            control={control}
+            label="Sección"
+            select
+            options={sectionOptions}
+            error={!!errors.section}
+            helperText={errors.section?.message}
+          />
 
-      <CustomTextField
-        name="name"
-        control={control}
-        label="Nombre"
-        error={!!errors.name}
-        helperText={errors.name?.message}
-      />
-      <CustomTextField
-        name="email"
-        control={control}
-        label="Email"
-        error={!!errors.email}
-        helperText={errors.email?.message}
-      />
-      <CustomTextField
-        name="password"
-        control={control}
-        label="Contraseña"
-        type="password"
-        error={!!errors.password}
-        helperText={errors.password?.message}
-      />
-      <CustomTextField
-        name="section"
-        control={control}
-        label="Sección"
-        select
-        options={sectionOptions}
-        error={!!errors.section}
-        helperText={errors.section?.message}
-      />
+          <CustomTextField
+            name="roleId"
+            control={control}
+            label="Rol"
+            select
+            options={[{ label: 'Alumno', value: 2 }]}
+            disabled
+            helperText="No se puede modificar"
+            error={!!errors.roleId}
+          />
 
-      <CustomTextField
-        name="roleId"
-        control={control}
-        label="Rol"
-        select
-        options={[{ label: 'Alumno', value: 2 }]}
-        disabled
-        helperText="No se puede modificar"
-        error={!!errors.roleId}
-      />
+          <Controller 
+            name="pokemonId" 
+            control={control} 
+            render={({ field }) => <PokemonSelector field={field} />} 
+          />
 
-      <Controller name="pokemonId" control={control} render={({ field }) => <PokemonSelector field={field} />} />
-
-      <Button type="submit" fullWidth variant="contained" disabled={loading} sx={submitButtonStyles}>
-        {loading ? <CircularProgress size={24} color="inherit" /> : 'SOLICITAR CÓDIGO DE VERIFICACIÓN'}
-      </Button>
+          <Button 
+            type="submit" 
+            fullWidth 
+            variant="contained" 
+            disabled={loading}
+            sx={{
+              mt: 3,
+              py: 2,
+              backgroundColor: 'primary.main',
+              fontFamily: 'Press Start 2P',
+              fontSize: isMobile ? '0.7rem' : '0.9rem',
+              '&:hover': {
+                backgroundColor: 'primary.dark',
+              },
+              '&:disabled': {
+                backgroundColor: 'action.disabled',
+              }
+            }}
+          >
+            {loading ? <LoadingSpinner /> : 'SOLICITAR CÓDIGO DE VERIFICACIÓN'}
+          </Button>
+        </Box>
+      </GameCard>
     </Box>
   );
 };

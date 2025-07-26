@@ -2,15 +2,10 @@ import { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
-  Container,
-  CircularProgress,
   List,
   ListItem,
   ListItemText,
   ListItemIcon,
-  Pagination,
-  useMediaQuery,
-  useTheme,
   Chip,
   Button,
 } from '@mui/material';
@@ -22,9 +17,11 @@ import { useActivityStore } from '../../store/activityStore';
 import { EvidenceModal } from '../registro/EvidenceModal';
 import { EvidenceStatusModal } from '../registro/EvidenceStatusModal';
 
+import { PageHeader, LoadingSpinner, Pagination, GameCard } from '../common';
+import { useResponsive, getCurrentUser } from '../../shared';
+
 export const ProfessorEvidenceList = () => {
-  const token = localStorage.getItem('auth-storage');
-  const user = token ? JSON.parse(atob(token.split('.')[1])) : null;
+  const { user } = getCurrentUser();
   const professorId = user?.id;
 
   const [page, setPage] = useState(1);
@@ -33,8 +30,7 @@ export const ProfessorEvidenceList = () => {
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [selectedEvidence, setSelectedEvidence] = useState<any>(null);
 
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isMobile } = useResponsive();
 
   const {
     evidences,
@@ -58,7 +54,7 @@ export const ProfessorEvidenceList = () => {
     return cleanEvidences;
   }, [page, professorId, getEvidencePerProfessor]);
 
-  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (value: number) => {
     setPage(value);
   };
 
@@ -109,17 +105,23 @@ export const ProfessorEvidenceList = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 5 }}>
-      <Typography
-        variant="h5"
-        sx={{ textAlign: 'center', mb: 4, fontWeight: 600, color: '#0D3745' }}
-      >
-        📂 Evidencias Recibidas
-      </Typography>
+    <Box
+      sx={{
+        py: 5,
+        px: 2,
+        maxWidth: 'md',
+        mx: 'auto',
+        fontFamily: 'Press Start 2P'
+      }}
+    >
+      <PageHeader
+        title="📂 Evidencias Recibidas"
+        subtitle="Revisa y evalúa las evidencias de tus estudiantes"
+      />
 
       {loading ? (
         <Box display="flex" justifyContent="center" mt={6}>
-          <CircularProgress sx={{ color: '#E07F3F' }} />
+          <LoadingSpinner />
         </Box>
       ) : evidences.length > 0 ? (
         <>
@@ -127,93 +129,131 @@ export const ProfessorEvidenceList = () => {
             {evidences.map((ev) => {
               const isFinalized = ev.status === 'approved' || ev.status === 'rejected';
               return (
-                <Box
-                  key={ev.id}
-                  sx={{
-                    px: 2,
-                    py: 2,
-                    mb: 2,
-                    bgcolor: '#fdfdfd',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: 2,
-                    boxShadow: '0px 4px 10px rgba(0,0,0,0.05)',
-                    transition: '0.2s ease',
-                    '&:hover': { backgroundColor: '#f8f8f8' },
-                  }}
-                >
-                  <ListItem disablePadding sx={{ flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                    <Box>
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
-                        <ListItemIcon sx={{ minWidth: '30px', color: '#84341c' }}>
-                          <AssignmentTurnedInIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={`Actividad: ${ev.activity?.title}`}
-                          primaryTypographyProps={{ fontSize: isMobile ? '0.9rem' : '1rem', color: '#333' }}
-                        />
+                <Box key={ev.id} sx={{ mb: 2 }}>
+                  <GameCard>
+                    <ListItem disablePadding sx={{ 
+                      flexDirection: isMobile ? 'column' : 'row', 
+                      alignItems: isMobile ? 'flex-start' : 'center', 
+                      justifyContent: 'space-between', 
+                      flexWrap: 'wrap' 
+                    }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Box display="flex" alignItems="center" gap={1} mb={1}>
+                          <ListItemIcon sx={{ minWidth: '30px', color: 'primary.main' }}>
+                            <AssignmentTurnedInIcon />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={`Actividad: ${ev.activity?.title}`}
+                            primaryTypographyProps={{ 
+                              fontSize: isMobile ? '0.7rem' : '0.8rem', 
+                              color: 'primary.main',
+                              fontFamily: 'Press Start 2P'
+                            }}
+                          />
+                        </Box>
+
+                        <Box display="flex" alignItems="center" gap={1} mb={1}>
+                          <ListItemIcon sx={{ minWidth: '30px', color: 'text.secondary' }}>
+                            <PersonIcon />
+                          </ListItemIcon>
+                          <Typography sx={{ 
+                            fontSize: isMobile ? '0.65rem' : '0.75rem', 
+                            color: 'text.secondary',
+                            fontFamily: 'Press Start 2P'
+                          }}>
+                            Estudiante: {ev.student?.name}
+                          </Typography>
+                        </Box>
+
+                        <Box display="flex" alignItems="center" gap={1} mb={1}>
+                          <ListItemIcon sx={{ minWidth: '30px', color: '#FFCC00' }}>
+                            <EventNoteIcon />
+                          </ListItemIcon>
+                          <Typography sx={{ 
+                            fontSize: isMobile ? '0.6rem' : '0.7rem', 
+                            color: 'text.secondary',
+                            fontFamily: 'Press Start 2P'
+                          }}>
+                            Enviado el: {ev.createdAt ? new Date(ev.createdAt).toLocaleString() : 'Fecha no disponible'}
+                          </Typography>
+                        </Box>
+
+                        <Box display="flex" alignItems="center" gap={1} mt={1} mb={1}>
+                          <Chip
+                            label={`Dificultad: ${ev.activity?.difficulty || 'N/A'}`}
+                            size="small"
+                            sx={{ 
+                              backgroundColor: 'action.hover', 
+                              color: 'text.secondary',
+                              fontFamily: 'Press Start 2P',
+                              fontSize: '0.6rem'
+                            }}
+                          />
+                          <Chip
+                            label={`${ev.activity?.xavicoints || 0} XC`}
+                            size="small"
+                            sx={{ 
+                              backgroundColor: '#FFCC00', 
+                              color: '#000',
+                              fontFamily: 'Press Start 2P',
+                              fontSize: '0.6rem'
+                            }}
+                          />
+                        </Box>
+
+                        <Box>
+                          <Chip
+                            label={ev.status.toUpperCase()}
+                            color={getStatusColor(ev.status)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                              fontFamily: 'Press Start 2P',
+                              fontSize: '0.6rem'
+                            }}
+                          />
+                        </Box>
                       </Box>
 
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
-                        <ListItemIcon sx={{ minWidth: '30px', color: '#0D3745' }}>
-                          <PersonIcon />
-                        </ListItemIcon>
-                        <Typography sx={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: '#555' }}>
-                          Estudiante: {ev.student?.name}
-                        </Typography>
-                      </Box>
-
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <ListItemIcon sx={{ minWidth: '30px', color: '#E07F3F' }}>
-                          <EventNoteIcon />
-                        </ListItemIcon>
-                        <Typography sx={{ fontSize: isMobile ? '0.75rem' : '0.85rem', color: '#777' }}>
-                          Enviado el: {ev.createdAt ? new Date(ev.createdAt).toLocaleString() : 'Fecha no disponible'}
-                        </Typography>
-                      </Box>
-
-                      <Box display="flex" alignItems="center" gap={1} mt={1}>
-                        <Chip
-                          label={`Dificultad: ${ev.activity?.difficulty || 'N/A'}`}
+                      <Box sx={{ 
+                        mt: isMobile ? 2 : 0, 
+                        display: 'flex', 
+                        flexDirection: isMobile ? 'column' : 'row', 
+                        gap: 1 
+                      }}>
+                        <Button
+                          variant="contained"
                           size="small"
-                          sx={{ backgroundColor: '#f0f0f0', color: '#555' }}
-                        />
-                        <Chip
-                          label={`${ev.activity?.xavicoints || 0} Xavicoints`}
-                          size="small"
-                          sx={{ backgroundColor: '#FFD700', color: '#000' }}
-                        />
-                      </Box>
-
-                      <Box mt={1}>
-                        <Chip
-                          label={ev.status.toUpperCase()}
-                          color={getStatusColor(ev.status)}
+                          onClick={() => handleReviewClick(ev)}
+                          disabled={isFinalized}
+                          sx={{ 
+                            backgroundColor: 'primary.main',
+                            fontFamily: 'Press Start 2P',
+                            fontSize: '0.6rem',
+                            '&:hover': { 
+                              backgroundColor: 'primary.dark' 
+                            } 
+                          }}
+                        >
+                          Revisar
+                        </Button>
+                        <Button
                           variant="outlined"
                           size="small"
-                        />
+                          onClick={() => handleChangeStatusClick(ev)}
+                          disabled={isFinalized}
+                          sx={{
+                            fontFamily: 'Press Start 2P',
+                            fontSize: '0.6rem',
+                            borderColor: 'primary.main',
+                            color: 'primary.main'
+                          }}
+                        >
+                          Cambiar Estado
+                        </Button>
                       </Box>
-                    </Box>
-
-                    <Box sx={{ mt: isMobile ? 1 : 0, display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 1 }}>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => handleReviewClick(ev)}
-                        disabled={isFinalized}
-                        sx={{ backgroundColor: 'rgb(132, 52, 28)', '&:hover': { backgroundColor: 'rgb(13, 55, 69)' } }}
-                      >
-                        Revisar Evidencias
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() => handleChangeStatusClick(ev)}
-                        disabled={isFinalized}
-                      >
-                        Cambiar Estado
-                      </Button>
-                    </Box>
-                  </ListItem>
+                    </ListItem>
+                  </GameCard>
                 </Box>
               );
             })}
@@ -222,18 +262,23 @@ export const ProfessorEvidenceList = () => {
           {totalPages > 1 && (
             <Box mt={4} display="flex" justifyContent="center">
               <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handlePageChange}
-                color="primary"
-                shape="rounded"
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
               />
             </Box>
           )}
         </>
       ) : (
         <Box mt={6} textAlign="center">
-          <Typography variant="body1" sx={{ color: '#84341c' }}>
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              color: 'text.secondary',
+              fontFamily: 'Press Start 2P',
+              fontSize: isMobile ? '0.7rem' : '0.9rem'
+            }}
+          >
             No se encontraron evidencias.
           </Typography>
         </Box>
@@ -251,6 +296,6 @@ export const ProfessorEvidenceList = () => {
         onSubmit={handleStatusSubmit}
         initialStatus={selectedEvidence?.status || 'pending'}
       />
-    </Container>
+    </Box>
   );
 };

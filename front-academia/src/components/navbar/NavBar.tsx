@@ -4,19 +4,17 @@ import {
   Toolbar,
   IconButton,
   Button,
-  useMediaQuery,
-  useTheme,
   Box
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuthStore } from '../../store/authStore';
 import { useNavigate } from 'react-router-dom';
+import { useResponsive } from '../../hooks/common';
+import { SIDEBAR_WIDTH } from '../../utils/contants';
 import { NavLogo } from './NavLogo';
 import { NavMenu } from './NavMenu';
 import { UserMenu } from './UserMenu';
 import { MobileDrawer } from './MobileDrawer';
-
-const SIDEBAR_WIDTH = 240;
 
 interface NavbarProps {
   admin?: boolean;
@@ -25,8 +23,7 @@ interface NavbarProps {
 const ResponsiveNavbar: React.FC<NavbarProps> = ({ admin = false }) => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { isMobile } = useResponsive();
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
