@@ -1,13 +1,11 @@
 import { 
 	Box, 
 	Paper, 
-	Typography, 
-	Divider,
-	Grid,
-	GridProps
+	Typography
 } from "@mui/material"
+import { Grid, type GridProps } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 interface FormProps {
 	title?: string
@@ -42,7 +40,7 @@ const FormHeader = styled(Box)(({ theme }) => ({
 	marginBottom: theme.spacing(2),
 }))
 
-const FormContent = styled(Box)(({ theme }) => ({
+const FormContent = styled(Box)(() => ({
 	flex: 1,
 }))
 
@@ -59,9 +57,6 @@ export const Form = ({
 	subtitle,
 	children,
 	actions,
-	loading = false,
-	error,
-	success,
 	spacing = 2,
 	gridProps = {},
 	sx = {},
@@ -121,8 +116,19 @@ export const FormField = ({
 	xl,
 	sx = {},
 }: FormFieldProps) => {
+	const gridProps: any = {
+		item: true,
+		xs,
+		sx
+	}
+	
+	if (sm !== undefined) gridProps.sm = sm
+	if (md !== undefined) gridProps.md = md
+	if (lg !== undefined) gridProps.lg = lg
+	if (xl !== undefined) gridProps.xl = xl
+
 	return (
-		<Grid item xs={xs} sm={sm} md={md} lg={lg} xl={xl} sx={sx}>
+		<Grid {...gridProps}>
 			{children}
 		</Grid>
 	)

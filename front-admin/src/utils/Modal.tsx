@@ -1,8 +1,8 @@
-import { 
-	Dialog, 
-	DialogTitle, 
-	DialogContent, 
-	DialogActions, 
+import {
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
 	DialogContentText,
 	IconButton,
 	Typography,
@@ -21,8 +21,6 @@ interface ModalProps {
 	maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 	fullWidth?: boolean
 	fullScreen?: boolean
-	disableBackdropClick?: boolean
-	disableEscapeKeyDown?: boolean
 	showCloseButton?: boolean
 	closeOnBackdropClick?: boolean
 	closeOnEscapeKey?: boolean
@@ -51,25 +49,23 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 	},
 }))
 
-export const Modal = ({ 
-	open, 
-	onClose, 
+export const Modal = ({
+	open,
+	onClose,
 	title,
-	children, 
+	children,
 	actions,
 	description,
 	maxWidth = 'sm',
 	fullWidth = true,
 	fullScreen = false,
-	disableBackdropClick = false,
-	disableEscapeKeyDown = false,
 	showCloseButton = true,
 	closeOnBackdropClick = true,
 	closeOnEscapeKey = true,
 	sx = {},
 	className = '',
 }: ModalProps) => {
-	const handleClose = (event: any, reason: string) => {
+	const handleClose = (_event: any, reason: string) => {
 		if (reason === 'backdropClick' && !closeOnBackdropClick) {
 			return
 		}
@@ -86,8 +82,6 @@ export const Modal = ({
 			maxWidth={maxWidth}
 			fullWidth={fullWidth}
 			fullScreen={fullScreen}
-			disableBackdropClick={disableBackdropClick}
-			disableEscapeKeyDown={disableEscapeKeyDown}
 			sx={sx}
 			className={className}
 		>
@@ -111,7 +105,7 @@ export const Modal = ({
 					</Box>
 				</DialogTitle>
 			)}
-			
+
 			<DialogContent>
 				{description && (
 					<DialogContentText sx={{ mb: 2 }}>
@@ -120,7 +114,7 @@ export const Modal = ({
 				)}
 				{children}
 			</DialogContent>
-			
+
 			{actions && (
 				<DialogActions>
 					{actions}

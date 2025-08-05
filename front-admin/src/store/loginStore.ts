@@ -5,6 +5,7 @@ interface LoginStore {
   isLoggedIn: boolean
   setIsLoggedIn: (isLoggedIn: boolean) => void
   logIn: (email: string, password: string) => Promise<void>
+  logOut: () => void
 }
 
 export const useLoginStore = create<LoginStore>((set) => ({
@@ -15,5 +16,8 @@ export const useLoginStore = create<LoginStore>((set) => ({
     if (response.status === 200) {
       set({ isLoggedIn: true })
     }
+  },
+  logOut: () => {
+    set({ isLoggedIn: false })
   }
 }))

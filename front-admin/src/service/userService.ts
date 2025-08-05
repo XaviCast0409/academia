@@ -1,5 +1,5 @@
 import api from "./api"
-import type { UserAttributes } from "../types/UserType"
+import type { User } from "../types/UserType"
 
 export const getUsers = async () => {
   const response = await api.get('/users')
@@ -11,12 +11,12 @@ export const getUserById = async (id: string) => {
     return response.data
 }
 
-export const createUser = async (user: UserAttributes) => {
+export const createUser = async (user: User) => {
     const response = await api.post('/users/create', user)
     return response.data
 }
 
-export const updateUser = async (id: string, user: UserAttributes) => {
+export const updateUser = async (id: string, user: User) => {
     const response = await api.put(`/users/update/${id}`, user)
     return response.data
 }

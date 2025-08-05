@@ -1,24 +1,80 @@
-export interface UserAttributes {
-    id: number;
-    name: string;
-    email: string;
-    password: string;
-    roleId: number; // Relación con Role
-    pokemonId: number; // <-- NUEVO
-    xavicoints?: number; // Xavicoints del usuario
-    section?: string;
-    level?: number;
-    experience?: number;
-    isActive?: boolean;
-    currentStreak?: number; // Racha actual de días consecutivos
-    lastLogin?: Date; // Última fecha de login
-    completedActivities?: number; // Número de actividades completadas
-    isVerified?: boolean; // Si el usuario está verificado
-    verificationCode?: string; // Código de verificación
-    verificationCodeExpires?: Date; // Fecha de expiración del código
-    createdAt?: Date;
-    updatedAt?: Date;
+import type { User, UserFilters } from './index'
+
+// Re-exportar tipos relacionados con usuarios desde el archivo principal
+export type { 
+  User, 
+  UserRole,
+  CreateUserRequest,
+  UpdateUserRequest,
+  UserFilters,
+  UserStats,
+  Role
+} from './index'
+
+// Tipos específicos para el contexto de usuarios
+export interface UserProfile extends User {
+  // Campos adicionales específicos para el perfil
+  avatar?: string
+  bio?: string
+  preferences?: UserPreferences
 }
 
-export type UserInput = Omit<UserAttributes, "id"> & Partial<Pick<UserAttributes, "id">>;
-export type UserOutput = Required<UserAttributes>;
+export interface UserPreferences {
+  theme: 'light' | 'dark' | 'auto'
+  language: 'es' | 'en'
+  notifications: {
+    email: boolean
+    push: boolean
+    sms: boolean
+  }
+  privacy: {
+    showProfile: boolean
+    showProgress: boolean
+    showAchievements: boolean
+  }
+}
+
+export interface UserSession {
+  user: User
+  token: string
+  refreshToken?: string
+  expiresAt: Date
+}
+
+export interface UserActivity {
+  id: number
+  userId: number
+  type: 'login' | 'logout' | 'activity_completed' | 'achievement_unlocked' | 'mission_completed'
+  description: string
+  metadata?: Record<string, any>
+  createdAt: Date
+}
+
+// Tipos para gestión de usuarios en el admin
+export interface UserManagementData {
+  users: User[]
+  total: number
+  page: number
+  limit: number
+  filters: UserFilters
+}
+
+export interface UserBulkAction {
+  userIds: number[]
+  action: 'activate' | 'deactivate' | 'delete' | 'changeRole' | 'resetPassword'
+  data?: Record<string, any>
+}
+
+export interface UserImportData {
+  name: string
+  email: string
+  roleId: number
+  section?: string
+  pokemonId?: number
+}
+
+export interface UserExportOptions {
+  format: 'csv' | 'excel' | 'pdf'
+  includeFields: (keyof User)[]
+  filters?: UserFilters
+}

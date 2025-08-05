@@ -1,9 +1,9 @@
-import { 
-	Table as MuiTable, 
-	TableBody, 
-	TableCell, 
-	TableContainer, 
-	TableHead, 
+import {
+	Table as MuiTable,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableHead,
 	TableRow,
 	TablePagination,
 	TableSortLabel,
@@ -56,13 +56,13 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 	},
 }))
 
-const StyledTable = styled(MuiTable)(({ theme }) => ({
+const StyledTable = styled(MuiTable)(() => ({
 	minWidth: 650,
 }))
 
-export const Table = ({ 
-	columns, 
-	data, 
+export const Table = ({
+	columns,
+	data,
 	loading = false,
 	error,
 	page = 0,
@@ -85,7 +85,7 @@ export const Table = ({
 		}
 	}
 
-	const handlePageChange = (event: unknown, newPage: number) => {
+	const handlePageChange = (_event: unknown, newPage: number) => {
 		if (onPageChange) {
 			onPageChange(newPage)
 		}
@@ -154,7 +154,7 @@ export const Table = ({
 								<TableRow key={index}>
 									{columns.map((column) => (
 										<TableCell key={column.id} align={column.align || 'left'}>
-											{column.render 
+											{column.render
 												? column.render(row[column.id], row)
 												: row[column.id]
 											}
@@ -166,7 +166,7 @@ export const Table = ({
 					</TableBody>
 				</StyledTable>
 			</StyledTableContainer>
-			
+
 			{showPagination && (
 				<TablePagination
 					rowsPerPageOptions={[5, 10, 25, 50]}

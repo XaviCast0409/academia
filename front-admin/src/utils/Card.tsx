@@ -6,7 +6,6 @@ import {
 	CardHeader,
 	CardActionArea,
 	Typography,
-	Box,
 	Avatar
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
@@ -57,7 +56,6 @@ export const Card = ({
 	elevation = 1,
 	variant = 'elevation',
 	hover = false,
-	loading = false,
 	sx = {},
 	className = '',
 }: CardProps) => {

@@ -3,11 +3,9 @@ import {
 	TextField, 
 	Autocomplete, 
 	CircularProgress,
-	Box,
 	InputAdornment
 } from "@mui/material"
 import { Search as SearchIcon } from '@mui/icons-material'
-import { styled } from "@mui/material/styles"
 
 interface SearchOption {
 	value: string | number
@@ -34,22 +32,6 @@ interface SearchFieldProps {
 	sx?: any
 	className?: string
 }
-
-const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
-	'& .MuiOutlinedInput-root': {
-		'&:hover fieldset': {
-			borderColor: theme.palette.primary.main,
-		},
-		'&.Mui-focused fieldset': {
-			borderColor: theme.palette.primary.main,
-		},
-	},
-	'& .MuiInputLabel-root': {
-		'&.Mui-focused': {
-			color: theme.palette.primary.main,
-		},
-	},
-}))
 
 export const SearchField = ({ 
 	label = 'Buscar',
@@ -90,7 +72,7 @@ export const SearchField = ({
 	}, [debouncedInputValue, onSearch])
 
 	return (
-		<StyledAutocomplete
+		<Autocomplete<SearchOption>
 			options={options}
 			value={value}
 			onChange={(_, newValue) => onChange(newValue)}
@@ -104,7 +86,22 @@ export const SearchField = ({
 			size={size}
 			noOptionsText={noOptionsText}
 			loadingText={loadingText}
-			sx={sx}
+			sx={{
+				'& .MuiOutlinedInput-root': {
+					'&:hover fieldset': {
+						borderColor: 'primary.main',
+					},
+					'&.Mui-focused fieldset': {
+						borderColor: 'primary.main',
+					},
+				},
+				'& .MuiInputLabel-root': {
+					'&.Mui-focused': {
+						color: 'primary.main',
+					},
+				},
+				...sx
+			}}
 			className={className}
 			renderInput={(params) => (
 				<TextField

@@ -1,8 +1,8 @@
 import { 
 	Button as MuiButton, 
-	ButtonProps as MuiButtonProps,
 	CircularProgress
 } from "@mui/material"
+import type { ButtonProps as MuiButtonProps } from "@mui/material"
 import { styled } from "@mui/material/styles"
 
 interface ButtonProps extends Omit<MuiButtonProps, 'onClick'> {
