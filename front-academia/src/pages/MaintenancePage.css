@@ -1,0 +1,19 @@
+.maintenance-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f5f6fa;
+  color: #222;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.maintenance-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.maintenance-container p {
+  font-size: 1.2rem;
+}
