@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(router);
-
+  
 app.get("/", (req, res) => {
   res.send("¡Hola, mundo!");
 });
@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
 const port = process.env.PORT || 3000;
 
 // Sincronización de base de datos y levantamiento del servidor
-db.sequelize.sync({ force: true }).then(async () => {
+db.sequelize.sync({ alert: true }).then(async () => {
   try {
     // Verificar y crear logros si la tabla está vacía
     await seedAchievementsIfEmpty();
