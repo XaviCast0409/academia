@@ -1,4 +1,3 @@
-import React from 'react';
 import './MaintenancePage.css';
 
 const MaintenancePage = () => (
