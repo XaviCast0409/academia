@@ -4,8 +4,12 @@ import {
   updateMissionProgress,
   claimMissionReward,
   getUserMissionHistory,
-  generateMissions
+  generateMissions,
+  generateDailyMissions,
+  generateWeeklyMissions,
+  cleanupExpiredMissions
 } from './mission.service';
+import MissionScheduler from '../../utils/scheduler';
 import { errorHelper } from '../../utils/error';
 
 export const getActiveMissionsController = async (req: Request, res: Response) => {
@@ -56,6 +60,59 @@ export const generateMissionsController = async (req: Request, res: Response) =>
   try {
     await generateMissions();
     res.status(200).json({ message: 'Misiones generadas correctamente' });
+  } catch (error) {
+    errorHelper(error, res);
+  }
+};
+
+// ====== CONTROLADORES DEL SCHEDULER ======
+
+export const regenerateDailyMissionsController = async (req: Request, res: Response) => {
+  try {
+    await generateDailyMissions();
+    res.status(200).json({ 
+      success: true,
+      message: 'Misiones diarias regeneradas manualmente' 
+    });
+  } catch (error) {
+    errorHelper(error, res);
+  }
+};
+
+export const regenerateWeeklyMissionsController = async (req: Request, res: Response) => {
+  try {
+    await generateWeeklyMissions();
+    res.status(200).json({ 
+      success: true,
+      message: 'Misiones semanales regeneradas manualmente' 
+    });
+  } catch (error) {
+    errorHelper(error, res);
+  }
+};
+
+export const cleanupExpiredMissionsController = async (req: Request, res: Response) => {
+  try {
+    await cleanupExpiredMissions();
+    res.status(200).json({ 
+      success: true,
+      message: 'Limpieza de misiones expiradas completada manualmente' 
+    });
+  } catch (error) {
+    errorHelper(error, res);
+  }
+};
+
+export const getSchedulerStatusController = async (req: Request, res: Response) => {
+  try {
+    const scheduler = MissionScheduler.getInstance();
+    const status = scheduler.getStatus();
+    
+    res.status(200).json({ 
+      success: true,
+      data: status,
+      message: 'Estado del programador de misiones' 
+    });
   } catch (error) {
     errorHelper(error, res);
   }

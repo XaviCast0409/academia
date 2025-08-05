@@ -186,3 +186,96 @@ export const getProfessorEvidences = async (
     totalItems: count,
   };
 };
+
+/**
+ * Cambiar estado de evidencia y agregar XaviCoins al estudiante
+ * También actualiza logros automáticamente
+ */
+export const changeEvidenceStatusAndAddXavicoints = async (
+  evidenceId: number,
+  newStatus: "approved" | "rejected",
+  professorId: number
+): Promise<any> => {
+  const transaction = await db.sequelize.transaction();
+
+  try {
+    // 1. Buscar la evidencia con información del estudiante y actividad
+    const evidence = await db.Evidence.findByPk(evidenceId, {
+      include: [
+        {
+          model: db.User,
+          as: "student",
+          attributes: ["id", "name", "xavicoints", "completedActivities"],
+        },
+        {
+          model: db.Activity,
+          as: "activity",
+          attributes: ["id", "title", "xavicoints", "mathTopic"],
+        },
+      ],
+      transaction,
+    });
+
+    if (!evidence) {
+      await transaction.rollback();
+      throw new Error("Evidencia no encontrada");
+    }
+
+    // 2. Verificar que la actividad pertenece al profesor
+    const activity = await db.Activity.findByPk(evidence.activityId, {
+      where: { professorId },
+      transaction,
+    });
+
+    if (!activity) {
+      await transaction.rollback();
+      throw new Error("No tienes permisos para modificar esta evidencia");
+    }
+
+    // 3. Actualizar estado de la evidencia
+    evidence.status = newStatus;
+    await evidence.save({ transaction });
+
+    // 4. Si se aprueba, otorgar XaviCoins y actualizar logros
+    if (newStatus === "approved") {
+      const student = evidence.student;
+      const activityXavicoints = evidence.activity.xavicoints || 0;
+
+      // Actualizar XaviCoins del estudiante
+      student.xavicoints = (student.xavicoints || 0) + activityXavicoints;
+      student.completedActivities = (student.completedActivities || 0) + 1;
+      await student.save({ transaction });
+
+      // Actualizar logros automáticamente
+      const { updateAchievementProgressFromAction } = await import("../achievement/achievementProgress.service");
+      
+      await updateAchievementProgressFromAction({
+        userId: student.id,
+        activityType: "math_activity",
+        mathTopic: evidence.activity.mathTopic,
+        xavicoinsEarned: activityXavicoints,
+      });
+    }
+
+    await transaction.commit();
+
+    return {
+      success: true,
+      evidence: {
+        id: evidence.id,
+        status: evidence.status,
+        studentId: evidence.studentId,
+        activityId: evidence.activityId,
+      },
+      student: {
+        id: evidence.student.id,
+        name: evidence.student.name,
+        xavicoints: evidence.student.xavicoints,
+        completedActivities: evidence.student.completedActivities,
+      },
+    };
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};

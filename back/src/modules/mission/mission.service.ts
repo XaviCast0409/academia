@@ -158,3 +158,29 @@ export const generateMissions = async (): Promise<any> => {
   await generateWeeklyMissions();
   await generateSpecialMissions();
 };
+
+/**
+ * Limpiar misiones expiradas
+ */
+export const cleanupExpiredMissions = async (): Promise<void> => {
+  try {
+    const now = new Date();
+    const expiredMissions = await db.Mission.update(
+      { isActive: false },
+      { 
+        where: { 
+          isActive: true,
+          endDate: { [db.Sequelize.Op.lt]: now }
+        }
+      }
+    );
+    
+    if (expiredMissions[0] > 0) {
+      console.log(`🧹 ${expiredMissions[0]} misiones expiradas desactivadas`);
+    }
+    
+  } catch (error) {
+    console.error("Error limpiando misiones expiradas:", error);
+    throw error;
+  }
+};

@@ -6,7 +6,8 @@ import {
   deleteEvidenceController,
   getEvidencesByActivityController,
   getProfessorEvidencesController,
-  getEvidencesByStudentController
+  getEvidencesByStudentController,
+  changeEvidenceStatusController
 } from "./evidence.controller";
 
 const routerEvidence = Router();
@@ -18,5 +19,8 @@ routerEvidence.delete("/:id", deleteEvidenceController);
 routerEvidence.get("/activities/:activityId", getEvidencesByActivityController);
 routerEvidence.get("/professor/:professorId", getProfessorEvidencesController);
 routerEvidence.get("/student/:studentId", getEvidencesByStudentController);
+
+// Nueva ruta para cambiar estado de evidencia con integración de logros
+routerEvidence.post("/change-status/:evidenceId", changeEvidenceStatusController);
 
 export default routerEvidence;

@@ -6,6 +6,10 @@ import {
   updateUser,
   deleteUser,
   loginUser,
+  updateUserStreak,
+  getUserStats,
+  updateUserXaviCoins,
+  assignMissionsToUser
 } from "./user.service";
 import { UserInput } from "../../models/User";
 import { errorHelper } from "../../utils/error";
@@ -36,8 +40,28 @@ export const getUsersController = async (req: Request, res: Response) => {
 export const createUserController = async (req: Request, res: Response) => {
   try {
     const { name, email, password, roleId, pokemonId, section } = req.body;
+    
+    // Validaciones básicas
+    if (!name || !email || !password) {
+      res.status(400).json({
+        error: "Los campos nombre, email y contraseña son obligatorios"
+      });
+      return;
+    }
+    
+    if (!roleId || !pokemonId) {
+      res.status(400).json({
+        error: "Los campos roleId y pokemonId son obligatorios"
+      });
+      return;
+    }
+    
     const user = await createUser(name, email, password, roleId, pokemonId, section);
-    res.json(user);
+    
+    res.status(201).json({
+      message: "Usuario creado exitosamente",
+      user: user
+    });
   } catch (error: any) {
     errorHelper(error, res);
   }
@@ -100,18 +124,107 @@ export const verifyCodeController = async (req: Request, res: Response): Promise
     }
 
     if (user.verificationCode !== code) {
-      res.status(400).json({ message: "Código de verificación inválido" });
+      res.status(400).json({ message: "Código de verificación incorrecto" });
       return;
     }
 
-    await user.update({
-      isVerified: true,
-      verificationCode: null,
-      verificationCodeExpires: null,
-    });
+    user.isVerified = true;
+    user.verificationCode = null;
+    user.verificationCodeExpires = null;
+    await user.save();
 
-    res.json({ message: "Código verificado correctamente" });
-  } catch (error) {
+    res.status(200).json({ message: "Usuario verificado correctamente" });
+  } catch (error: any) {
+    errorHelper(error, res);
+  }
+};
+
+export const updateUserStreakController = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      res.status(400).json({ error: 'userId es requerido' });
+      return;
+    }
+
+    const result = await updateUserStreak(parseInt(userId));
+
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: 'Streak actualizado correctamente'
+    });
+  } catch (error: any) {
+    errorHelper(error, res);
+  }
+};
+
+export const getUserStatsController = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      res.status(400).json({ error: 'userId es requerido' });
+      return;
+    }
+
+    const stats = await getUserStats(parseInt(userId));
+
+    res.status(200).json({
+      success: true,
+      data: stats,
+      message: 'Estadísticas obtenidas correctamente'
+    });
+  } catch (error: any) {
+    errorHelper(error, res);
+  }
+};
+
+export const updateUserXaviCoinsController = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const { amount, operation = 'add' } = req.body;
+    
+    if (!userId || !amount) {
+      res.status(400).json({ error: 'userId y amount son requeridos' });
+      return;
+    }
+
+    if (operation !== 'add' && operation !== 'subtract') {
+      res.status(400).json({ error: 'operation debe ser "add" o "subtract"' });
+      return;
+    }
+
+    const result = await updateUserXaviCoins(parseInt(userId), Number(amount), operation);
+
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: 'XaviCoins actualizadas correctamente'
+    });
+  } catch (error: any) {
+    errorHelper(error, res);
+  }
+};
+
+export const assignMissionsToUserController = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      res.status(400).json({ error: 'userId es requerido' });
+      return;
+    }
+
+    const result = await assignMissionsToUser(parseInt(userId));
+
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: 'Misiones asignadas correctamente'
+    });
+  } catch (error: any) {
     errorHelper(error, res);
   }
 };

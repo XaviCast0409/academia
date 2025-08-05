@@ -8,7 +8,7 @@ import transactionRouter from "../modules/Transaction/transaction.routes";
 import routerPokemon from "../modules/Pokemon/pokemon.routes";
 import routerEmailVerification from "../modules/emailVerification/emailVerification.routes";
 import missionRoutes from '../modules/mission/mission.router';
-
+import routerAchievement from '../modules/achievement/achievement.router';
 
 const router = Router();
 
@@ -25,5 +25,6 @@ router.use("/pokemons", routerPokemon);
 router.use("/email-verification", routerEmailVerification);
 
 router.use("/missions", missionRoutes);
+router.use("/achievements", routerAchievement);
 
 export default router;

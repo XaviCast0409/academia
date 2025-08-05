@@ -10,6 +10,7 @@ export interface ActivityAttributes {
   professorId: number; // Relación con el profesor (User)
   difficulty?: string;
   section?: string; // Campo opcional para la sección
+  mathTopic?: string; // Tema matemático para logros
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -26,6 +27,7 @@ export class Activity extends Model<ActivityAttributes> implements ActivityAttri
   public professorId!: number;
   public difficulty?: string;
   public section?: string;
+  public mathTopic?: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -79,6 +81,10 @@ export class Activity extends Model<ActivityAttributes> implements ActivityAttri
           defaultValue: "beginner", // Valor por defecto para la dificultad
         },
         section: {
+          type: DataTypes.STRING,
+          allowNull: true,
+        },
+        mathTopic: {
           type: DataTypes.STRING,
           allowNull: true,
         },

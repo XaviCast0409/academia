@@ -79,6 +79,16 @@ export const addExperience = async (
     ? EXPERIENCE_REQUIREMENTS[nextLevel] - newExperience
     : 0;
 
+  // Si subió de nivel, actualizar logros automáticamente
+  if (newLevel > currentLevel) {
+    try {
+      const { updateProgressFromLevelUp } = await import("../achievement/achievementProgress.service");
+      await updateProgressFromLevelUp(userId, newLevel);
+    } catch (error) {
+      console.error("Error actualizando logros por subida de nivel:", error);
+    }
+  }
+
   return {
     level: newLevel,
     experience: newExperience,

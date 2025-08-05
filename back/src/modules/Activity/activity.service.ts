@@ -256,6 +256,7 @@ export const changeEvidenceStatusAndAddXavicoints = async (
 
       // Añadir xavicoints
       student.xavicoints = (student.xavicoints || 0) + activity.xavicoints;
+      student.completedActivities = (student.completedActivities || 0) + 1;
       await student.save({ transaction });
 
       // Añadir experiencia y actualizar nivel
@@ -265,6 +266,21 @@ export const changeEvidenceStatusAndAddXavicoints = async (
       setImmediate(() => {
         updateMissionProgressForActivity(student.id)
           .catch((err: any) => console.error('Error updating mission progress:', err));
+      });
+
+      // Actualizar logros automáticamente (no bloqueante)
+      setImmediate(async () => {
+        try {
+          const { updateAchievementProgressFromAction } = await import("../achievement/achievementProgress.service");
+          await updateAchievementProgressFromAction({
+            userId: student.id,
+            activityType: "math_activity",
+            mathTopic: activity.mathTopic,
+            xavicoinsEarned: activity.xavicoints,
+          });
+        } catch (error) {
+          console.error('Error updating achievement progress:', error);
+        }
       });
     }
 

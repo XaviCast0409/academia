@@ -12,6 +12,12 @@ export interface UserAttributes {
   level?: number;
   experience?: number;
   isActive?: boolean;
+  currentStreak?: number; // Racha actual de días consecutivos
+  lastLogin?: Date; // Última fecha de login
+  completedActivities?: number; // Número de actividades completadas
+  isVerified?: boolean; // Si el usuario está verificado
+  verificationCode?: string; // Código de verificación
+  verificationCodeExpires?: Date; // Fecha de expiración del código
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -33,7 +39,12 @@ export class User
   public level?: number;
   public experience?: number;
   public isActive?: boolean;
-  
+  public currentStreak?: number;
+  public lastLogin?: Date;
+  public completedActivities?: number;
+  public isVerified?: boolean;
+  public verificationCode?: string;
+  public verificationCodeExpires?: Date;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -68,9 +79,23 @@ export class User
       foreignKey: "userId",
       as: "transactions",
     });
+
+    // Relación con Pokemon
     User.belongsTo(db.Pokemon, {
       foreignKey: "pokemonId",
       as: "pokemon",
+    });
+
+    // Relación con UserAchievement (un usuario puede tener muchos logros)
+    User.hasMany(db.UserAchievement, {
+      foreignKey: "userId",
+      as: "userAchievements",
+    });
+
+    // Relación con UserMission (un usuario puede tener muchas misiones)
+    User.hasMany(db.UserMission, {
+      foreignKey: "userId",
+      as: "userMissions",
     });
   }
 
@@ -138,6 +163,33 @@ export class User
           type: DataTypes.BOOLEAN,
           allowNull: true,
           defaultValue: true, // Valor por defecto para el estado activo
+        },
+        currentStreak: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          defaultValue: 0, // Valor por defecto para la racha
+        },
+        lastLogin: {
+          type: DataTypes.DATE,
+          allowNull: true,
+        },
+        completedActivities: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          defaultValue: 0, // Valor por defecto para actividades completadas
+        },
+        isVerified: {
+          type: DataTypes.BOOLEAN,
+          allowNull: true,
+          defaultValue: false, // Valor por defecto para verificación
+        },
+        verificationCode: {
+          type: DataTypes.STRING,
+          allowNull: true,
+        },
+        verificationCodeExpires: {
+          type: DataTypes.DATE,
+          allowNull: true,
         },
       },
       {

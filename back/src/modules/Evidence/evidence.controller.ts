@@ -6,7 +6,8 @@ import {
   deleteEvidence,
   getEvidencesByActivity,
   getProfessorEvidences,
-  getEvidencesByStudent
+  getEvidencesByStudent,
+  changeEvidenceStatusAndAddXavicoints
 } from "./evidence.service";
 import { errorHelper } from "../../utils/error";
 
@@ -80,3 +81,34 @@ export const getEvidencesByStudentController = async (req: Request, res: Respons
     errorHelper(error, res);
   }
 }
+
+export const changeEvidenceStatusController = async (req: Request, res: Response) => {
+  try {
+    const { evidenceId } = req.params;
+    const { status, professorId } = req.body;
+
+    if (!status || !professorId) {
+      res.status(400).json({ error: 'status y professorId son requeridos' });
+      return;
+    }
+
+    if (status !== 'approved' && status !== 'rejected') {
+      res.status(400).json({ error: 'status debe ser "approved" o "rejected"' });
+      return;
+    }
+
+    const result = await changeEvidenceStatusAndAddXavicoints(
+      parseInt(evidenceId),
+      status,
+      parseInt(professorId)
+    );
+
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: `Evidencia ${status === 'approved' ? 'aprobada' : 'rechazada'} correctamente`
+    });
+  } catch (error) {
+    errorHelper(error, res);
+  }
+};
