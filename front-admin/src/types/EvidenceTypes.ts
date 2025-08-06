@@ -1,32 +1,14 @@
-import type { 
-  Evidence, 
-  EvidenceStatus, 
-  CreateEvidenceRequest, 
-  UpdateEvidenceRequest, 
-  EvidenceFilters, 
-  EvidenceStats 
-} from './index'
+import type { Evidence } from './index'
 
-// Tipos específicos para evidencias
+// Simplified User interface for these specific types
+interface SimpleUser {
+	id: number
+	name: string
+	email: string
+}
+
 export interface EvidenceWithDetails extends Evidence {
-  student: {
-    id: number
-    name: string
-    email: string
-  }
-  activity: {
-    id: number
-    title: string
-    xavicoints: number
-  }
-  files: EvidenceFile[]
-  submittedAt: Date
-  reviewedAt?: Date
-  reviewedBy?: {
-    id: number
-    name: string
-  }
-  feedback?: string
+	student: SimpleUser
 }
 
 export interface EvidenceFile {

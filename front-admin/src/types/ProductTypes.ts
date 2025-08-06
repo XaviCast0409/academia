@@ -1,21 +1,14 @@
-import type { 
-  Product, 
-  CreateProductRequest, 
-  UpdateProductRequest, 
-  ProductFilters 
-} from './index'
+import type { Product } from './index'
 
-// Tipos específicos para productos
+// Simplified User interface for these specific types
+interface SimpleUser {
+	id: number
+	name: string
+	email: string
+}
+
 export interface ProductWithDetails extends Product {
-  professor: {
-    id: number
-    name: string
-    email: string
-  }
-  salesCount: number
-  totalRevenue: number
-  averageRating?: number
-  reviewsCount: number
+	professor: SimpleUser
 }
 
 export interface ProductFormData {

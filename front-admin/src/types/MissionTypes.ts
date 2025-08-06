@@ -1,34 +1,18 @@
-import type { 
-  Mission, 
-  UserMission, 
-  MissionType, 
-  RewardType, 
-  CreateMissionRequest, 
-  UpdateMissionRequest, 
-  MissionFilters 
-} from './index'
+import type { Mission, UserMission } from './index'
 
-// Tipos específicos para misiones
+// Simplified User interface for these specific types
+interface SimpleUser {
+	id: number
+	name: string
+	email: string
+}
+
 export interface MissionWithDetails extends Mission {
-  userMissions?: UserMissionWithUser[]
-  completionRate: number
-  activeParticipants: number
-  averageProgress: number
+	userMissions?: UserMissionWithUser[]
 }
 
 export interface UserMissionWithUser extends UserMission {
-  user: {
-    id: number
-    name: string
-    email: string
-  }
-  mission: {
-    id: number
-    title: string
-    type: MissionType
-    rewardType: RewardType
-    rewardAmount: number
-  }
+	user: SimpleUser
 }
 
 export interface MissionFormData {

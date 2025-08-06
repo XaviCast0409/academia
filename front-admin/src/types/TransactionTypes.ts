@@ -1,25 +1,14 @@
-import type { 
-  Transaction, 
-  TransactionType, 
-  CreateTransactionRequest, 
-  TransactionFilters, 
-  TransactionStats 
-} from './index'
+import type { Transaction } from './index'
 
-// Tipos específicos para transacciones
+// Simplified User interface for these specific types
+interface SimpleUser {
+	id: number
+	name: string
+	email: string
+}
+
 export interface TransactionWithDetails extends Transaction {
-  user: {
-    id: number
-    name: string
-    email: string
-  }
-  product?: {
-    id: number
-    name: string
-    price: number
-  }
-  formattedAmount: string
-  formattedDate: string
+	user: SimpleUser
 }
 
 export interface TransactionFormData {

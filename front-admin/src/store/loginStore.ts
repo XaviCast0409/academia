@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { logIn } from '../service/userService'
+import { userService } from '../service/userService'
 
 interface LoginStore {
   isLoggedIn: boolean
@@ -12,7 +12,8 @@ export const useLoginStore = create<LoginStore>((set) => ({
   isLoggedIn: false,
   setIsLoggedIn: (isLoggedIn) => set({ isLoggedIn }),
   logIn: async (email: string, password: string) => {
-    const response = await logIn(email, password)
+    const response = await userService.login(email, password)
+    console.log(response)
     if (response.status === 200) {
       set({ isLoggedIn: true })
     }

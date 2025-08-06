@@ -1,80 +1,106 @@
-import type { User, UserFilters } from './index'
+// User Types for Admin Interface
+// Comprehensive type definitions for user management
 
-// Re-exportar tipos relacionados con usuarios desde el archivo principal
-export type { 
-  User, 
-  UserRole,
-  CreateUserRequest,
-  UpdateUserRequest,
-  UserFilters,
-  UserStats,
-  Role
-} from './index'
-
-// Tipos específicos para el contexto de usuarios
-export interface UserProfile extends User {
-  // Campos adicionales específicos para el perfil
-  avatar?: string
-  bio?: string
-  preferences?: UserPreferences
+export interface User {
+	id: number
+	name: string
+	email: string
+	section: string
+	level: number
+	experience: number
+	xavicoints: number
+	currentStreak: number
+	completedActivities: number
+	isActive: boolean
+	isVerified: boolean
+	lastLogin: string | null
+	createdAt: string
+	updatedAt: string
+	role?: Role
+	pokemon?: Pokemon
 }
 
-export interface UserPreferences {
-  theme: 'light' | 'dark' | 'auto'
-  language: 'es' | 'en'
-  notifications: {
-    email: boolean
-    push: boolean
-    sms: boolean
-  }
-  privacy: {
-    showProfile: boolean
-    showProgress: boolean
-    showAchievements: boolean
-  }
+export interface Role {
+	id: number
+	name: string
+	description?: string
 }
 
-export interface UserSession {
-  user: User
-  token: string
-  refreshToken?: string
-  expiresAt: Date
+export interface Pokemon {
+	id: number
+	name: string
+	image?: string
 }
 
-export interface UserActivity {
-  id: number
-  userId: number
-  type: 'login' | 'logout' | 'activity_completed' | 'achievement_unlocked' | 'mission_completed'
-  description: string
-  metadata?: Record<string, any>
-  createdAt: Date
+export interface UserFilters {
+	page: number
+	limit: number
+	section?: string
+	isActive?: boolean
+	search?: string
 }
 
-// Tipos para gestión de usuarios en el admin
-export interface UserManagementData {
-  users: User[]
-  total: number
-  page: number
-  limit: number
-  filters: UserFilters
+export interface UsersResponse {
+	success: boolean
+	data: {
+		users: User[]
+		total: number
+		totalPages: number
+		currentPage: number
+	}
 }
 
-export interface UserBulkAction {
-  userIds: number[]
-  action: 'activate' | 'deactivate' | 'delete' | 'changeRole' | 'resetPassword'
-  data?: Record<string, any>
+export interface UserStats {
+	user: User
+	achievements: {
+		total: number
+		unlocked: number
+		claimed: number
+		pendingClaim: number
+	}
+	missions: {
+		total: number
+		completed: number
+		active: number
+	}
 }
 
-export interface UserImportData {
-  name: string
-  email: string
-  roleId: number
-  section?: string
-  pokemonId?: number
+export interface UserFormData {
+	name: string
+	email: string
+	password?: string
+	section: string
+	roleId: number
+	pokemonId: number
+	isActive: boolean
 }
 
-export interface UserExportOptions {
-  format: 'csv' | 'excel' | 'pdf'
-  includeFields: (keyof User)[]
-  filters?: UserFilters
+export interface UserTableColumn {
+	id: keyof User | 'actions'
+	label: string
+	width?: string
+	align?: 'left' | 'center' | 'right'
+	sortable?: boolean
+	render?: (value: any, row: User) => React.ReactNode
+}
+
+export interface Section {
+	value: string
+	label: string
+}
+
+export const SECTIONS: Section[] = [
+	{ value: 'A', label: 'Sección A' },
+	{ value: 'B', label: 'Sección B' },
+	{ value: 'C', label: 'Sección C' },
+	{ value: 'D', label: 'Sección D' },
+	{ value: 'E', label: 'Sección E' },
+	{ value: 'F', label: 'Sección F' },
+	{ value: 'G', label: 'Sección G' },
+	{ value: 'H', label: 'Sección H' }
+]
+
+export interface LoginRequest {
+	email: string
+	password: string
 }

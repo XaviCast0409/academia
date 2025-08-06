@@ -14,6 +14,9 @@ export { Table } from './Table'
 export { Loading } from './Loading'
 export { Alert } from './Alert'
 
+// Temas y estilos - Re-export from styles module
+export * from '../styles'
+
 // Tipos comunes
 export interface SelectOption {
 	value: string | number
