@@ -1,14 +1,38 @@
-import type { Evidence } from './index'
-
-// Simplified User interface for these specific types
-interface SimpleUser {
-	id: number
-	name: string
-	email: string
+export interface Evidence {
+  id: number;
+  studentId: number;
+  activityId: number;
+  filePath: string[];
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface EvidenceWithDetails extends Evidence {
-	student: SimpleUser
+  student: {
+    id: number;
+    name: string;
+    email: string;
+  };
+  activity: {
+    id: number;
+    title: string;
+    xavicoints: number;
+    difficulty: string;
+  };
+}
+
+export interface EvidenceStatusChange {
+  evidenceId: number;
+  status: 'approved' | 'rejected';
+  professorId: number;
+}
+
+export interface EvidencesResponse {
+  evidences: EvidenceWithDetails[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
 }
 
 export interface EvidenceFile {

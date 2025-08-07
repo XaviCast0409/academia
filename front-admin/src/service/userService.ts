@@ -1,4 +1,4 @@
-import api from "./api"
+import { api } from "./api"
 import type { User, UserFilters, UsersResponse, UserFormData, UserStats } from '../types/UserType'
 
 // User Service for Admin Interface

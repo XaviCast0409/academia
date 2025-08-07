@@ -1,13 +1,13 @@
-import { useLoginStore } from '../../store/loginStore'
 import { InputField, Button } from '../../utils'
 import { useState } from 'react'
 import type { LoginRequest } from '../../types/UserType'
 import { Box, Typography, Alert, Avatar } from '@mui/material'
 import { Add as AddIcon } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 export const Login = () => {
-	const { logIn } = useLoginStore()
+	const { login } = useAuth()
 	const [formData, setFormData] = useState<LoginRequest>({
 		email: '',
 		password: ''
@@ -15,6 +15,7 @@ export const Login = () => {
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string>('')
 	const navigate = useNavigate()
+	
 	const handleInputChange = (field: keyof LoginRequest) => (
 		e: React.ChangeEvent<HTMLInputElement>
 	) => {
@@ -36,17 +37,20 @@ export const Login = () => {
 				return
 			}
 
-			// Aquí iría la llamada real a la API
-			await logIn(formData.email, formData.password)
+			// Usar el nuevo sistema de autenticación
+			await login(formData.email, formData.password)
 
 			// Limpiar formulario después del login exitoso
 			setFormData({
 				email: '',
 				password: ''
 			})
-			navigate('/admin')
-		} catch (err) {
-			setError('Error al iniciar sesión. Verifica tus credenciales.')
+			
+			// Redirigir al dashboard
+			navigate('/admin', { replace: true })
+		} catch (err: any) {
+			console.error('Login error:', err)
+			setError(err.response?.data?.message || 'Error al iniciar sesión. Verifica tus credenciales.')
 		} finally {
 			setLoading(false)
 		}
@@ -273,7 +277,7 @@ export const Login = () => {
 								variant="contained"
 								fullWidth
 								loading={loading}
-								loadingText="Signing Up..."
+								loadingText="Signing In..."
 								disabled={!formData.email || !formData.password}
 								size="large"
 								sx={{
@@ -298,7 +302,7 @@ export const Login = () => {
 									},
 								}}
 							>
-								Sign Up
+								Sign In
 							</Button>
 						</Box>
 
@@ -321,10 +325,7 @@ export const Login = () => {
 								}
 							}}
 						>
-							ALREADY PART OF THE DARK SIDE?{' '}
-							<span style={{ color: 'white', fontWeight: 600, cursor: 'pointer' }}>
-								SIGN IN
-							</span>
+							WELCOME TO THE DARK SIDE
 						</Typography>
 					</form>
 				</Box>

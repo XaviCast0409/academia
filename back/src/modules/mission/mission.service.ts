@@ -8,8 +8,15 @@ export const getActiveMissionsForUser = async (userId: number): Promise<any> => 
 };
 
 export const assignActiveMissionsToUser = async (userId: number): Promise<any> => {
+  console.log(`🎯 [MISSION ASSIGN] Asignando misiones activas al usuario ID: ${userId}`);
+  
   const activeMissions = await db.Mission.findAll({ where: { isActive: true } });
+  console.log(`📋 [MISSION ASSIGN] Misiones activas encontradas: ${activeMissions.length}`);
+  
+  let assignedCount = 0;
   for (const mission of activeMissions) {
+    console.log(`🔍 [MISSION ASSIGN] Verificando misión: ${mission.title} (ID: ${mission.id})`);
+    
     const exists = await db.UserMission.findOne({ where: { userId, missionId: mission.id } });
     if (!exists) {
       await db.UserMission.create({
@@ -18,8 +25,15 @@ export const assignActiveMissionsToUser = async (userId: number): Promise<any> =
         progress: 0,
         isCompleted: false,
       });
+      console.log(`✅ [MISSION ASSIGN] Misión asignada: ${mission.title}`);
+      assignedCount++;
+    } else {
+      console.log(`⏸️ [MISSION ASSIGN] Misión ya asignada: ${mission.title}`);
     }
   }
+  
+  console.log(`📊 [MISSION ASSIGN] Total de misiones asignadas: ${assignedCount}`);
+  return { assignedCount, totalMissions: activeMissions.length };
 };
 
 export const updateMissionProgress = async (userId: number, missionId: number, increment: number = 1): Promise<any> => {
@@ -88,6 +102,32 @@ export const generateDailyMissions = async (): Promise<any> => {
 };
 
 export const updateMissionProgressForActivity = async (userId: number): Promise<void> => {
+  
+  // Verificar si el usuario tiene misiones asignadas
+  const allUserMissions = await db.UserMission.findAll({
+    where: { userId },
+    include: [{
+      model: db.Mission,
+      as: 'mission',
+      where: { isActive: true }
+    }],
+  });
+
+  // Si el usuario no tiene misiones asignadas, asignarlas automáticamente
+  if (allUserMissions.length === 0) {
+    await assignActiveMissionsToUser(userId);
+    
+    // Volver a buscar las misiones después de asignarlas
+    const updatedUserMissions = await db.UserMission.findAll({
+      where: { userId },
+      include: [{
+        model: db.Mission,
+        as: 'mission',
+        where: { isActive: true }
+      }],
+    });
+  }
+
   // Busca todas las misiones activas del usuario que sean de completar actividades
   const userMissions = await db.UserMission.findAll({
     where: { userId, isCompleted: false },
@@ -96,32 +136,64 @@ export const updateMissionProgressForActivity = async (userId: number): Promise<
       as: 'mission',
       where: {
         isActive: true,
-        // Filtrar misiones que sean de completar actividades
+        // Filtrar misiones que sean de completar actividades - filtro más amplio
         title: {
           [db.Sequelize.Op.or]: [
             { [db.Sequelize.Op.like]: '%actividad%' },
             { [db.Sequelize.Op.like]: '%activity%' },
             { [db.Sequelize.Op.like]: '%completar%' },
-            { [db.Sequelize.Op.like]: '%complete%' }
+            { [db.Sequelize.Op.like]: '%complete%' },
+            { [db.Sequelize.Op.like]: '%aprueba%' },
+            { [db.Sequelize.Op.like]: '%approve%' },
+            { [db.Sequelize.Op.like]: '%realiza%' },
+            { [db.Sequelize.Op.like]: '%perform%' }
           ]
         }
       }
     }],
   });
 
-  for (const userMission of userMissions) {
-    // Incrementar progreso en 1
-    userMission.progress += 1;
 
-    // Verificar si la misión se completó
-    if (userMission.progress >= userMission.mission.requiredCount) {
-      userMission.isCompleted = true;
-      userMission.completedAt = new Date();
-      // Aquí puedes agregar lógica para otorgar recompensa
-      // await userService.addCoins(userId, userMission.mission.rewardAmount);
+  // Si no se encontraron misiones con el filtro, intentar con todas las misiones activas
+  if (userMissions.length === 0) {
+    
+    const allActiveMissions = await db.UserMission.findAll({
+      where: { userId, isCompleted: false },
+      include: [{
+        model: db.Mission,
+        as: 'mission',
+        where: { isActive: true }
+      }],
+    });
+
+    
+    for (const userMission of allActiveMissions) {
+      
+      // Incrementar progreso en 1
+      userMission.progress += 1;
+
+      // Verificar si la misión se completó
+      if (userMission.progress >= userMission.mission.requiredCount) {
+        userMission.isCompleted = true;
+        userMission.completedAt = new Date();
+      }
+
+      await userMission.save();
     }
+  } else {
+    for (const userMission of userMissions) {
+      
+      // Incrementar progreso en 1
+      userMission.progress += 1;
 
-    await userMission.save();
+      // Verificar si la misión se completó
+      if (userMission.progress >= userMission.mission.requiredCount) {
+        userMission.isCompleted = true;
+        userMission.completedAt = new Date();
+      }
+
+      await userMission.save();
+    }
   }
 };
 
@@ -154,9 +226,28 @@ export const generateSpecialMissions = async (): Promise<any> => {
 };
 
 export const generateMissions = async (): Promise<any> => {
+  console.log(`🎯 [MISSION GENERATE] Generando misiones de prueba`);
   await generateDailyMissions();
   await generateWeeklyMissions();
   await generateSpecialMissions();
+  console.log(`✅ [MISSION GENERATE] Misiones generadas correctamente`);
+};
+
+/**
+ * Verificar y crear misiones si no existen
+ */
+export const ensureMissionsExist = async (): Promise<void> => {
+  console.log(`🔍 [MISSION ENSURE] Verificando si existen misiones en la base de datos`);
+  
+  const missionCount = await db.Mission.count({ where: { isActive: true } });
+  console.log(`📊 [MISSION ENSURE] Misiones activas encontradas: ${missionCount}`);
+  
+  if (missionCount === 0) {
+    console.log(`⚠️ [MISSION ENSURE] No hay misiones activas, generando misiones de prueba`);
+    await generateMissions();
+  } else {
+    console.log(`✅ [MISSION ENSURE] Ya existen misiones activas`);
+  }
 };
 
 /**

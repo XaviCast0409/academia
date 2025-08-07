@@ -87,4 +87,7 @@ export const SECTIONS: Section[] = [
 	{ value: 'F', label: 'Sección F' },
 	{ value: 'G', label: 'Sección G' },
 	{ value: 'H', label: 'Sección H' }
-] 
+]
+
+// Evidence types
+export * from './EvidenceTypes' 

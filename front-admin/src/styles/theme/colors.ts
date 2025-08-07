@@ -59,5 +59,14 @@ export const colors = {
 		warning: '#ff9800',
 		error: '#f44336',
 		info: '#2196f3'
+	},
+
+	// Alert colors
+	error: {
+		success: '#4caf50',
+		warning: '#ff9800',
+		error: '#f44336',
+		info: '#2196f3',
+		main: '#f44336'
 	}
 } 

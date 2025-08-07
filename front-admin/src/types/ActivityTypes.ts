@@ -12,8 +12,12 @@ export interface Activity {
 	description: string
 	images: string[]
 	xavicoints: number
-	section: string
-	isActive: boolean
+	professorId: number
+	difficulty?: string
+	section?: string
+	mathTopic?: string
+	createdAt?: Date
+	updatedAt?: Date
 }
 
 export interface ActivityWithDetails extends Activity {

@@ -22,6 +22,8 @@ export interface AchievementProgressData {
  */
 export const updateProgressFromActivity = async (userId: number, activityData: any): Promise<any[]> => {
 
+  console.log(`🎯 [ACHIEVEMENT ACTIVITY] Actualizando logros por actividad para usuario ID: ${userId}`);
+  console.log(`📊 [ACHIEVEMENT ACTIVITY] Datos de actividad:`, activityData);
   
   const user = await db.User.findByPk(userId);
   if (!user) throw new Error("Usuario no encontrado");
@@ -33,21 +35,32 @@ export const updateProgressFromActivity = async (userId: number, activityData: a
     } 
   });
 
+  console.log(`🏆 [ACHIEVEMENT ACTIVITY] Logros activos encontrados: ${achievements.length}`);
+
   const unlockedAchievements = [];
 
   for (const achievement of achievements) {
+    console.log(`🔍 [ACHIEVEMENT ACTIVITY] Procesando logro: ${achievement.title} (ID: ${achievement.id})`);
+    
     const userAchievement = await getUserAchievementOrCreate(userId, achievement.id);
+    console.log(`📈 [ACHIEVEMENT ACTIVITY] Progreso actual del usuario: ${userAchievement.progress}/${achievement.requiredCount}`);
     
     if (!userAchievement.isUnlocked) {
       const newProgress = await calculateProgressForAchievement(user, achievement, activityData);
+      console.log(`📊 [ACHIEVEMENT ACTIVITY] Nuevo progreso calculado: ${newProgress}`);
+      
       const wasUnlocked = await updateAchievementProgress(userAchievement, newProgress, achievement);
       
       if (wasUnlocked) {
+        console.log(`🎉 [ACHIEVEMENT ACTIVITY] ¡Logro desbloqueado! ${achievement.title}`);
         unlockedAchievements.push(achievement);
       }
+    } else {
+      console.log(`✅ [ACHIEVEMENT ACTIVITY] Logro ya desbloqueado: ${achievement.title}`);
     }
   }
 
+  console.log(`🏆 [ACHIEVEMENT ACTIVITY] Total de logros desbloqueados: ${unlockedAchievements.length}`);
   return unlockedAchievements;
 };
 
@@ -194,9 +207,6 @@ export const updateProgressFromRanking = async (userId: number, rankingPosition:
  */
 export const updateAchievementProgressFromAction = async (progressData: AchievementProgressData): Promise<any[]> => {
   const { userId, activityType, mathTopic, xavicoinsEarned, levelReached, streakDays, perfectScore, rankingPosition } = progressData;
-  
-
-  
   const unlockedAchievements = [];
   
   // Actualizar por actividad completada
@@ -265,6 +275,8 @@ const getUserAchievementOrCreate = async (userId: number, achievementId: number)
  * Calcular el progreso actual para un logro específico
  */
 const calculateProgressForAchievement = async (user: any, achievement: any, activityData?: any): Promise<number> => {
+  console.log(`🔍 [ACHIEVEMENT CALC] Calculando progreso para logro: ${achievement.title} (Tipo: ${achievement.requirementType})`);
+  
   switch (achievement.requirementType) {
     case "activities_completed":
       // Contar actividades completadas desde la base de datos
@@ -275,6 +287,7 @@ const calculateProgressForAchievement = async (user: any, achievement: any, acti
         }
       });
 
+      console.log(`📊 [ACHIEVEMENT CALC] Actividades completadas encontradas: ${completedActivities}`);
       
       // Debug adicional: verificar todas las evidencias del usuario
       const allEvidences = await db.Evidence.findAll({
@@ -284,6 +297,7 @@ const calculateProgressForAchievement = async (user: any, achievement: any, acti
         }
       });
 
+      console.log(`📋 [ACHIEVEMENT CALC] Evidencias aprobadas del usuario:`, allEvidences.map((e: any) => ({ id: e.id, activityId: e.activityId, status: e.status })));
       
       return completedActivities;
     
@@ -357,6 +371,9 @@ const calculateProgressForAchievement = async (user: any, achievement: any, acti
  * Actualizar el progreso de un logro específico
  */
 const updateAchievementProgress = async (userAchievement: any, newProgress: number, achievement: any): Promise<boolean> => {
+  console.log(`🔍 [ACHIEVEMENT UPDATE] Actualizando progreso del logro: ${achievement.title}`);
+  console.log(`📊 [ACHIEVEMENT UPDATE] Progreso anterior: ${userAchievement.progress}, Nuevo progreso: ${newProgress}, Requerido: ${achievement.requirementValue}`);
+  
   const oldProgress = userAchievement.progress;
   const wasUnlocked = userAchievement.isUnlocked;
   
@@ -373,13 +390,18 @@ const updateAchievementProgress = async (userAchievement: any, newProgress: numb
     shouldBeUnlocked = newProgress >= achievement.requirementValue;
   }
   
+  console.log(`🎯 [ACHIEVEMENT UPDATE] Debe desbloquearse: ${shouldBeUnlocked}, Ya estaba desbloqueado: ${wasUnlocked}`);
+  
   // Si se desbloqueó
   if (!wasUnlocked && shouldBeUnlocked) {
     userAchievement.isUnlocked = true;
     userAchievement.unlockedAt = new Date();
+    console.log(`🎉 [ACHIEVEMENT UPDATE] ¡Logro desbloqueado! ${achievement.title}`);
 
   } else if (newProgress > oldProgress) {
-
+    console.log(`📈 [ACHIEVEMENT UPDATE] Progreso actualizado: ${achievement.title} (${oldProgress} → ${newProgress})`);
+  } else {
+    console.log(`⏸️ [ACHIEVEMENT UPDATE] Sin cambios en el progreso: ${achievement.title}`);
   }
   
   await userAchievement.save();

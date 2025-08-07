@@ -55,10 +55,10 @@ const menuItems: MenuItem[] = [
 		route: '/activities'
 	},
 	{
-		id: 'evidence',
+		id: 'evidences',
 		label: 'Evidencias',
 		icon: <FolderIcon />,
-		route: '/evidence'
+		route: '/evidences'
 	},
 	{
 		id: 'transactions',
@@ -107,8 +107,7 @@ export const Sidebar = ({ open, onToggle, onNavigate, currentRoute }: SidebarPro
 					position: 'fixed',
 					top: 16,
 					left: 16,
-					zIndex: 1200,
-					display: { xs: 'block', md: 'none' }
+					display: { xs: 'block', md: 'none' },
 				}}
 			>
 				<Tooltip title="Abrir menú">

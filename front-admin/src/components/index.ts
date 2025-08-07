@@ -13,5 +13,14 @@ export { UsersTable } from './users/UsersTable'
 export { UsersFilters } from './users/UsersFilters'
 export { UsersTableRow } from './users/UsersTableRow'
 
+// Activity Components
+export { ActivitiesView } from './activities/ActivitiesView'    
+export { ActivitiesTable } from './activities/ActivitiesTable'
+export { CreateActivityModal } from './activities/CreateActivityModal'
+
+// Evidence Components
+export { EvidencesView } from './evidences/EvidencesView'
+export { EvidenceDetailModal } from './evidences/EvidenceDetailModal'
+
 // Auth Components
 export { Login } from './login/Login' 

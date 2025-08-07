@@ -246,15 +246,19 @@ export const changeEvidenceStatusAndAddXavicoints = async (
       student.completedActivities = (student.completedActivities || 0) + 1;
       await student.save({ transaction });
 
-      // Actualizar logros automáticamente
+      // Actualizar logros automáticamente    
       const { updateAchievementProgressFromAction } = await import("../achievement/achievementProgress.service");
       
-      await updateAchievementProgressFromAction({
+      const unlockedAchievements = await updateAchievementProgressFromAction({
         userId: student.id,
         activityType: "math_activity",
         mathTopic: evidence.activity.mathTopic,
         xavicoinsEarned: activityXavicoints,
-      });
+      });      
+      // Actualizar misiones automáticamente
+      
+      const { updateMissionProgressForActivity } = await import("../mission/mission.service");
+      await updateMissionProgressForActivity(student.id);
     }
 
     await transaction.commit();
