@@ -33,11 +33,12 @@ export const getActivities = async (): Promise<ActivityOutput[]> => {
 export const createActivity = async (
   activity: ActivityInput
 ): Promise<ActivityOutput> => {
-  if (!activity.title || !activity.description || !activity.images || !activity.xavicoints) {
-    throw new Error("Title, description, pdfPath and xavicoints are required.");
+  if (!activity.title || !activity.description || !activity.xavicoints || !activity.professorId) {
+    throw new Error("Title, description, and xavicoints are required.");
   }
-
+  console.log('Creating activity:', activity);
   const newActivity = await db.Activity.create(activity);
+  console.log('New activity created:', newActivity);
   return newActivity;
 };
 
@@ -45,8 +46,8 @@ export const updateActivity = async (
   id: number,
   activity: ActivityInput
 ): Promise<ActivityOutput> => {
-  if (!activity.title || !activity.description || !activity.images || !activity.xavicoints) {
-    throw new Error("Title, description, pdfPath and xavicoints are required.");
+  if (!activity.title || !activity.description || !activity.xavicoints) {
+    throw new Error("Title, description, and xavicoints are required.");
   }
 
   const findActivity = await db.Activity.findByPk(id);

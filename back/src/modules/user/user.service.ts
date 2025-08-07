@@ -24,19 +24,63 @@ export const getUser = async (id: number): Promise<UserOutput> => {
   }
 };
 
-export const getUsers = async (section?: string): Promise<UserOutput[]> => {
-  const whereClause = section ? { section, roleId: 2 } : { roleId: 2 };
-  
-  const users = await db.User.findAll({
-    where: whereClause,
-    attributes: ["id", "name", "level", "experience", "section", "xavicoints"],
-    include: [
-      { model: db.Pokemon, as: "pokemon" }
-    ],
-    order: [["level", "DESC"], ["experience", "DESC"]],
-    limit: 20,
-  });
-  return users;
+export const getUsers = async (
+  page: number = 1,
+  limit: number = 20,
+  section?: string,
+  isActive?: boolean,
+  search?: string
+): Promise<{ users: UserOutput[]; total: number; totalPages: number; currentPage: number }> => {
+  try {
+    // Construir where clause
+    const whereClause: any = {};
+    
+    if (section && section.trim() !== '') {
+      whereClause.section = section;
+    }
+    
+    if (isActive !== undefined && isActive !== null) {
+      whereClause.isActive = isActive;
+    }
+    
+    if (search && search.trim() !== '') {
+      whereClause[db.Sequelize.Op.or] = [
+        { name: { [db.Sequelize.Op.iLike]: `%${search}%` } },
+        { email: { [db.Sequelize.Op.iLike]: `%${search}%` } },
+        { section: { [db.Sequelize.Op.iLike]: `%${search}%` } }
+      ];
+    }
+
+    // Obtener total de usuarios
+    const total = await db.User.count({ where: whereClause });
+
+    // Calcular offset
+    const offset = (page - 1) * limit;
+
+    // Obtener usuarios con paginación
+    const users = await db.User.findAll({
+      where: whereClause,
+      include: [
+        { model: db.Role, as: "role" },
+        { model: db.Pokemon, as: "pokemon" }
+      ],
+      order: [["createdAt", "DESC"]],
+      limit,
+      offset
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      users,
+      total,
+      totalPages,
+      currentPage: page
+    };
+  } catch (error) {
+    console.error('Error in getUsers:', error);
+    throw error;
+  }
 };
 
 export const createUser = async (

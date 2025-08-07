@@ -29,10 +29,35 @@ export const getUserController = async (req: Request, res: Response) => {
 
 export const getUsersController = async (req: Request, res: Response) => {
   try {
-    const { section } = req.query;
-    const users = await getUsers(section as string);
-    res.json(users);
+    const { 
+      page = 1, 
+      limit = 20, 
+      section, 
+      isActive, 
+      search 
+    } = req.query;
+
+    // Parse and validate parameters
+    const pageNum = parseInt(page as string) || 1;
+    const limitNum = parseInt(limit as string) || 20;
+    const sectionStr = section as string || undefined;
+    const isActiveBool = isActive !== undefined ? isActive === 'true' : undefined;
+    const searchStr = search as string || undefined;
+
+    const result = await getUsers(
+      pageNum,
+      limitNum,
+      sectionStr,
+      isActiveBool,
+      searchStr
+    );
+
+    res.json({
+      success: true,
+      data: result
+    });
   } catch (error: any) {
+    console.error('Error in getUsersController:', error);
     errorHelper(error, res);
   }
 };
@@ -78,6 +103,27 @@ export const updateUserController = async (req: Request, res: Response) => {
   }
 };
 
+export const updateUserStatusController = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
+    
+    if (typeof isActive !== 'boolean') {
+      res.status(400).json({ error: 'isActive debe ser un valor booleano' });
+      return;
+    }
+
+    const user = await updateUser(parseInt(id), { isActive });
+    res.json({
+      success: true,
+      message: `Usuario ${isActive ? 'activado' : 'desactivado'} correctamente`,
+      user
+    });
+  } catch (error: any) {
+    errorHelper(error, res);
+  }
+};
+
 export const deleteUserController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -92,7 +138,7 @@ export const loginUserController = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const { token, user } = await loginUser(email, password);
-    res.json({ token, user });
+    res.status(200).json({ token, user });
   } catch (error: any) {
     errorHelper(error, res);
   }

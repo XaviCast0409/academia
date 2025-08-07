@@ -34,7 +34,7 @@ export const getActivitiesController = async (_req: Request, res: Response) => {
 
 export const createActivityController = async (req: Request, res: Response) => {
   try {
-    const { title, description, xavicoints, images, professorId, difficulty, section } = req.body as ActivityInput;
+    const { title, description, xavicoints, images, professorId, difficulty, section, mathTopic } = req.body as ActivityInput;
     const activity = await createActivity({
       title,
       description,
@@ -42,10 +42,12 @@ export const createActivityController = async (req: Request, res: Response) => {
       xavicoints,
       professorId,
       difficulty,
-      section
+      section,
+      mathTopic
     });
     res.status(201).json(activity);
   } catch (error) {
+    console.log('Error creating activity:', error);
     errorHelper(error, res);
   }
 };
