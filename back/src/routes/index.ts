@@ -9,6 +9,7 @@ import routerPokemon from "../modules/Pokemon/pokemon.routes";
 import routerEmailVerification from "../modules/emailVerification/emailVerification.routes";
 import missionRoutes from '../modules/mission/mission.router';
 import routerAchievement from '../modules/achievement/achievement.router';
+import notificationsRouter from '../modules/notifications/notification.routes';
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/email-verification", routerEmailVerification);
 
 router.use("/missions", missionRoutes);
 router.use("/achievements", routerAchievement);
+router.use('/notifications', notificationsRouter);
 
 export default router;

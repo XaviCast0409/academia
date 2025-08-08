@@ -13,6 +13,7 @@ import {
   assignMissionsToUserController,
   updateUserStatusController
 } from "./user.controller";
+import { savePushTokenController } from './user.controller';
 import { body } from "express-validator";
 import { validateRequest } from "../../middlewares/validateRequest";
 
@@ -36,6 +37,7 @@ router.put("/:id", updateUserController);
 router.patch("/:id/streak", updateUserStreakController);
 router.patch("/:id/xavicoins", updateUserXaviCoinsController);
 router.patch("/:id/status", updateUserStatusController);
+router.post('/:userId/push-token', savePushTokenController);
 
 // DELETE routes
 router.delete("/:id", deleteUserController);

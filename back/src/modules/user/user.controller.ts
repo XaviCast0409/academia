@@ -274,3 +274,24 @@ export const assignMissionsToUserController = async (req: Request, res: Response
     errorHelper(error, res);
   }
 };
+
+export const savePushTokenController = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params as any;
+    const { pushToken } = req.body as { pushToken?: string };
+    if (!pushToken) {
+      res.status(400).json({ error: 'pushToken requerido' });
+      return;
+    }
+    const user = await db.User.findByPk(Number(userId));
+    if (!user) {
+      res.status(404).json({ error: 'Usuario no encontrado' });
+      return;
+    }
+    user.pushToken = pushToken;
+    await user.save();
+    res.status(200).json({ success: true });
+  } catch (error) {
+    errorHelper(error, res);
+  }
+};

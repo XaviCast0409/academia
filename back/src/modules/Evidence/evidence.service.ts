@@ -1,6 +1,9 @@
 import db from "../../config/database";
 import { EvidenceInput, EvidenceOutput } from "../../models/Evidence";
 import { addExperience } from "../Level/level.service";
+import { emitToUser } from "../../realtime/socket";
+import { createNotification } from "../notifications/notification.service";
+import { sendPushToTokens } from "../notifications/push.service";
 
 export const getEvidence = async (id: number): Promise<any> => {
   const evidence = await db.Evidence.findByPk(id, {
@@ -249,7 +252,6 @@ export const changeEvidenceStatusAndAddXavicoints = async (
       await student.save({ transaction });
 
       // Actualizar experiencia y nivel del estudiante
-      console.log("Actualizando experiencia y nivel del estudiante", student.id, evidence.activity.difficulty);
       await addExperience(student.id, evidence.activity.difficulty, transaction);
 
       // Agendar actualización de logros de forma asíncrona (fuera de la transacción)
@@ -279,6 +281,48 @@ export const changeEvidenceStatusAndAddXavicoints = async (
     }
 
     await transaction.commit();
+
+    // Emitir notificación realtime y persistir histórico después del commit
+    try {
+      const studentId = evidence.studentId;
+      emitToUser(studentId, 'evidence:statusChanged', {
+        evidenceId: evidence.id,
+        activityId: evidence.activityId,
+        status: evidence.status,
+        timestamp: new Date().toISOString(),
+      });
+    } catch {}
+
+    try {
+      await createNotification({
+        userId: evidence.studentId,
+        type: 'evidence_status',
+        title: `Evidencia ${evidence.status === 'approved' ? 'aprobada' : 'rechazada'}`,
+        message: `Tu evidencia de la actividad ${evidence.activity?.title ?? evidence.activityId} fue ${evidence.status}.`,
+        data: {
+          evidenceId: evidence.id,
+          activityId: evidence.activityId,
+          status: evidence.status,
+        },
+        isRead: false,
+      });
+    } catch {}
+
+    // Enviar push al alumno afectado (si tiene token)
+    try {
+      const student = await db.User.findByPk(evidence.studentId, { attributes: ['pushToken'], raw: true });
+      const token = student?.pushToken;
+      if (token) {
+        await sendPushToTokens([token], {
+          title: evidence.status === 'approved' ? 'Evidencia aprobada' : 'Evidencia rechazada',
+          body: `Actividad: ${evidence.activity?.title ?? evidence.activityId}`,
+          sound: 'default',
+          data: { type: 'evidence_status', evidenceId: evidence.id, activityId: evidence.activityId, status: evidence.status },
+        });
+      }
+    } catch (err) {
+      console.error('[PUSH] Error sending evidence push', err);
+    }
 
     return {
       success: true,

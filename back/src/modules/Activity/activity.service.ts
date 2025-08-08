@@ -3,6 +3,9 @@ import { ActivityInput, ActivityOutput } from "../../models/Activity";
 import Evidence from "../../models/Evidence";
 import { addExperience } from "../Level/level.service";
 import { updateMissionProgressForActivity } from '../mission/mission.service';
+import { emitToAll } from '../../realtime/socket';
+import { createNotification } from '../notifications/notification.service';
+import { getUserPushTokens, sendPushToTokens } from '../notifications/push.service';
 
 export const getActivity = async (id: number): Promise<ActivityOutput> => {
   const activity = await db.Activity.findByPk(id, {
@@ -37,6 +40,55 @@ export const createActivity = async (
     throw new Error("Title, description, and xavicoints are required.");
   }
   const newActivity = await db.Activity.create(activity);
+  // Emitir evento realtime y crear notificación global
+  try {
+    emitToAll('activity:created', {
+      id: newActivity.id,
+      title: newActivity.title,
+      section: newActivity.section,
+      professorId: newActivity.professorId,
+      createdAt: newActivity.createdAt,
+    });
+  } catch {}
+
+  try {
+    // Crear notificaciones por usuario para garantizar que aparezcan en el historial
+    const users: Array<{ id: number }> = await db.User.findAll({ attributes: ['id'], raw: true });
+    if (users && users.length > 0) {
+      const notifications = users.map((u) => ({
+        userId: u.id,
+        type: 'activity_created',
+        title: 'Nueva actividad',
+        message: `${newActivity.title}`,
+        data: {
+          activityId: newActivity.id,
+          section: newActivity.section,
+          professorId: newActivity.professorId,
+        },
+        isRead: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }));
+      await db.Notification.bulkCreate(notifications, { validate: false });
+    }
+  } catch {}
+
+  // Enviar push a todos los usuarios (si tienen token registrado)
+  try {
+    const users: Array<{ id: number; pushToken?: string | null }> = await db.User.findAll({ attributes: ['id', 'pushToken'], raw: true });
+    const tokens = users.map((u) => u.pushToken).filter(Boolean) as string[];
+    if (tokens.length) {
+      await sendPushToTokens(tokens, {
+        title: 'Nueva actividad',
+        body: newActivity.title,
+        sound: 'default',
+        data: { type: 'activity_created', activityId: newActivity.id },
+      });
+    }
+  } catch (err) {
+    console.error('[PUSH] Error sending activity push', err);
+  }
+
   return newActivity;
 };
 

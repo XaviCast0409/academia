@@ -18,6 +18,7 @@ export interface UserAttributes {
   isVerified?: boolean; // Si el usuario está verificado
   verificationCode?: string; // Código de verificación
   verificationCodeExpires?: Date; // Fecha de expiración del código
+  pushToken?: string | null; // Expo push token
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -45,6 +46,7 @@ export class User
   public isVerified?: boolean;
   public verificationCode?: string;
   public verificationCodeExpires?: Date;
+  public pushToken?: string | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -189,6 +191,10 @@ export class User
         },
         verificationCodeExpires: {
           type: DataTypes.DATE,
+          allowNull: true,
+        },
+        pushToken: {
+          type: DataTypes.STRING,
           allowNull: true,
         },
       },

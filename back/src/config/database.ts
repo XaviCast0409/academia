@@ -12,19 +12,20 @@ import { Role } from "../models/Role";
 import { Pokemon } from "../models/Pokemon";
 import { Product } from "../models/Product";
 import { Transaction } from "../models/Transaction";
+import { Notification } from "../models/Notification";
 
 const db: any = {}
-export const sequelize = new Sequelize({
+/* export const sequelize = new Sequelize({
   username: dataConfig.development.username,
   password: dataConfig.development.password,
   database: dataConfig.development.database,
   host: dataConfig.development.host,
   dialect: "postgres",
   logging: false,
-});
+}); */
 
 // configuracion produccion de la base de datos
-/* export const sequelize = new Sequelize(dataConfig.production.url, {
+export const sequelize = new Sequelize(dataConfig.production.url, {
   dialect: "postgres",
   logging: false,
   dialectOptions: {
@@ -33,7 +34,7 @@ export const sequelize = new Sequelize({
       rejectUnauthorized: false, // Cambia esto según tus necesidades de seguridad
     },
   },
-}); */
+});
 
 // Inicializar todos los modelos manualmente
 const models = [
@@ -48,6 +49,7 @@ const models = [
   Pokemon,
   Product,
   Transaction,
+  Notification,
   VerificationCode
 ];
 
