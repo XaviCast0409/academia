@@ -30,8 +30,8 @@ interface UserState {
 }
 
 const initialFilters: UserFilters = {
-	page: 1,
-	limit: 20,
+    page: 1,
+    limit: 10,
 	section: undefined,
 	isActive: undefined,
 	search: undefined

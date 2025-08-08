@@ -22,5 +22,9 @@ export { CreateActivityModal } from './activities/CreateActivityModal'
 export { EvidencesView } from './evidences/EvidencesView'
 export { EvidenceDetailModal } from './evidences/EvidenceDetailModal'
 
+// Product Components
+export { ProductsView } from './products/ProductsView'
+export { ProductFormModal } from './products/ProductFormModal'
+
 // Auth Components
 export { Login } from './login/Login' 

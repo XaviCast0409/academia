@@ -1,23 +1,37 @@
 import api from './api';
-import { RankingResponse, RankingFilters } from '@/types/ranking';
+import { RankingResponse, RankingFilters, RankingUser } from '@/types/ranking';
 
 class RankingService {
   // Obtener ranking de usuarios
   async getRanking(filters?: RankingFilters): Promise<RankingResponse> {
     try {
-      console.log('RankingService: Getting ranking with filters-------------------------------------------:', filters);
-      
-      const params = filters?.section ? { section: filters.section } : {};
-      console.log('RankingService: Request params:', params);
-      
+      const params: any = { page: 1, limit: 100 };
+      if (filters?.section) params.section = filters.section;
+
       const response = await api.get('/users', { params });
-      
-      console.log('RankingService: Ranking retrieved successfully:', response.data);
-      console.log('RankingService: Number of users returned:', response.data.length);
-      
+      const payload = response.data?.data;
+
+      const usersRaw: any[] = payload?.users || [];
+      const users: RankingUser[] = usersRaw.map((u: any) => ({
+        id: u.id,
+        name: u.username || u.name || '',
+        level: u.level ?? 0,
+        experience: u.experience ?? 0,
+        section: u.section || '',
+        xavicoints: u.xaviCoins ?? u.xavicoints ?? 0,
+        pokemon: u.pokemon
+          ? {
+              id: u.pokemon.id,
+              name: u.pokemon.name,
+              imageUrl: u.pokemon.imageUrl,
+              highResImageUrl: u.pokemon.highResImageUrl,
+            }
+          : undefined,
+      }));
+
       return {
-        users: response.data,
-        total: response.data.length
+        users,
+        total: payload?.total ?? users.length,
       };
     } catch (error: any) {
       console.error('RankingService: Error getting ranking:', error);

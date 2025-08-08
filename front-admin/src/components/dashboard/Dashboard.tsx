@@ -4,17 +4,17 @@ import { colors } from '../../styles/theme/colors'
 
 export const Dashboard = () => {
 	return (
-		<Box sx={{ 
-			...backgroundUtils.mainBackground, 
-			minHeight: '100vh', 
-			width: '100vw', 
+		<Box sx={{
+			...backgroundUtils.mainBackground,
+			minHeight: '100vh',
+			width: '100vw',
 			p: 4,
 			position: 'relative'
 		}}>
 			{/* Welcome Section */}
 			<Box sx={{ mb: 4 }}>
-				<Typography 
-					variant="h3" 
+				<Typography
+					variant="h3"
 					sx={{
 						...typographyUtils.title,
 						fontSize: '2.5rem',
@@ -28,9 +28,9 @@ export const Dashboard = () => {
 				>
 					Dashboard
 				</Typography>
-				<Typography 
-					variant="h6" 
-					sx={{ 
+				<Typography
+					variant="h6"
+					sx={{
 						color: colors.text.secondary,
 						fontWeight: 400,
 						letterSpacing: '0.5px'
@@ -57,9 +57,9 @@ export const Dashboard = () => {
 						}
 					}}
 				>
-					<Typography 
-						variant="h5" 
-						sx={{ 
+					<Typography
+						variant="h5"
+						sx={{
 							color: colors.text.primary,
 							fontWeight: 600,
 							mb: 2
@@ -67,9 +67,9 @@ export const Dashboard = () => {
 					>
 						Resumen del Sistema
 					</Typography>
-					<Typography 
-						variant="body1" 
-						sx={{ 
+					<Typography
+						variant="body1"
+						sx={{
 							color: colors.text.secondary,
 							lineHeight: 1.6
 						}}
@@ -93,19 +93,19 @@ export const Dashboard = () => {
 						}
 					}}
 				>
-					<Typography 
-						variant="h5" 
-						sx={{ 
+					<Typography
+						variant="h5"
+						sx={{
 							color: colors.text.primary,
 							fontWeight: 600,
 							mb: 2
 						}}
 					>
-					Acciones Rápidas
+						Acciones Rápidas
 					</Typography>
-					<Typography 
-						variant="body1" 
-						sx={{ 
+					<Typography
+						variant="body1"
+						sx={{
 							color: colors.text.secondary,
 							lineHeight: 1.6
 						}}

@@ -17,7 +17,7 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({ children, style }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6', // gray-100
+    backgroundColor: 'white',
   },
 });
 

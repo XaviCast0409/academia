@@ -47,7 +47,6 @@ export const createActivityController = async (req: Request, res: Response) => {
     });
     res.status(201).json(activity);
   } catch (error) {
-    console.log('Error creating activity:', error);
     errorHelper(error, res);
   }
 };

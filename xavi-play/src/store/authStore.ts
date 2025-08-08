@@ -45,10 +45,13 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         try {
+          // limpiar token y storage persistente
           await authService.logout();
+          await AsyncStorage.removeItem('auth-storage');
           set({ isAuthenticated: false, user: null, token: null });
         } catch (error) {
-          console.error('Logout error:', error);
+          // aun si falla, forzar estado limpio
+          set({ isAuthenticated: false, user: null, token: null });
         }
       },
 
@@ -78,11 +81,10 @@ export const useAuthStore = create<AuthState>()(
       initializeAuth: async () => {
         try {
           const user = await authService.getCurrentUser();
-          if (user) {
-            set({ isAuthenticated: true, user });
-          }
+          set({ isAuthenticated: !!user, user: user || null, token: null });
         } catch (error) {
           console.error('Auth initialization error:', error);
+          set({ isAuthenticated: false, user: null, token: null });
         }
       },
     }),

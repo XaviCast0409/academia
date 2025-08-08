@@ -9,14 +9,9 @@ class MissionService {
   // Obtener misiones activas del usuario
   async getActiveMissions(userId: number): Promise<UserMission[]> {
     try {
-      console.log('MissionService: Getting active missions for user:', userId);
-      
       const response = await api.get('/missions/active', {
         params: { userId }
       });
-      
-      console.log('MissionService: Active missions retrieved successfully:', response.data);
-      
       return response.data;
     } catch (error: any) {
       console.error('MissionService: Error getting active missions:', error);
@@ -35,14 +30,9 @@ class MissionService {
   // Obtener historial de misiones del usuario
   async getMissionHistory(userId: number): Promise<UserMission[]> {
     try {
-      console.log('MissionService: Getting mission history for user:', userId);
-      
       const response = await api.get('/missions/history', {
         params: { userId }
       });
-      
-      console.log('MissionService: Mission history retrieved successfully:', response.data);
-      
       return response.data;
     } catch (error: any) {
       console.error('MissionService: Error getting mission history:', error);
@@ -61,14 +51,9 @@ class MissionService {
   // Reclamar recompensa de misión
   async claimMissionReward(userId: number, missionId: number): Promise<ClaimRewardResponse> {
     try {
-      console.log('MissionService: Claiming reward for user:', userId, 'mission:', missionId);
-      
       const requestData: ClaimRewardRequest = { userId };
       
       const response = await api.post(`/missions/${missionId}/claim`, requestData);
-      
-      console.log('MissionService: Reward claimed successfully:', response.data);
-      
       return response.data;
     } catch (error: any) {
       console.error('MissionService: Error claiming reward:', error);
@@ -87,15 +72,10 @@ class MissionService {
   // Actualizar progreso de misión
   async updateMissionProgress(userId: number, missionId: number, increment: number = 1): Promise<UserMission> {
     try {
-      console.log('MissionService: Updating mission progress for user:', userId, 'mission:', missionId, 'increment:', increment);
-      
       const response = await api.post(`/missions/${missionId}/progress`, {
         userId,
         increment
       });
-      
-      console.log('MissionService: Mission progress updated successfully:', response.data);
-      
       return response.data;
     } catch (error: any) {
       console.error('MissionService: Error updating mission progress:', error);

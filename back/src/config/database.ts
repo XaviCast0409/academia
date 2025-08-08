@@ -71,7 +71,7 @@ Object.keys(db).forEach((modelName) => {
 (async () => {
   try {
     await sequelize.authenticate();
-    console.log("Conexión exitosa a la base de datos.");
+    // conexión exitosa
   } catch (error) {
     console.error("Error al conectar a la base de datos:", error);
   }

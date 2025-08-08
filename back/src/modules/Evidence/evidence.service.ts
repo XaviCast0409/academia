@@ -1,5 +1,6 @@
 import db from "../../config/database";
 import { EvidenceInput, EvidenceOutput } from "../../models/Evidence";
+import { addExperience } from "../Level/level.service";
 
 export const getEvidence = async (id: number): Promise<any> => {
   const evidence = await db.Evidence.findByPk(id, {
@@ -210,7 +211,7 @@ export const changeEvidenceStatusAndAddXavicoints = async (
         {
           model: db.Activity,
           as: "activity",
-          attributes: ["id", "title", "xavicoints", "mathTopic"],
+          attributes: ["id", "title", "xavicoints", "mathTopic", "difficulty"],
         },
       ],
       transaction,
@@ -221,9 +222,9 @@ export const changeEvidenceStatusAndAddXavicoints = async (
       throw new Error("Evidencia no encontrada");
     }
 
-    // 2. Verificar que la actividad pertenece al profesor
-    const activity = await db.Activity.findByPk(evidence.activityId, {
-      where: { professorId },
+    // 2. Verificar que la actividad pertenece al profesor (uso correcto de where)
+    const activity = await db.Activity.findOne({
+      where: { id: evidence.activityId, professorId },
       transaction,
     });
 
@@ -232,12 +233,13 @@ export const changeEvidenceStatusAndAddXavicoints = async (
       throw new Error("No tienes permisos para modificar esta evidencia");
     }
 
-    // 3. Actualizar estado de la evidencia
+    // 3. Actualizar estado de la evidencia (evitar doble acreditación)
+    const previousStatus = evidence.status;
     evidence.status = newStatus;
     await evidence.save({ transaction });
 
-    // 4. Si se aprueba, otorgar XaviCoins y actualizar logros
-    if (newStatus === "approved") {
+    // 4. Si se aprueba (y antes no estaba aprobada), otorgar XaviCoins y programar actualizaciones
+    if (newStatus === "approved" && previousStatus !== "approved") {
       const student = evidence.student;
       const activityXavicoints = evidence.activity.xavicoints || 0;
 
@@ -246,19 +248,34 @@ export const changeEvidenceStatusAndAddXavicoints = async (
       student.completedActivities = (student.completedActivities || 0) + 1;
       await student.save({ transaction });
 
-      // Actualizar logros automáticamente    
-      const { updateAchievementProgressFromAction } = await import("../achievement/achievementProgress.service");
-      
-      const unlockedAchievements = await updateAchievementProgressFromAction({
-        userId: student.id,
-        activityType: "math_activity",
-        mathTopic: evidence.activity.mathTopic,
-        xavicoinsEarned: activityXavicoints,
-      });      
-      // Actualizar misiones automáticamente
-      
-      const { updateMissionProgressForActivity } = await import("../mission/mission.service");
-      await updateMissionProgressForActivity(student.id);
+      // Actualizar experiencia y nivel del estudiante
+      console.log("Actualizando experiencia y nivel del estudiante", student.id, evidence.activity.difficulty);
+      await addExperience(student.id, evidence.activity.difficulty, transaction);
+
+      // Agendar actualización de logros de forma asíncrona (fuera de la transacción)
+      setImmediate(async () => {
+        try {
+          const { updateAchievementProgressFromAction } = await import("../achievement/achievementProgress.service");
+          await updateAchievementProgressFromAction({
+            userId: student.id,
+            activityType: "math_activity",
+            mathTopic: evidence.activity.mathTopic,
+            xavicoinsEarned: activityXavicoints,
+          });
+        } catch (err) {
+          console.error("[EVIDENCE SERVICE] Error actualizando logros asíncronamente:", err);
+        }
+      });
+
+      // Agendar actualización de misiones de forma asíncrona (fuera de la transacción)
+      setImmediate(async () => {
+        try {
+          const { updateMissionProgressForActivity } = await import("../mission/mission.service");
+          await updateMissionProgressForActivity(student.id);
+        } catch (err) {
+          console.error("[EVIDENCE SERVICE] Error actualizando misiones asíncronamente:", err);
+        }
+      });
     }
 
     await transaction.commit();

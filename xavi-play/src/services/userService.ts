@@ -31,9 +31,9 @@ export interface PokemonResponse {
 class UserService {
   // Create a new user
   async createUser(userData: CreateUserData): Promise<any> {
+    console.log('Creating user:', userData);
     try {
-      console.log(userData);
-      const response = await api.post('/users/create', userData);
+      const response = await api.post('/users', userData);
       return response.data;
     } catch (error: any) {
       console.error('Error creating user:', error);

@@ -13,7 +13,6 @@ export const useLoginStore = create<LoginStore>((set) => ({
   setIsLoggedIn: (isLoggedIn) => set({ isLoggedIn }),
   logIn: async (email: string, password: string) => {
     const response = await userService.login(email, password)
-    console.log(response)
     if (response.status === 200) {
       set({ isLoggedIn: true })
     }

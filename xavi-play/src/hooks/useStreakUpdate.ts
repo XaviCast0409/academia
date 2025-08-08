@@ -65,7 +65,7 @@ export const useStreakUpdate = () => {
     
     // Retornar función de limpieza vacía cuando no se cumple la condición
     return () => {};
-  }, [isAuthenticated, user?.id]); // Solo depender del ID del usuario
+  }, [isAuthenticated, user?.id]);
 
   return {
     user,

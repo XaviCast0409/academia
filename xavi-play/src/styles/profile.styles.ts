@@ -9,21 +9,6 @@ export const profileStyles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  profileCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-    borderWidth: 2,
-    borderColor: '#dbeafe', // blue-200
-  },
   avatarSection: {
     alignItems: 'center',
     marginBottom: 20,

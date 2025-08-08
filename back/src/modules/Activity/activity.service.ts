@@ -36,9 +36,7 @@ export const createActivity = async (
   if (!activity.title || !activity.description || !activity.xavicoints || !activity.professorId) {
     throw new Error("Title, description, and xavicoints are required.");
   }
-  console.log('Creating activity:', activity);
   const newActivity = await db.Activity.create(activity);
-  console.log('New activity created:', newActivity);
   return newActivity;
 };
 

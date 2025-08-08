@@ -62,9 +62,7 @@ class AuthService {
   // Login user
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     try {
-      console.log('AuthService: Iniciando login...');
       const response = await api.post('/users/login', credentials);
-      console.log('AuthService: Response recibida:', response.data);
       const { token, user: backendUser } = response.data;
       
       // Transform backend user to app user format
@@ -86,14 +84,10 @@ class AuthService {
       
       // Store token
       await AsyncStorage.setItem('authToken', token);
-      console.log('AuthService: Token guardado en AsyncStorage');
       
       const result = { token, user };
-      console.log('AuthService: Retornando resultado:', result);
       return result;
     } catch (error: any) {
-      console.log('AuthService: Error en login:', error);
-      console.log('AuthService: Error response:', error.response);
       throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
     }
   }
@@ -121,7 +115,7 @@ class AuthService {
         return null;
       }
 
-      const response = await api.get(`/users/byId/${decodedToken.id}`);
+      const response = await api.get(`/users/${decodedToken.id}`);
       const backendUser = response.data;
             
       // Transform backend user to app user format
@@ -160,7 +154,7 @@ class AuthService {
   // Update user streak
   async updateStreak(userId: number): Promise<void> {
     try {
-      await api.post(`/users/streak/${userId}`);
+      await api.patch(`/users/${userId}/streak`);
     } catch (error: any) {
       console.error('Error updating streak:', error);
       throw new Error(error.response?.data?.message || 'Error al actualizar racha');

@@ -38,7 +38,6 @@ export const claimMissionRewardController = async (req: Request, res: Response) 
   try {
     const { userId } = req.body;
     const missionId = Number(req.params.id);
-    console.log(userId, missionId);
     const result = await claimMissionReward(Number(userId), missionId);
     res.status(200).json(result);
   } catch (error) {

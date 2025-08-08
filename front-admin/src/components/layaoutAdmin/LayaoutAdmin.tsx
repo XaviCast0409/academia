@@ -23,7 +23,6 @@ export const LayoutAdmin = ({ children, currentRoute, onNavigate }: LayoutAdminP
 	}
 
 	const handleNavigate = (route: string) => {
-		console.log('Navigating to:', route)
 		onNavigate?.(route) // Call the parent's onNavigate if provided
 		setSidebarOpen(false) // Cerrar sidebar en móvil después de navegar
 	}

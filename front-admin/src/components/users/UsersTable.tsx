@@ -134,7 +134,7 @@ export const UsersTable = () => {
 						page={pagination.currentPage - 1}
 						onPageChange={handlePageChange}
 						rowsPerPage={filters.limit}
-						rowsPerPageOptions={[10, 20, 50]}
+                        rowsPerPageOptions={[10]}
 						sx={{
 							color: 'white',
 							'& .MuiTablePagination-selectIcon': {

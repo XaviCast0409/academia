@@ -6,7 +6,8 @@ import {
 	CircularProgress,
 	Alert,
 	Button,
-	Grid
+	Grid,
+	Pagination
 } from '@mui/material'
 import { Add as AddIcon } from '@mui/icons-material'
 import { ActivitiesTable } from './ActivitiesTable'
@@ -15,25 +16,34 @@ import { activityService } from '../../service/activityService'
 import type { ActivityWithDetails } from '../../types/ActivityTypes'
 import { backgroundUtils, typographyUtils } from '../../styles/utils/themeUtils'
 import { colors } from '../../styles/theme/colors'
+import { authService } from '../../service/authService'
 
 export const ActivitiesView: React.FC = () => {
-	console.log('ActivitiesView: Component loaded')
 	const [activities, setActivities] = useState<ActivityWithDetails[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+	const [currentPage, setCurrentPage] = useState(1)
+	const [totalPages, setTotalPages] = useState(1)
+	const [totalItems, setTotalItems] = useState(0)
 
 	useEffect(() => {
-		console.log('ActivitiesView: useEffect triggered')
 		loadActivities()
-	}, [])
+	}, [currentPage])
 
 	const loadActivities = async () => {
 		try {
 			setLoading(true)
 			setError(null)
-			const data = await activityService.getActivities()
-			setActivities(data)
+			const professorId = authService.getUserId()
+			if (!professorId) {
+				setError('Error: No se pudo obtener el ID del profesor.')
+				return
+			}
+			const data = await activityService.getActivitiesByProfessor(professorId, currentPage, 10)
+			setActivities(data.activities)
+			setTotalPages(data.totalPages)
+			setTotalItems(data.total)
 		} catch (err) {
 			setError('Error al cargar las actividades. Por favor, inténtalo de nuevo.')
 			console.error('Error loading activities:', err)
@@ -42,13 +52,11 @@ export const ActivitiesView: React.FC = () => {
 		}
 	}
 
-	const handleView = (activity: ActivityWithDetails) => {
-		console.log('Ver actividad:', activity)
+	const handleView = (_activity: ActivityWithDetails) => {
 		// TODO: Implementar vista de detalles
 	}
 
-	const handleEdit = (activity: ActivityWithDetails) => {
-		console.log('Editar actividad:', activity)
+	const handleEdit = (_activity: ActivityWithDetails) => {
 		// TODO: Implementar edición
 	}
 
@@ -65,7 +73,6 @@ export const ActivitiesView: React.FC = () => {
 	}
 
 	const handleCreate = () => {
-		console.log('Crear nueva actividad')
 		setIsCreateModalOpen(true)
 	}
 
@@ -163,7 +170,7 @@ export const ActivitiesView: React.FC = () => {
 						}}
 					>
 						<Typography variant="h4" sx={{ color: colors.primary.main, fontWeight: 700 }}>
-							{activities.length}
+							{totalItems}
 						</Typography>
 						<Typography variant="body2" sx={{ color: colors.text.secondary }}>
 							Total Actividades
@@ -302,6 +309,26 @@ export const ActivitiesView: React.FC = () => {
 						Crea la primera actividad para comenzar
 					</Typography>
 				</Paper>
+			)}
+
+			{/* Pagination */}
+			{totalPages > 1 && (
+				<Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+					<Pagination
+						count={totalPages}
+						page={currentPage}
+						onChange={(_, page) => setCurrentPage(page)}
+						sx={{
+							'& .MuiPaginationItem-root': {
+								color: colors.text.primary,
+								'&.Mui-selected': {
+									backgroundColor: colors.primary.main,
+									color: 'white'
+								}
+							}
+						}}
+					/>
+				</Box>
 			)}
 
 			{/* Create Activity Modal */}

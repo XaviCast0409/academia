@@ -63,8 +63,10 @@ export const getEvidencesByActivityController = async (req: Request, res: Respon
 export const getProfessorEvidencesController = async (req: Request, res: Response) => {
   try {
     const { professorId } = req.params;
-    const { page, limit  } = req.query;
-    const evidences = await getProfessorEvidences(parseInt(professorId), Number(page), Number(limit));
+    const { page = 1, limit = 10 } = req.query;
+    const pageNum = parseInt(page as string) || 1;
+    const limitNum = parseInt(limit as string) || 10;
+    const evidences = await getProfessorEvidences(parseInt(professorId), pageNum, limitNum);
     res.status(200).json(evidences);
   } catch (error) {
     errorHelper(error, res);

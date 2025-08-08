@@ -26,7 +26,7 @@ export const getUser = async (id: number): Promise<UserOutput> => {
 
 export const getUsers = async (
   page: number = 1,
-  limit: number = 20,
+  limit: number = 10,
   section?: string,
   isActive?: boolean,
   search?: string

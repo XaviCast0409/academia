@@ -8,15 +8,9 @@ export const getActiveMissionsForUser = async (userId: number): Promise<any> => 
 };
 
 export const assignActiveMissionsToUser = async (userId: number): Promise<any> => {
-  console.log(`🎯 [MISSION ASSIGN] Asignando misiones activas al usuario ID: ${userId}`);
-  
   const activeMissions = await db.Mission.findAll({ where: { isActive: true } });
-  console.log(`📋 [MISSION ASSIGN] Misiones activas encontradas: ${activeMissions.length}`);
-  
   let assignedCount = 0;
   for (const mission of activeMissions) {
-    console.log(`🔍 [MISSION ASSIGN] Verificando misión: ${mission.title} (ID: ${mission.id})`);
-    
     const exists = await db.UserMission.findOne({ where: { userId, missionId: mission.id } });
     if (!exists) {
       await db.UserMission.create({
@@ -25,14 +19,9 @@ export const assignActiveMissionsToUser = async (userId: number): Promise<any> =
         progress: 0,
         isCompleted: false,
       });
-      console.log(`✅ [MISSION ASSIGN] Misión asignada: ${mission.title}`);
       assignedCount++;
-    } else {
-      console.log(`⏸️ [MISSION ASSIGN] Misión ya asignada: ${mission.title}`);
     }
   }
-  
-  console.log(`📊 [MISSION ASSIGN] Total de misiones asignadas: ${assignedCount}`);
   return { assignedCount, totalMissions: activeMissions.length };
 };
 
@@ -64,7 +53,6 @@ export const claimMissionReward = async (userId: number, missionId: number): Pro
   if (mission && mission.rewardType === 'COINS') {
     // Buscar el usuario y sumarle las monedas
     const user = await db.User.findByPk(userId);
-    console.log(user);
     if (user) {
       user.xavicoints = (user.xavicoints || 0) + mission.rewardAmount;
       await user.save();
@@ -226,27 +214,18 @@ export const generateSpecialMissions = async (): Promise<any> => {
 };
 
 export const generateMissions = async (): Promise<any> => {
-  console.log(`🎯 [MISSION GENERATE] Generando misiones de prueba`);
   await generateDailyMissions();
   await generateWeeklyMissions();
   await generateSpecialMissions();
-  console.log(`✅ [MISSION GENERATE] Misiones generadas correctamente`);
 };
 
 /**
  * Verificar y crear misiones si no existen
  */
 export const ensureMissionsExist = async (): Promise<void> => {
-  console.log(`🔍 [MISSION ENSURE] Verificando si existen misiones en la base de datos`);
-  
   const missionCount = await db.Mission.count({ where: { isActive: true } });
-  console.log(`📊 [MISSION ENSURE] Misiones activas encontradas: ${missionCount}`);
-  
   if (missionCount === 0) {
-    console.log(`⚠️ [MISSION ENSURE] No hay misiones activas, generando misiones de prueba`);
     await generateMissions();
-  } else {
-    console.log(`✅ [MISSION ENSURE] Ya existen misiones activas`);
   }
 };
 
@@ -266,9 +245,7 @@ export const cleanupExpiredMissions = async (): Promise<void> => {
       }
     );
     
-    if (expiredMissions[0] > 0) {
-      console.log(`🧹 ${expiredMissions[0]} misiones expiradas desactivadas`);
-    }
+    // opcional: podrías registrar métricas con un logger si fuera necesario
     
   } catch (error) {
     console.error("Error limpiando misiones expiradas:", error);

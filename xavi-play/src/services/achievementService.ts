@@ -15,7 +15,7 @@ class AchievementService {
       const response = await api.get('/achievements');
       return response.data.data || response.data;
     } catch (error) {
-      console.error('AchievementService: Error obteniendo logros:', error);
+      
       this.handleError(error, 'Error al obtener los logros');
     }
   }
@@ -30,7 +30,7 @@ class AchievementService {
       });
       return response.data.data?.userAchievements || response.data.userAchievements || response.data;
     } catch (error) {
-      console.error('AchievementService: Error obteniendo logros del usuario:', error);
+      
       this.handleError(error, 'Error al obtener tus logros');
     }
   }
@@ -43,7 +43,7 @@ class AchievementService {
       const response = await api.get(`/achievements/progress/debug/${userId}`);
       return response.data.data?.userAchievements || response.data.userAchievements || [];
     } catch (error) {
-      console.error('AchievementService: Error obteniendo progreso detallado de logros:', error);
+      
       this.handleError(error, 'Error al obtener el progreso de logros');
     }
   }
@@ -58,7 +58,7 @@ class AchievementService {
       });
       return response.data;
     } catch (error) {
-      console.error('AchievementService: Error reclamando recompensa:', error);
+      
       this.handleError(error, 'Error al reclamar la recompensa');
     }
   }
@@ -74,7 +74,7 @@ class AchievementService {
       });
       return response.data.data?.newlyUnlocked || response.data.newlyUnlocked || [];
     } catch (error) {
-      console.error('AchievementService: Error verificando logros:', error);
+      
       this.handleError(error, 'Error al verificar logros');
     }
   }
@@ -100,7 +100,7 @@ class AchievementService {
       const response = await api.post(`/achievements/progress/action/${userId}`, activityData);
       return response.data.data?.unlockedAchievements || response.data.unlockedAchievements || [];
     } catch (error) {
-      console.error('AchievementService: Error actualizando progreso:', error);
+      
       this.handleError(error, 'Error al actualizar el progreso de logros');
     }
   }
@@ -113,7 +113,7 @@ class AchievementService {
       const response = await api.post(`/achievements/progress/force-update/${userId}`);
       return response.data.data || response.data;
     } catch (error) {
-      console.error('AchievementService: Error en actualización forzada:', error);
+      
       this.handleError(error, 'Error al forzar la actualización de logros');
     }
   }
@@ -126,7 +126,7 @@ class AchievementService {
       const response = await api.post(`/achievements/progress/activity/${userId}`, activityData);
       return response.data.data?.unlockedAchievements || response.data.unlockedAchievements || [];
     } catch (error) {
-      console.error('AchievementService: Error actualizando progreso por actividad:', error);
+      
       this.handleError(error, 'Error al actualizar progreso por actividad');
     }
   }
@@ -139,7 +139,7 @@ class AchievementService {
       const response = await api.post(`/achievements/progress/level/${userId}`, { newLevel });
       return response.data.data?.unlockedAchievements || response.data.unlockedAchievements || [];
     } catch (error) {
-      console.error('AchievementService: Error actualizando progreso por subida de nivel:', error);
+      
       this.handleError(error, 'Error al actualizar progreso por subida de nivel');
     }
   }
@@ -152,7 +152,7 @@ class AchievementService {
       const response = await api.post(`/achievements/progress/streak/${userId}`, { streakDays });
       return response.data.data?.unlockedAchievements || response.data.unlockedAchievements || [];
     } catch (error) {
-      console.error('AchievementService: Error actualizando progreso por racha:', error);
+      
       this.handleError(error, 'Error al actualizar progreso por racha');
     }
   }
@@ -165,7 +165,7 @@ class AchievementService {
       const response = await api.post(`/achievements/progress/coins/${userId}`, { totalCoins });
       return response.data.data?.unlockedAchievements || response.data.unlockedAchievements || [];
     } catch (error) {
-      console.error('AchievementService: Error actualizando progreso por XaviCoins:', error);
+      
       this.handleError(error, 'Error al actualizar progreso por XaviCoins');
     }
   }
@@ -214,7 +214,7 @@ class AchievementService {
         byCategory
       };
     } catch (error) {
-      console.error('AchievementService: Error calculando estadísticas:', error);
+      
       this.handleError(error, 'Error al calcular estadísticas de logros');
     }
   }

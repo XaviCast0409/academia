@@ -21,7 +21,7 @@ export const fetchAndStoreFirstGenPokemons = async (): Promise<void> => {
       });
     }
 
-    console.log("Pokémones de la primera generación guardados exitosamente.");
+    
   } catch (error) {
     console.error("Error al obtener los Pokémon:", error);
     throw error;

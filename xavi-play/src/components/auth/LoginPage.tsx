@@ -171,7 +171,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
               {/* Create User Link */}
               <View style={loginStyles.createUserContainer}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('Register' as never)}
+                  onPress={() => navigation.navigate('CreateUser' as never)}
                   style={loginStyles.createUserButton}
                 >
                   <Text style={loginStyles.createUserButtonText}>

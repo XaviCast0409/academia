@@ -31,7 +31,7 @@ export const getUsersController = async (req: Request, res: Response) => {
   try {
     const { 
       page = 1, 
-      limit = 20, 
+      limit = 10, 
       section, 
       isActive, 
       search 
@@ -39,7 +39,7 @@ export const getUsersController = async (req: Request, res: Response) => {
 
     // Parse and validate parameters
     const pageNum = parseInt(page as string) || 1;
-    const limitNum = parseInt(limit as string) || 20;
+    const limitNum = parseInt(limit as string) || 10;
     const sectionStr = section as string || undefined;
     const isActiveBool = isActive !== undefined ? isActive === 'true' : undefined;
     const searchStr = search as string || undefined;
@@ -187,14 +187,14 @@ export const verifyCodeController = async (req: Request, res: Response): Promise
 
 export const updateUserStreakController = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
+    const { id } = req.params;
     
-    if (!userId) {
+    if (!id) {
       res.status(400).json({ error: 'userId es requerido' });
       return;
     }
 
-    const result = await updateUserStreak(parseInt(userId));
+    const result = await updateUserStreak(parseInt(id));
 
     res.status(200).json({
       success: true,

@@ -23,8 +23,6 @@ class EvidenceService {
 
   async createEvidence(evidenceData: EvidenceRequest): Promise<EvidenceResponse> {
     try {
-      console.log('EvidenceService: Creating evidence with data:', evidenceData);
-      
       // Mapear los campos del frontend a los del backend
       const backendData = {
         studentId: evidenceData.userId, // userId -> studentId
@@ -33,12 +31,7 @@ class EvidenceService {
         description: evidenceData.description,
       };
       
-      console.log('EvidenceService: Mapped data for backend:', backendData);
-      
       const response = await api.post('/evidences', backendData);
-      
-      console.log('EvidenceService: Evidence created successfully:', response.data);
-      
       return response.data;
     } catch (error: any) {
       console.error('EvidenceService: Error creating evidence:', error);
@@ -59,7 +52,7 @@ class EvidenceService {
       const response = await api.get(`/evidences/activity/${activityId}`);
       return response.data;
     } catch (error: any) {
-      console.error('EvidenceService: Error getting evidence:', error);
+      
       
       if (error.response) {
         const errorMessage = error.response.data?.message || 'Error al obtener las evidencias';
@@ -77,7 +70,7 @@ class EvidenceService {
       const response = await api.get(`/evidences/user/${userId}`);
       return response.data;
     } catch (error: any) {
-      console.error('EvidenceService: Error getting user evidence:', error);
+      
       
       if (error.response) {
         const errorMessage = error.response.data?.message || 'Error al obtener las evidencias del usuario';
@@ -92,14 +85,9 @@ class EvidenceService {
 
   async getEvidencesByStudent(studentId: number, page: number = 1, limit: number = 10): Promise<EvidencesResponse> {
     try {
-      console.log('EvidenceService: Getting evidences for student:', studentId, 'page:', page, 'limit:', limit);
-      
       const response = await api.get(`/evidences/student/${studentId}`, {
         params: { page, limit }
       });
-      
-      console.log('EvidenceService: Evidences retrieved successfully:', response.data);
-      
       return response.data;
     } catch (error: any) {
       console.error('EvidenceService: Error getting student evidences:', error);

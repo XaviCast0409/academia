@@ -20,14 +20,9 @@ class TransactionService {
   // Obtener transacciones del usuario
   async getUserTransactions(userId: number, page: number = 1, limit: number = 10): Promise<TransactionsResponse> {
     try {
-      console.log('TransactionService: Getting transactions for user:', userId, 'page:', page, 'limit:', limit);
-      
       const response = await api.get('/transactions/get-all', {
         params: { userId, page, limit }
       });
-      
-      console.log('TransactionService: Transactions retrieved successfully:', response.data);
-      
       return response.data;
     } catch (error: any) {
       console.error('TransactionService: Error getting user transactions:', error);

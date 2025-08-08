@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { LayoutAdmin, Dashboard, UsersView, ActivitiesView, EvidencesView } from './components'
+import React, { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { LayoutAdmin, Dashboard, UsersView, ActivitiesView, EvidencesView, ProductsView } from './components'
 import { Login } from './components/login/Login'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -8,14 +8,15 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 function AppContent() {
 	const { isAuthenticated } = useAuth()
 	const [currentRoute, setCurrentRoute] = useState<string>('/dashboard')
+  const navigate = useNavigate()
+  const location = useLocation()
 
-	const handleNavigate = (route: string) => {
-		console.log('App: Navigating to route:', route)
-		setCurrentRoute(route)
-	}
+  const handleNavigate = (route: string) => {
+    setCurrentRoute(route)
+    navigate(`/admin${route}`)
+  }
 
-	const renderContent = () => {
-		console.log('App: Current route:', currentRoute)
+  const renderContent = () => {
 		switch (currentRoute) {
 			case '/users':
 				return <UsersView />
@@ -23,11 +24,26 @@ function AppContent() {
 				return <ActivitiesView />
 			case '/evidences':
 				return <EvidencesView />
+      case '/products':
+        return <ProductsView />
 			case '/dashboard':
 			default:
 				return <Dashboard />
 		}
 	}
+
+  // Sync currentRoute with URL path under /admin
+  React.useEffect(() => {
+    if (!isAuthenticated) return
+    const path = location.pathname.replace(/\/+$/, '') // trim trailing slash
+    if (path.startsWith('/admin')) {
+      const sub = path.slice('/admin'.length) || '/dashboard'
+      const normalized = sub === '' ? '/dashboard' : sub
+      if (normalized !== currentRoute) {
+        setCurrentRoute(normalized)
+      }
+    }
+  }, [location.pathname, isAuthenticated])
 
 	return (
 		<LayoutAdmin currentRoute={currentRoute} onNavigate={handleNavigate}>

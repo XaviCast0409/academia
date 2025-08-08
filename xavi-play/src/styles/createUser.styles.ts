@@ -3,10 +3,10 @@ import { StyleSheet } from 'react-native';
 export const createUserStyles = StyleSheet.create({
   content: {
     flex: 1,
-    backgroundColor: '#f3f4f6', // gray-100
+    backgroundColor: '#ffffff',
   },
   formContainer: {
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     margin: 16,
     borderRadius: 16,
     padding: 24,
@@ -19,26 +19,26 @@ export const createUserStyles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     borderWidth: 2,
-    borderColor: '#3b82f6', // blue-500
+    borderColor: '#3b82f6',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 24,
-    color: '#1e40af', // blue-800
+    color: '#1e40af',
   },
   infoContainer: {
-    backgroundColor: '#dbeafe', // blue-100
+    backgroundColor: '#dbeafe',
     borderWidth: 1,
-    borderColor: '#3b82f6', // blue-500
+    borderColor: '#3b82f6',
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
   },
   infoText: {
     fontSize: 14,
-    color: '#1e40af', // blue-800
+    color: '#1e40af',
     textAlign: 'center',
     fontWeight: '500',
   },
@@ -48,7 +48,7 @@ export const createUserStyles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#374151', // gray-700
+    color: '#374151',
     marginBottom: 8,
   },
   input: {
@@ -56,14 +56,14 @@ export const createUserStyles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderWidth: 2,
-    borderColor: '#d1d5db', // gray-300
+    borderColor: '#d1d5db',
     borderRadius: 8,
     fontSize: 16,
-    backgroundColor: 'white',
-    color: '#1f2937', // gray-800
+    backgroundColor: '#ffffff',
+    color: '#1f2937',
   },
   inputError: {
-    borderColor: '#ef4444', // red-500
+    borderColor: '#ef4444',
   },
   errorText: {
     color: '#ef4444', // red-500
@@ -76,22 +76,22 @@ export const createUserStyles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderWidth: 2,
-    borderColor: '#d1d5db', // gray-300
+    borderColor: '#d1d5db',
     borderRadius: 8,
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   selectorText: {
     fontSize: 16,
-    color: '#1f2937', // gray-800
+    color: '#1f2937',
     flex: 1,
   },
   selectorDropdown: {
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     borderWidth: 2,
-    borderColor: '#3b82f6', // blue-500
+    borderColor: '#d1d5db',
     borderRadius: 8,
     marginTop: 4,
     maxHeight: 200,
@@ -104,15 +104,31 @@ export const createUserStyles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  selectWrapper: {
+    position: 'relative',
+  },
+  selectorDropdownAbsolute: {
+    position: 'absolute',
+    top: 52,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+  },
+  selectorList: {
+    maxHeight: 200,
+  },
   selectorOption: {
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb', // gray-200
+    borderBottomColor: '#e5e7eb',
+  },
+  selectorOptionSelected: {
+    backgroundColor: '#eff6ff',
   },
   selectorOptionText: {
     fontSize: 16,
-    color: '#1f2937', // gray-800
+    color: '#1f2937',
   },
   pokemonSelector: {
     flexDirection: 'row',
@@ -126,13 +142,13 @@ export const createUserStyles = StyleSheet.create({
     borderRadius: 16,
   },
   pokemonGrid: {
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     borderWidth: 2,
-    borderColor: '#3b82f6', // blue-500
+    borderColor: '#3b82f6',
     borderRadius: 8,
     marginTop: 4,
     padding: 8,
-    maxHeight: 320,
+    maxHeight: 750,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -151,18 +167,18 @@ export const createUserStyles = StyleSheet.create({
   pokemonOption: {
     width: '31%',
     aspectRatio: 1,
-    backgroundColor: '#f8fafc', // gray-50
+    backgroundColor: '#f8fafc',
     borderRadius: 8,
     marginBottom: 6,
     padding: 4,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#e2e8f0', // gray-200
+    borderColor: '#e2e8f0',
   },
   pokemonOptionSelected: {
-    borderColor: '#3b82f6', // blue-500
-    backgroundColor: '#dbeafe', // blue-100
+    borderColor: '#3b82f6',
+    backgroundColor: '#dbeafe',
     borderWidth: 2,
   },
   pokemonOptionImage: {
@@ -173,7 +189,7 @@ export const createUserStyles = StyleSheet.create({
   },
   pokemonOptionText: {
     fontSize: 10,
-    color: '#1f2937', // gray-800
+    color: '#1f2937',
     textTransform: 'capitalize',
     textAlign: 'center',
     fontWeight: '600',
@@ -188,12 +204,12 @@ export const createUserStyles = StyleSheet.create({
   paginationButton: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    backgroundColor: '#3b82f6', // blue-500
+    backgroundColor: '#3b82f6',
     borderRadius: 4,
     marginHorizontal: 3,
   },
   paginationButtonDisabled: {
-    backgroundColor: '#d1d5db', // gray-300
+    backgroundColor: '#d1d5db',
   },
   paginationButtonText: {
     color: '#ffffff',
@@ -201,33 +217,33 @@ export const createUserStyles = StyleSheet.create({
     fontWeight: '600',
   },
   paginationButtonTextDisabled: {
-    color: '#6b7280', // gray-500
+    color: '#6b7280',
   },
   paginationInfo: {
     fontSize: 11,
-    color: '#6b7280', // gray-500
+    color: '#6b7280',
     marginHorizontal: 6,
   },
   loadMoreButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#f3f4f6', // gray-100
+    backgroundColor: '#f3f4f6',
     borderRadius: 6,
     alignItems: 'center',
     marginTop: 6,
   },
   loadMoreText: {
     fontSize: 12,
-    color: '#3b82f6', // blue-500
+    color: '#3b82f6',
     fontWeight: '600',
   },
   button: {
-    backgroundColor: '#fbbf24', // yellow-400
+    backgroundColor: '#fbbf24',
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 25,
     borderWidth: 2,
-    borderColor: '#3b82f6', // blue-500
+    borderColor: '#3b82f6',
     alignItems: 'center',
     marginTop: 24,
     shadowColor: '#000',
@@ -240,12 +256,54 @@ export const createUserStyles = StyleSheet.create({
     elevation: 3,
   },
   buttonDisabled: {
-    backgroundColor: '#d1d5db', // gray-300
-    borderColor: '#9ca3af', // gray-400
+    backgroundColor: '#d1d5db',
+    borderColor: '#9ca3af',
   },
   buttonText: {
-    color: '#1e40af', // blue-800
+    color: '#1e40af',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  passwordRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  eyeButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderWidth: 2,
+    borderColor: '#d1d5db',
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+  },
+  eyeText: {
+    color: '#374151',
+    fontSize: 16,
+  },
+  overlayContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  overlayCard: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+    gap: 8,
+  },
+  overlayText: {
+    color: '#111827',
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 8,
+  },
+  overlaySubText: {
+    color: '#6b7280',
+    fontSize: 12,
   },
 }); 

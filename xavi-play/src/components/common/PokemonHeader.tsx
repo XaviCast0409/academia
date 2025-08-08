@@ -34,9 +34,9 @@ const PokemonHeader: React.FC<PokemonHeaderProps> = ({ title, onMenuPress, showB
           onPress: async () => {
             try {
               await logout();
-              console.log('Logout successful');
+              setMenuVisible(false);
+              (navigation as any).reset({ index: 0, routes: [{ name: 'Login' }] });
             } catch (error: any) {
-              console.error('Error during logout:', error);
               Alert.alert('Error', 'No se pudo cerrar sesión correctamente');
             }
           },
@@ -46,34 +46,28 @@ const PokemonHeader: React.FC<PokemonHeaderProps> = ({ title, onMenuPress, showB
   };
 
   const handleMenuItemPress = (item: string) => {
-    console.log('Menu item pressed:', item);
     setMenuVisible(false);
     
     // Implementar navegación a las diferentes vistas
-               switch (item) {
-             case 'mis-evidences':
-               console.log('Navigating to Evidences');
-               (navigation as any).navigate('Evidences');
-               break;
-             case 'mis-compras':
-               console.log('Navigating to Transactions');
-               (navigation as any).navigate('Transactions');
-               break;
-             case 'ranking':
-               console.log('Navigating to Ranking');
-               (navigation as any).navigate('Ranking');
-               break;
-             case 'misiones':
-               console.log('Navigating to Missions');
-               (navigation as any).navigate('Missions');
-               break;
-             case 'cerrar-sesion':
-               console.log('Logging out');
-               handleLogout();
-               break;
-             default:
-               console.log('Opción no implementada:', item);
-           }
+    switch (item) {
+      case 'mis-evidences':
+        (navigation as any).navigate('Evidences');
+        break;
+      case 'mis-compras':
+        (navigation as any).navigate('Transactions');
+        break;
+      case 'ranking':
+        (navigation as any).navigate('Ranking');
+        break;
+      case 'misiones':
+        (navigation as any).navigate('Missions');
+        break;
+      case 'cerrar-sesion':
+        handleLogout();
+        break;
+      default:
+        break;
+    }
   };
 
      const menuItems = [

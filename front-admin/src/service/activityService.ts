@@ -16,7 +16,6 @@ export const activityService = {
 
 	// Crear una nueva actividad
 	createActivity: async (activity: Omit<Activity, 'id'>): Promise<ActivityWithDetails> => {
-		console.log('Creating activity:', activity)
 		const response = await api.post('/activities/create', activity)
 		return response.data
 	},

@@ -1,23 +1,39 @@
-import type { Product } from './index'
-
-// Simplified User interface for these specific types
-interface SimpleUser {
-	id: number
-	name: string
-	email: string
+// Core Product types aligned with backend Product model
+export interface Product {
+  id: number
+  name: string
+  description: string
+  price: number
+  professorId: number
+  professor?: {
+    id: number
+    name: string
+    email?: string
+  }
+  createdAt: string
+  updatedAt: string
 }
 
-export interface ProductWithDetails extends Product {
-	professor: SimpleUser
+export interface CreateProductRequest {
+  name: string
+  description: string
+  price: number
+  professorId: number
 }
 
+export type UpdateProductRequest = Partial<CreateProductRequest>
+
+export interface ProductFilters {
+  page?: number
+  professorId?: number
+  search?: string
+}
+
+// Simplified helper types for UI needs
 export interface ProductFormData {
   name: string
   description: string
   price: number
-  images?: File[]
-  category?: string
-  tags?: string[]
 }
 
 export interface ProductPreview {
@@ -26,65 +42,12 @@ export interface ProductPreview {
   description: string
   price: number
   professorName: string
-  salesCount: number
-  averageRating?: number
-  createdAt: Date
+  createdAt: string
 }
 
-export interface ProductAnalytics {
+export interface ProductsResponse {
+  currentPage: number
+  totalPages: number
   totalProducts: number
-  totalRevenue: number
-  averagePrice: number
-  topSellingProducts: Array<{
-    productId: number
-    productName: string
-    salesCount: number
-    revenue: number
-  }>
-  productsByCategory: Record<string, number>
-  recentProducts: Product[]
+  products: Product[]
 }
-
-export interface ProductSearchParams {
-  search?: string
-  professorId?: number
-  minPrice?: number
-  maxPrice?: number
-  category?: string
-  dateFrom?: Date
-  dateTo?: Date
-}
-
-export interface ProductBulkAction {
-  productIds: number[]
-  action: 'publish' | 'unpublish' | 'delete' | 'duplicate'
-  data?: Record<string, any>
-}
-
-export interface ProductReview {
-  id: number
-  productId: number
-  userId: number
-  rating: number
-  comment?: string
-  createdAt: Date
-  user?: {
-    id: number
-    name: string
-  }
-}
-
-export interface ProductCategory {
-  id: number
-  name: string
-  description?: string
-  productCount: number
-}
-
-// Re-exportar tipos principales
-export type {
-  Product,
-  CreateProductRequest,
-  UpdateProductRequest,
-  ProductFilters
-} 
