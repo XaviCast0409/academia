@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 export const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  //baseURL: 'http://localhost:3000',
+  baseURL: "https://academia-nho8.onrender.com/"  // produccion
 })
 
 // Interceptor para agregar el token a todas las peticiones
