@@ -24,7 +24,7 @@ export const useAchievementRefresh = () => {
           
           // 3. Asignar logros si el usuario no tiene ninguno (usuario nuevo o primera vez)
           // Solo hacerlo si realmente no hay ningún logro para evitar bucles
-          const userAchievements = useAchievementStore.getState().userAchievements;
+          const userAchievements = useAchievementStore().userAchievements;
           if (userAchievements.length === 0) {
     
             // Usar timeout para evitar que interfiera con otras actualizaciones

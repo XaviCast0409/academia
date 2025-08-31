@@ -99,7 +99,6 @@ export const createInputStyle = (
     paddingHorizontal: designTokens.spacing.md,
     paddingVertical: designTokens.spacing.sm,
     borderRadius: designTokens.borderRadius.md,
-    fontSize: designTokens.typography.fontSize.md,
     backgroundColor: designTokens.colors.surface,
     borderWidth: 1,
     height: designTokens.dimensions.input.md,

@@ -27,7 +27,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     if (!user) return;
     set({ isLoading: true });
     try {
-      const res = await notificationService.list(user.id, page);
+      const res = await notificationService.list(parseInt(user.id), page);
       const unread = res.notifications.filter((n) => !n.isRead).length;
       set({
         items: page === 1 ? res.notifications : [...get().items, ...res.notifications],
@@ -43,7 +43,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   markAsRead: async (id: number) => {
     const user = useAuthStore.getState().user;
     if (!user) return;
-    await notificationService.markAsRead(id, user.id);
+    await notificationService.markAsRead(id, parseInt(user.id));
     set((state) => {
       const items = state.items.map((n) => (n.id === id ? { ...n, isRead: true } : n));
       const unreadCount = items.filter((n) => !n.isRead).length;
