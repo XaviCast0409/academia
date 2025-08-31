@@ -21,13 +21,10 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
   loadActiveMissions: async (userId: number) => {
     try {
-      console.log('MissionStore: Loading active missions for user:', userId);
       set({ loading: true, error: null });
       
       const missions = await missionService.getActiveMissions(userId);
-      
-      console.log('MissionStore: Active missions loaded successfully:', missions);
-      
+          
       set({
         activeMissions: missions,
         loading: false,
@@ -44,7 +41,6 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
   loadCompletedMissions: async (userId: number) => {
     try {
-      console.log('MissionStore: Loading completed missions for user:', userId);
       set({ loading: true, error: null });
       
       const missions = await missionService.getMissionHistory(userId);

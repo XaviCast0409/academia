@@ -17,10 +17,12 @@ import TransactionsPage from '@/pages/TransactionsPage';
 import RankingPage from '@/pages/RankingPage';
 import MissionsPage from '@/pages/MissionsPage';
 import AchievementsPage from '@/pages/AchievementsPage';
+import NotificationsPage from '@/pages/NotificationsPage';
 import CreateUserPage from '@/pages/CreateUserPage';
 import RegisterPage from '@/pages/RegisterPage';
 import LoginAfterRegisterPage from '@/pages/LoginAfterRegisterPage';
 import BottomTabBar from '@/components/navigation/BottomTabBar';
+import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -45,6 +47,7 @@ const TabNavigator: React.FC = () => {
 // Main app navigator
 const AppNavigator: React.FC = () => {
   const { isAuthenticated, initializeAuth } = useAuthStore();
+  useRealtimeNotifications();
   
   // Hook para refrescar datos cuando la app vuelve a estar activa
   useAppStateRefresh();
@@ -78,6 +81,7 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen name="Ranking" component={RankingPage} />
             <Stack.Screen name="Missions" component={MissionsPage} />
             <Stack.Screen name="Achievements" component={AchievementsPage} />
+            <Stack.Screen name="Notifications" component={NotificationsPage} />
             <Stack.Screen name="CreateUser" component={CreateUserPage} />
             <Stack.Screen name="Register" component={RegisterPage} />
             <Stack.Screen name="LoginAfterRegister" component={LoginAfterRegisterPage} />

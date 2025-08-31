@@ -33,5 +33,13 @@
       }
     },
     "owner": "xaviplay"
+  },
+  "expo-updates": {
+    "url": "https://u.expo.dev/9c4804db-0470-4fea-b8e9-fdaa81589109"
+  },
+  "expo-notifications": {
+    "icon": "./assets/logo.png",
+    "color": "#000000",
+    "sounds": ["./assets/notification-sound.mp3"]
   }
 }

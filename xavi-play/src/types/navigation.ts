@@ -7,6 +7,7 @@ export type RootStackParamList = {
   Ranking: undefined;
   Missions: undefined;
   Achievements: undefined;
+  Notifications: undefined;
   CreateUser: undefined;
   Register: undefined;
   LoginAfterRegister: { userEmail?: string };

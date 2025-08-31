@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-na
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import ScreenWrapper from '@/components/common/ScreenWrapper';
 import PokemonHeader from '@/components/common/PokemonHeader';
+import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import Pagination from '@/components/common/Pagination';
 import { activitiesStyles } from '@/styles/activities.styles';
 import { useAuthStore } from '@/store/authStore';
@@ -10,6 +11,7 @@ import { useActivityStore } from '@/store/activityStore';
 import { Activity } from '@/types/activity';
 
 const ActivitiesPage: React.FC = () => {
+  useRealtimeNotifications();
   const navigation = useNavigation();
   const { user } = useAuthStore();
   const { 

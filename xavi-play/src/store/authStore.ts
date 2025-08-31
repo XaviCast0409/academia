@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from '@/types/user';
 import authService from '@/services/authService';
+import { logger, stateLogger } from '@/utils/logger';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -25,20 +26,21 @@ export const useAuthStore = create<AuthState>()(
       
       login: async (email: string, password: string) => {
         try {
-          console.log('Store: Iniciando login...');
+          stateLogger.storeUpdate('authStore', 'login', { email });
           const response = await authService.login({ email, password });
-          console.log("Store: response", response);
-          console.log('Store: Login exitoso, actualizando estado...');
-          console.log('Store: User data:', response.user);
-          console.log('Store: Token:', response.token);
+          
           set({ 
             isAuthenticated: true, 
             user: response.user, 
             token: response.token 
           });
-          console.log('Store: Estado actualizado correctamente');
+          
+          stateLogger.storeUpdate('authStore', 'login:success', { 
+            userId: response.user.id, 
+            username: response.user.username 
+          });
         } catch (error) {
-          console.log('Store: Error en login:', error);
+          stateLogger.storeError('authStore', 'login', error);
           throw error;
         }
       },
@@ -67,23 +69,27 @@ export const useAuthStore = create<AuthState>()(
 
       refreshUserData: async () => {
         try {
+          stateLogger.storeUpdate('authStore', 'refreshUserData:start');
           const user = await authService.getCurrentUser();
           if (user) {
             set((state) => ({
               user: { ...state.user, ...user },
             }));
+            stateLogger.storeUpdate('authStore', 'refreshUserData:success', { userId: user.id });
           }
         } catch (error) {
-          console.error('Error refreshing user data:', error);
+          stateLogger.storeError('authStore', 'refreshUserData', error);
         }
       },
 
       initializeAuth: async () => {
         try {
+          stateLogger.storeUpdate('authStore', 'initializeAuth:start');
           const user = await authService.getCurrentUser();
           set({ isAuthenticated: !!user, user: user || null, token: null });
+          stateLogger.storeUpdate('authStore', 'initializeAuth:success', { authenticated: !!user });
         } catch (error) {
-          console.error('Auth initialization error:', error);
+          stateLogger.storeError('authStore', 'initializeAuth', error);
           set({ isAuthenticated: false, user: null, token: null });
         }
       },

@@ -1,21 +1,13 @@
 import api from './api';
 import { User } from '@/types/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Función para decodificar el token JWT y obtener el ID del usuario
-const decodeToken = (token: string): { id: number } | null => {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  } catch (error) {
-    console.error('Error decoding token:', error);
-    return null;
-  }
-};
+import { logger } from '@/utils/logger';
+import { 
+  decodeToken, 
+  getCurrentValidToken, 
+  clearAuthData,
+  isTokenExpired 
+} from '@/utils/tokenUtils';
 
 export interface LoginCredentials {
   email: string;
@@ -62,8 +54,15 @@ class AuthService {
   // Login user
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     try {
+      logger.info('Iniciando proceso de login para:', credentials.email);
+      
       const response = await api.post('/users/login', credentials);
       const { token, user: backendUser } = response.data;
+      
+      // Validar token recibido
+      if (!token || isTokenExpired(token)) {
+        throw new Error('Token inválido recibido del servidor');
+      }
       
       // Transform backend user to app user format
       const user: User = {
@@ -85,9 +84,10 @@ class AuthService {
       // Store token
       await AsyncStorage.setItem('authToken', token);
       
-      const result = { token, user };
-      return result;
+      logger.info('Login exitoso para usuario:', user.username);
+      return { token, user };
     } catch (error: any) {
+      logger.error('Error en login:', error);
       throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
     }
   }
@@ -95,26 +95,39 @@ class AuthService {
   // Logout user
   async logout(): Promise<void> {
     try {
-      // Remove token
-      await AsyncStorage.removeItem('authToken');
+      logger.info('Iniciando proceso de logout');
+      await clearAuthData();
+      logger.info('Logout completado exitosamente');
     } catch (error) {
-      console.error('Logout error:', error);
+      logger.error('Error en logout:', error);
+      // Aún si falla, intentar limpiar datos básicos
+      try {
+        await AsyncStorage.removeItem('authToken');
+      } catch (fallbackError) {
+        logger.error('Error en fallback de logout:', fallbackError);
+      }
     }
   }
 
   // Get current user
   async getCurrentUser(): Promise<User | null> {
     try {
-      const token = await AsyncStorage.getItem('authToken');
-      if (!token) return null;
+      // Usar el método seguro para obtener token válido
+      const token = await getCurrentValidToken();
+      if (!token) {
+        logger.info('No hay token válido disponible');
+        return null;
+      }
 
       // Decodificar el token para obtener el ID del usuario
       const decodedToken = decodeToken(token);
       if (!decodedToken || !decodedToken.id) {
-        console.error('No se pudo obtener el ID del usuario del token');
+        logger.error('No se pudo obtener el ID del usuario del token');
+        await clearAuthData(); // Limpiar token inválido
         return null;
       }
 
+      logger.info('Obteniendo datos del usuario:', decodedToken.id);
       const response = await api.get(`/users/${decodedToken.id}`);
       const backendUser = response.data;
             
@@ -135,8 +148,14 @@ class AuthService {
         pokemonId: backendUser.pokemonId,
       };
       
+      logger.info('Datos de usuario obtenidos exitosamente');
       return user;
     } catch (error) {
+      logger.error('Error obteniendo usuario actual:', error);
+      // Si hay error de autenticación, limpiar datos
+      if (error instanceof Error && error.message.includes('Sesión expirada')) {
+        await clearAuthData();
+      }
       return null;
     }
   }
@@ -144,9 +163,10 @@ class AuthService {
   // Check if user is authenticated
   async isAuthenticated(): Promise<boolean> {
     try {
-      const token = await AsyncStorage.getItem('authToken');
+      const token = await getCurrentValidToken();
       return !!token;
     } catch (error) {
+      logger.error('Error verificando autenticación:', error);
       return false;
     }
   }
@@ -154,9 +174,11 @@ class AuthService {
   // Update user streak
   async updateStreak(userId: number): Promise<void> {
     try {
+      logger.info('Actualizando racha del usuario:', userId);
       await api.patch(`/users/${userId}/streak`);
+      logger.info('Racha actualizada exitosamente');
     } catch (error: any) {
-      console.error('Error updating streak:', error);
+      logger.error('Error actualizando racha:', error);
       throw new Error(error.response?.data?.message || 'Error al actualizar racha');
     }
   }

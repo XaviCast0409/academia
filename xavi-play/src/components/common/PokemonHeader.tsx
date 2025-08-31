@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { headerStyles } from '@/styles/header.styles';
 import { useAuthStore } from '@/store/authStore';
 import XavicoinDisplay from './XavicoinDisplay';
+import NotificationBell from './NotificationBell';
 
 interface PokemonHeaderProps {
   title: string;
@@ -94,9 +95,7 @@ const PokemonHeader: React.FC<PokemonHeaderProps> = ({ title, onMenuPress, showB
         ) : null}
         <Text style={headerStyles.title}>{title}</Text>
         <View style={headerStyles.rightSection}>
-          {user && (
-            <XavicoinDisplay amount={user.xaviCoins || 0} size="small" />
-          )}
+          <NotificationBell onPress={() => (navigation as any).navigate('Notifications')} />
           <TouchableOpacity
             style={headerStyles.menuButton}
             onPress={handleMenuPress}

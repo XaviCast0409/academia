@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { View, ScrollView } from 'react-native'
 import PokemonHeader from '@/components/common/PokemonHeader'
+import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications'
+import { usePushNotifications } from '@/hooks/usePushNotifications'
 import { useNavigation } from '@react-navigation/native'
 import ScreenWrapper from '@/components/common/ScreenWrapper'
 import { profileStyles } from '@/styles/profile.styles'
@@ -16,6 +18,8 @@ import { QuickActions } from '@/pages/profilepage/vistas/QuickActions'
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuthStore()
+  useRealtimeNotifications()
+  usePushNotifications()
   const navigation = useNavigation()
   const { userAchievements, loadUserAchievements, loading } = useAchievementStore()
   

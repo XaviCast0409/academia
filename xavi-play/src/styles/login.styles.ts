@@ -1,10 +1,9 @@
 import { StyleSheet } from 'react-native';
+import { designTokens } from './designTokens';
+import { createContainerStyle, createCardStyle, createButtonStyle, createButtonTextStyle, createInputStyle } from './styleUtils';
 
 export const loginStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#dc2626', // red-600
-  },
+  container: createContainerStyle('md', designTokens.colors.background),
   contentContainer: {
     width: '100%',
     maxWidth: 400,
@@ -12,27 +11,17 @@ export const loginStyles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: designTokens.spacing.lg,
   },
   logo: {
-    height: 96,
+    height: designTokens.dimensions.avatar.xl,
     width: 200,
     resizeMode: 'contain',
   },
   formContainer: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 8,
-    padding: 24,
+    ...createCardStyle('elevated'),
     borderWidth: 4,
-    borderColor: '#3b82f6', // blue-500
+    borderColor: designTokens.colors.secondary,
   },
   pokeballContainer: {
     alignItems: 'center',
@@ -87,26 +76,17 @@ export const loginStyles = StyleSheet.create({
     borderWidth: 2,
   },
   button: {
-    backgroundColor: '#fbbf24', // yellow-400
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 25,
-    borderWidth: 2,
-    borderColor: '#3b82f6', // blue-500
-    alignItems: 'center',
-    marginTop: 8,
+    ...createButtonStyle('primary', 'md'),
+    marginTop: designTokens.spacing.sm,
+    borderRadius: designTokens.borderRadius.xxl,
   },
   buttonDisabled: {
-    backgroundColor: '#d1d5db', // gray-300
-    borderColor: '#9ca3af', // gray-400
+    backgroundColor: designTokens.colors.gray[300],
+    borderColor: designTokens.colors.gray[400],
   },
-  buttonText: {
-    color: '#1e40af', // blue-800
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  buttonText: createButtonTextStyle('primary', 'md'),
   buttonTextDisabled: {
-    color: '#6b7280', // gray-500
+    color: designTokens.colors.text.disabled,
   },
   pikachuContainer: {
     alignItems: 'center',

@@ -7,6 +7,8 @@ import { useAuthStore } from '@/store/authStore';
 import { useProductStore } from '@/store/productStore';
 import transactionService from '@/services/transactionService';
 import { Product } from '@/types/product';
+import XavicoinDisplay from '@/components/common/XavicoinDisplay';
+import { profileStyles } from '@/styles/profile.styles';
 
 const StorePage = () => {
   const { user, updateUserXaviCoins, refreshUserData } = useAuthStore();
@@ -29,7 +31,7 @@ const StorePage = () => {
 
     if (user.xaviCoins < product.price) {
       Alert.alert(
-        'Saldo Insuficiente', 
+        'Saldo Insuficiente',
         `Necesitas ${product.price} XaviCoins para comprar este producto. Tu saldo actual es ${user.xaviCoins} XaviCoins.`
       );
       return;
@@ -58,12 +60,12 @@ const StorePage = () => {
 
     try {
       const response = await transactionService.purchaseProduct(parseInt(user.id), product.id);
-      
+
       if (response.success) {
         // Actualizar XaviCoins del usuario en el store
         const newXaviCoins = user.xaviCoins - product.price;
         updateUserXaviCoins(newXaviCoins);
-        
+
         Alert.alert(
           '¡Compra Exitosa!',
           `Has comprado "${product.name}" exitosamente.\n\n${response.message}`,
@@ -92,12 +94,20 @@ const StorePage = () => {
   return (
     <ScreenWrapper>
       <PokemonHeader title="Tienda Pokémon" />
-      <ScrollView 
-        style={storeStyles.content} 
+      <ScrollView
+        style={storeStyles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         <View style={storeStyles.itemsContainer}>
+          {user && (
+            <View style={profileStyles.xavicoinsSection}>
+              <Text style={profileStyles.sectionTitle}>Tu Tesoro</Text>
+              <View style={profileStyles.xavicoinsContainer}>
+                <XavicoinDisplay amount={user.xaviCoins || 0} size="large" />
+              </View>
+            </View>
+          )}
           {loading ? (
             <View style={storeStyles.loadingContainer}>
               <Text style={storeStyles.loadingText}>Cargando productos...</Text>
@@ -105,9 +115,9 @@ const StorePage = () => {
           ) : (
             products.map((product) => (
               <TouchableOpacity key={product.id} style={storeStyles.itemCard}>
-                <Image 
-                  source={{ uri: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png' }} 
-                  style={storeStyles.itemImage} 
+                <Image
+                  source={{ uri: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png' }}
+                  style={storeStyles.itemImage}
                 />
                 <View style={storeStyles.itemInfo}>
                   <Text style={storeStyles.itemName}>{product.name}</Text>
@@ -118,7 +128,7 @@ const StorePage = () => {
                     <Text style={storeStyles.currency}> XaviCoins</Text>
                   </View>
                 </View>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={storeStyles.buyButton}
                   onPress={() => handleBuyProduct(product)}
                 >
