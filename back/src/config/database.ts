@@ -13,6 +13,9 @@ import { Pokemon } from "../models/Pokemon";
 import { Product } from "../models/Product";
 import { Transaction } from "../models/Transaction";
 import { Notification } from "../models/Notification";
+import { StudyCard } from "../models/StudyCard";
+import { UserStudyCard } from "../models/UserStudyCard";
+import { StudySession } from "../models/StudySession";
 
 const db: any = {}
 /* export const sequelize = new Sequelize({
@@ -50,7 +53,10 @@ const models = [
   Product,
   Transaction,
   Notification,
-  VerificationCode
+  VerificationCode,
+  StudyCard,
+  UserStudyCard,
+  StudySession
 ];
 
 // Inicializar modelos

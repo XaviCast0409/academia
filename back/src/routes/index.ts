@@ -10,6 +10,8 @@ import routerEmailVerification from "../modules/emailVerification/emailVerificat
 import missionRoutes from '../modules/mission/mission.router';
 import routerAchievement from '../modules/achievement/achievement.router';
 import notificationsRouter from '../modules/notifications/notification.routes';
+import studyCardRoutes from '../modules/studyCard/studyCard.routes';
+import studySessionRoutes from '../modules/studySession/studySession.routes';
 
 const router = Router();
 
@@ -28,5 +30,9 @@ router.use("/email-verification", routerEmailVerification);
 router.use("/missions", missionRoutes);
 router.use("/achievements", routerAchievement);
 router.use('/notifications', notificationsRouter);
+
+// Study system routes
+router.use("/study-cards", studyCardRoutes);
+router.use("/study-sessions", studySessionRoutes);
 
 export default router;
