@@ -262,9 +262,11 @@ export class StudySessionController {
 
       const activeSession = await studySessionService.getActiveSession(userId);
 
+      // Si no hay sesión activa, devolver 200 con null (no es un error)
       if (!activeSession) {
-        res.status(404).json({
-          success: false,
+        res.status(200).json({
+          success: true,
+          data: null,
           message: "No hay sesión activa"
         });
         return;
@@ -298,8 +300,9 @@ export class StudySessionController {
       const activeSession = await studySessionService.getActiveSession(userId);
 
       if (!activeSession) {
-        res.status(404).json({
-          success: false,
+        res.status(200).json({
+          success: true,
+          data: null,
           message: "No hay sesión activa para cancelar"
         });
         return;
