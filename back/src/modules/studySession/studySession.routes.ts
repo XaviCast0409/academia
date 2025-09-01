@@ -7,35 +7,41 @@ import {
   getSessionHistoryValidation,
   getStudyStatisticsValidation
 } from "./studySession.validation";
+import { authMiddleware } from "../../middlewares/auth.middleware";
 
 const router = Router();
 
 // Gestión de sesiones de estudio
 router.post(
   "/start",
+  authMiddleware,
   startSessionValidation,
   studySessionController.startSession
 );
 
 router.put(
   "/:sessionId/finish",
+  authMiddleware,
   finishSessionValidation,
   studySessionController.finishSession
 );
 
 router.get(
   "/active",
+  authMiddleware,
   studySessionController.getActiveSession
 );
 
 router.delete(
   "/active",
+  authMiddleware,
   studySessionController.cancelActiveSession
 );
 
 // Registro de estudio de tarjetas
 router.post(
   "/cards/:cardId/study",
+  authMiddleware,
   recordCardStudyValidation,
   studySessionController.recordCardStudy
 );
@@ -43,12 +49,14 @@ router.post(
 // Historial y estadísticas
 router.get(
   "/history",
+  authMiddleware,
   getSessionHistoryValidation,
   studySessionController.getSessionHistory
 );
 
 router.get(
   "/statistics",
+  authMiddleware,
   getStudyStatisticsValidation,
   studySessionController.getStudyStatistics
 );
