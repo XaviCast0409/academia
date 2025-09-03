@@ -171,6 +171,30 @@ class AuthService {
     }
   }
 
+  // Refresh token if needed
+  async refreshTokenIfNeeded(): Promise<string | null> {
+    try {
+      const token = await AsyncStorage.getItem('authToken');
+      if (!token) {
+        logger.info('No hay token para refrescar');
+        return null;
+      }
+
+      // Si el token está expirado, intentar renovarlo
+      if (isTokenExpired(token)) {
+        logger.info('Token expirado, necesita renovación');
+        await clearAuthData();
+        return null;
+      }
+
+      return token;
+    } catch (error) {
+      logger.error('Error refrescando token:', error);
+      await clearAuthData();
+      return null;
+    }
+  }
+
   // Update user streak
   async updateStreak(userId: number): Promise<void> {
     try {

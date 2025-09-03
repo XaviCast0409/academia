@@ -15,6 +15,7 @@ interface AuthState {
   updateUserXaviCoins: (newXaviCoins: number) => void;
   refreshUserData: () => Promise<void>;
   initializeAuth: () => Promise<void>;
+  checkAuthStatus: () => Promise<boolean>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -91,6 +92,34 @@ export const useAuthStore = create<AuthState>()(
         } catch (error) {
           stateLogger.storeError('authStore', 'initializeAuth', error);
           set({ isAuthenticated: false, user: null, token: null });
+        }
+      },
+
+      checkAuthStatus: async () => {
+        try {
+          stateLogger.storeUpdate('authStore', 'checkAuthStatus:start');
+          const token = await authService.refreshTokenIfNeeded();
+          const isValid = !!token;
+          
+          if (!isValid) {
+            set({ isAuthenticated: false, user: null, token: null });
+            stateLogger.storeUpdate('authStore', 'checkAuthStatus:invalid');
+            return false;
+          }
+
+          // Si hay token válido pero no hay usuario cargado, intentar cargar
+          const currentState = useAuthStore.getState();
+          if (!currentState.user) {
+            const user = await authService.getCurrentUser();
+            set({ isAuthenticated: !!user, user: user || null, token });
+          }
+
+          stateLogger.storeUpdate('authStore', 'checkAuthStatus:valid');
+          return true;
+        } catch (error) {
+          stateLogger.storeError('authStore', 'checkAuthStatus', error);
+          set({ isAuthenticated: false, user: null, token: null });
+          return false;
         }
       },
     }),

@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import XavicoinDisplay from '@/components/common/XavicoinDisplay'
+import StreakDisplay from '@/components/common/StreakDisplay'
 import { profileStyles } from '@/styles/profile.styles'
 import type { User } from '@/types/user'
 

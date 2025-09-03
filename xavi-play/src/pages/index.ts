@@ -3,4 +3,7 @@ export { default as ActivitiesPage } from './ActivitiesPage';
 export { default as ProfilePage } from './ProfilePage';
 export { default as CreateUserPage } from './CreateUserPage';
 export { default as RegisterPage } from './RegisterPage';
-export { default as LoginAfterRegisterPage } from './LoginAfterRegisterPage'; 
+export { default as LoginAfterRegisterPage } from './LoginAfterRegisterPage';
+export { default as StudyDecksPage } from './StudyDecksPage';
+export { default as StudySessionPage } from './StudySessionPage';
+export { default as StudyResultsPage } from './StudyResultsPage'; 

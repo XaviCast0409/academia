@@ -21,6 +21,9 @@ import NotificationsPage from '@/pages/NotificationsPage';
 import CreateUserPage from '@/pages/CreateUserPage';
 import RegisterPage from '@/pages/RegisterPage';
 import LoginAfterRegisterPage from '@/pages/LoginAfterRegisterPage';
+import StudyDecksPage from '@/pages/StudyDecksPage';
+import StudySessionPage from '@/pages/StudySessionPage';
+import StudyResultsPage from '@/pages/StudyResultsPage';
 import BottomTabBar from '@/components/navigation/BottomTabBar';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 
@@ -40,6 +43,7 @@ const TabNavigator: React.FC = () => {
       <Tab.Screen name="Profile" component={ProfilePage} />
       <Tab.Screen name="Store" component={StorePage} />
       <Tab.Screen name="Activities" component={ActivitiesPage} />
+      <Tab.Screen name="Study" component={StudyDecksPage} />
     </Tab.Navigator>
   );
 };
@@ -85,6 +89,10 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen name="CreateUser" component={CreateUserPage} />
             <Stack.Screen name="Register" component={RegisterPage} />
             <Stack.Screen name="LoginAfterRegister" component={LoginAfterRegisterPage} />
+            {/* Study system screens */}
+            <Stack.Screen name="StudyDecks" component={StudyDecksPage} />
+            <Stack.Screen name="StudySession" component={StudySessionPage} />
+            <Stack.Screen name="StudyResults" component={StudyResultsPage} />
           </>
         )}
       </Stack.Navigator>

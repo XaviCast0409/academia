@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
+import { useAchievementStore } from '@/store/achievementStore';
 import { AppState } from 'react-native';
 import authService from '@/services/authService';
 
@@ -8,7 +9,8 @@ import authService from '@/services/authService';
  * Se ejecuta cuando la app se abre o cuando vuelve del background
  */
 export const useStreakUpdate = () => {
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, refreshUserData } = useAuthStore();
+  const { updateProgressFromStreak } = useAchievementStore();
   const lastUpdateRef = useRef<string | null>(null);
   const isUpdatingRef = useRef(false);
 
@@ -16,7 +18,22 @@ export const useStreakUpdate = () => {
     if (!user) return;
     
     try {
+      // 1. Actualizar racha en el backend
       await authService.updateStreak(parseInt(user.id));
+      
+      // 2. Refrescar datos del usuario para obtener la nueva racha
+      await refreshUserData();
+      
+      // 3. Obtener la racha actualizada
+      const updatedUser = useAuthStore.getState().user;
+      const currentStreak = updatedUser?.currentStreak || 0;
+      
+      // 4. Actualizar progreso de logros basados en racha
+      if (currentStreak > 0) {
+        await updateProgressFromStreak(parseInt(user.id), currentStreak);
+      }
+      
+      console.log(`Streak updated successfully: ${currentStreak} days`);
     } catch (error) {
       console.error('Error updating streak:', error);
     }
@@ -56,7 +73,7 @@ export const useStreakUpdate = () => {
         }
       };
 
-      const subscription = AppState.addEventListener('change', handleAppStateChange);
+      const subscription = AppState.addEventListener('change', handleAppStateChange); 
 
       return () => {
         subscription?.remove();

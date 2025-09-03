@@ -4,19 +4,16 @@ import { apiLogger } from '@/utils/logger';
 
 // Configuración de entornos
 const API_CONFIG = {
-  development: 'http://192.168.18.159:3000',
+  development: 'http://192.168.18.159:3000', // Tu IP local que ya funcionaba
   staging: 'https://staging.academia.com',
   production: 'https://academia-nho8.onrender.com'
 };
 
 // Determinar entorno actual
 const getEnvironment = (): keyof typeof API_CONFIG => {
-  // FORZANDO PRODUCCIÓN PARA PRUEBAS
-  return 'production';
-  
-  // Configuración original (comentada para pruebas):
+  // Configuración para desarrollo local
   // if (__DEV__) return 'development';
-  // return 'production';
+  return 'production';
 };
 
 // Configuración base de la API
@@ -36,10 +33,23 @@ const MAX_RETRIES = 3;
 api.interceptors.request.use(
   async (config) => {
     try {
-      // Add auth token if available
+      // Add auth token if available and valid
       const token = await AsyncStorage.getItem('authToken');
       if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        // Verificar si el token está expirado antes de usarlo
+        try {
+          const { isTokenExpired } = require('@/utils/tokenUtils');
+          if (!isTokenExpired(token)) {
+            config.headers.Authorization = `Bearer ${token}`;
+          } else {
+            // Token expirado, removemos del storage
+            await AsyncStorage.removeItem('authToken');
+            apiLogger.error('REQUEST', 'token-expired', 'Token expirado removido del storage');
+          }
+        } catch (tokenError) {
+          // Si hay error verificando token, intentamos usarlo de todas formas
+          config.headers.Authorization = `Bearer ${token}`;
+        }
       }
       
       // Log request
@@ -133,9 +143,9 @@ api.interceptors.response.use(
       
       switch (status) {
         case 401:
-          // Token expirado o inválido
-          await AsyncStorage.removeItem('authToken');
-          return Promise.reject(new Error('Sesión expirada. Por favor, inicia sesión nuevamente.'));
+          // Token expirado o inválido - limpiar todos los datos de auth
+          await AsyncStorage.multiRemove(['authToken', 'auth-storage']);
+          return Promise.reject(new Error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente para continuar.'));
         case 403:
           return Promise.reject(new Error('No tienes permisos para realizar esta acción.'));
         case 404:
