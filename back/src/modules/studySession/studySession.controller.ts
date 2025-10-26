@@ -1,22 +1,11 @@
 import { Request, Response } from "express";
 import studySessionService from "./studySession.service";
-import { validationResult } from "express-validator";
 
 export class StudySessionController {
 
   // Iniciar una nueva sesión de estudio
-  async startSession(req: Request, res: Response): Promise<void> {
+  async startStudySession(req: Request, res: Response): Promise<void> {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        res.status(400).json({ 
-          success: false, 
-          message: "Errores de validación", 
-          errors: errors.array() 
-        });
-        return;
-      }
-
       const userId = (req as any).user?.id;
       if (!userId) {
         res.status(401).json({ 
@@ -26,32 +15,16 @@ export class StudySessionController {
         return;
       }
 
-      // Verificar si ya tiene una sesión activa
-      const activeSession = await studySessionService.getActiveSession(userId);
-      if (activeSession) {
-        res.status(409).json({
-          success: false,
-          message: "Ya tienes una sesión activa",
-          data: { activeSessionId: activeSession.id }
-        });
-        return;
-      }
-
-      const { studyCardId, sessionType, sessionGoal } = req.body;
-
-      const session = await studySessionService.startStudySession(userId, {
-        studyCardId,
-        sessionType,
-        sessionGoal
-      });
-
+      const sessionData = req.body;
+      const session = await studySessionService.startStudySession(userId, sessionData);
+      
       res.status(201).json({
         success: true,
         message: "Sesión de estudio iniciada",
         data: session
       });
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
+      console.error("Error al iniciar sesión de estudio:", error);
       res.status(500).json({ 
         success: false, 
         message: "Error interno del servidor" 
@@ -60,80 +33,11 @@ export class StudySessionController {
   }
 
   // Finalizar una sesión de estudio
-  async finishSession(req: Request, res: Response): Promise<void> {
+  async endStudySession(req: Request, res: Response): Promise<void> {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        res.status(400).json({ 
-          success: false, 
-          message: "Errores de validación", 
-          errors: errors.array() 
-        });
-        return;
-      }
-
-      const userId = (req as any).user?.id;
-      if (!userId) {
-        res.status(401).json({ 
-          success: false, 
-          message: "Usuario no autenticado" 
-        });
-        return;
-      }
-
       const { sessionId } = req.params;
-      const { cardsStudied, notes } = req.body;
-
-      const result = await studySessionService.finishStudySession(Number(sessionId), {
-        cardsStudied,
-        endTime: new Date(),
-        notes
-      });
-
-      res.status(200).json({
-        success: true,
-        message: "Sesión completada exitosamente",
-        data: result
-      });
-    } catch (error) {
-      console.error("Error al finalizar sesión:", error);
-      if (error instanceof Error) {
-        if (error.message === "Sesión no encontrada") {
-          res.status(404).json({ 
-            success: false, 
-            message: error.message 
-          });
-          return;
-        }
-        if (error.message === "La sesión ya está completada") {
-          res.status(409).json({ 
-            success: false, 
-            message: error.message 
-          });
-          return;
-        }
-      }
-      res.status(500).json({ 
-        success: false, 
-        message: "Error interno del servidor" 
-      });
-    }
-  }
-
-  // Registrar estudio de una tarjeta específica
-  async recordCardStudy(req: Request, res: Response): Promise<void> {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        res.status(400).json({ 
-          success: false, 
-          message: "Errores de validación", 
-          errors: errors.array() 
-        });
-        return;
-      }
-
       const userId = (req as any).user?.id;
+      
       if (!userId) {
         res.status(401).json({ 
           success: false, 
@@ -142,31 +46,45 @@ export class StudySessionController {
         return;
       }
 
-      const { cardId } = req.params;
-      const { sessionId } = req.body;
+      const sessionData = req.body;
+      const result: any = await studySessionService.endStudySession(Number(sessionId), userId, sessionData);
 
-      const userCard = await studySessionService.recordCardStudy(
-        userId, 
-        Number(cardId),
-        sessionId
-      );
+      // Si el servicio devuelve rewards === null es porque ya estaba completada
+      if (result && result.rewards === null) {
+        res.status(200).json({
+          success: true,
+          message: 'Sesión ya finalizada',
+          data: result.session
+        });
+        return;
+      }
 
       res.status(200).json({
         success: true,
-        message: "Estudio de tarjeta registrado",
-        data: userCard
+        message: "Sesión de estudio finalizada",
+        data: result.session,
+        rewards: result.rewards
       });
     } catch (error) {
-      console.error("Error al registrar estudio:", error);
-      res.status(500).json({ 
-        success: false, 
-        message: "Error interno del servidor" 
-      });
+      console.error("Error al finalizar sesión de estudio:", error);
+      if (error instanceof Error && error.message === 'Sesión no encontrada') {
+        res.status(404).json({ success: false, message: error.message });
+        return;
+      }
+
+      // Duracion mínima no alcanzada
+      if (error && (error as any).message === 'DuracionMinimaNoAlcanzada') {
+        const details = (error as any).details || {};
+        res.status(400).json({ success: false, message: 'No alcanzaste el tiempo mínimo de estudio', details });
+        return;
+      }
+
+      res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
   }
 
-  // Obtener historial de sesiones del usuario
-  async getSessionHistory(req: Request, res: Response): Promise<void> {
+  // Obtener sesiones del usuario
+  async getUserSessions(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user?.id;
       if (!userId) {
@@ -177,38 +95,52 @@ export class StudySessionController {
         return;
       }
 
-      const { 
-        sessionType, 
-        page = 1, 
-        limit = 20, 
-        startDate, 
-        endDate 
-      } = req.query;
+      const { limit = 20 } = req.query;
+      const sessions = await studySessionService.getUserSessions(userId, Number(limit));
+      
+      res.status(200).json({
+        success: true,
+        data: sessions
+      });
+    } catch (error) {
+      console.error("Error al obtener sesiones:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error interno del servidor" 
+      });
+    }
+  }
 
-      const offset = (Number(page) - 1) * Number(limit);
+  // Obtener una sesión por ID
+  async getSessionById(req: Request, res: Response): Promise<void> {
+    try {
+      const { sessionId } = req.params;
+      const userId = (req as any).user?.id;
+      
+      if (!userId) {
+        res.status(401).json({ 
+          success: false, 
+          message: "Usuario no autenticado" 
+        });
+        return;
+      }
 
-      const filters = {
-        sessionType: sessionType as string,
-        limit: Number(limit),
-        offset,
-        startDate: startDate ? new Date(startDate as string) : undefined,
-        endDate: endDate ? new Date(endDate as string) : undefined
-      };
-
-      const result = await studySessionService.getUserSessionHistory(userId, filters);
+      const session = await studySessionService.getSessionById(Number(sessionId), userId);
+      
+      if (!session) {
+        res.status(404).json({ 
+          success: false, 
+          message: "Sesión no encontrada" 
+        });
+        return;
+      }
 
       res.status(200).json({
         success: true,
-        data: result.rows,
-        pagination: {
-          total: result.count,
-          page: Number(page),
-          limit: Number(limit),
-          totalPages: Math.ceil(result.count / Number(limit))
-        }
+        data: session
       });
     } catch (error) {
-      console.error("Error al obtener historial:", error);
+      console.error("Error al obtener sesión:", error);
       res.status(500).json({ 
         success: false, 
         message: "Error interno del servidor" 
@@ -217,7 +149,7 @@ export class StudySessionController {
   }
 
   // Obtener estadísticas de estudio del usuario
-  async getStudyStatistics(req: Request, res: Response): Promise<void> {
+  async getUserStudyStats(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user?.id;
       if (!userId) {
@@ -228,13 +160,8 @@ export class StudySessionController {
         return;
       }
 
-      const { timeframe = "month" } = req.query;
-
-      const stats = await studySessionService.getUserStudyStatistics(
-        userId, 
-        timeframe as "week" | "month" | "year"
-      );
-
+      const stats = await studySessionService.getUserStudyStats(userId);
+      
       res.status(200).json({
         success: true,
         data: stats
@@ -260,21 +187,11 @@ export class StudySessionController {
         return;
       }
 
-      const activeSession = await studySessionService.getActiveSession(userId);
-
-      // Si no hay sesión activa, devolver 200 con null (no es un error)
-      if (!activeSession) {
-        res.status(200).json({
-          success: true,
-          data: null,
-          message: "No hay sesión activa"
-        });
-        return;
-      }
-
+      const session = await studySessionService.getActiveSession(userId);
+      
       res.status(200).json({
         success: true,
-        data: activeSession
+        data: session
       });
     } catch (error) {
       console.error("Error al obtener sesión activa:", error);
@@ -285,48 +202,48 @@ export class StudySessionController {
     }
   }
 
-  // Cancelar sesión activa
+  // Cancelar sesión activa del usuario
   async cancelActiveSession(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user?.id;
+      // Si no hay usuario, devolver 200 para no romper flujo anónimo
       if (!userId) {
-        res.status(401).json({ 
-          success: false, 
-          message: "Usuario no autenticado" 
-        });
+        res.status(200).json({ success: true, message: 'No active session for anonymous user' });
         return;
       }
 
-      const activeSession = await studySessionService.getActiveSession(userId);
+      const cancelled = await studySessionService.cancelActiveSession(userId);
 
-      if (!activeSession) {
-        res.status(200).json({
-          success: true,
-          data: null,
-          message: "No hay sesión activa para cancelar"
-        });
-        return;
-      }
-
-      // Marcar la sesión como completada sin recompensas
-      await activeSession.update({
-        endTime: new Date(),
-        isCompleted: true,
-        duration: 0,
-        cardsStudied: 0,
-        xavicoinsEarned: 0
-      });
-
-      res.status(200).json({
-        success: true,
-        message: "Sesión cancelada exitosamente"
-      });
+      res.status(200).json({ success: true, message: 'Active session cancelled', data: cancelled });
     } catch (error) {
-      console.error("Error al cancelar sesión:", error);
-      res.status(500).json({ 
-        success: false, 
-        message: "Error interno del servidor" 
-      });
+      console.error('Error cancelling active session:', error);
+      res.status(500).json({ success: false, message: 'Error interno del servidor' });
+    }
+  }
+
+  // Añadir recompensas directamente a un usuario (monedas + experiencia)
+  async addRewardsToUser(req: Request, res: Response): Promise<void> {
+    try {
+      const { userId } = req.params;
+      const { xavicoins = 0, experience = 0 } = req.body || {};
+
+      // Validación mínima
+      const uid = Number(userId);
+      if (!uid || (Number(xavicoins) === 0 && Number(experience) === 0)) {
+        res.status(400).json({ success: false, message: 'Parámetros inválidos' });
+        return;
+      }
+
+      const result = await studySessionService.addRewardsToUser(uid, Number(xavicoins), Number(experience));
+
+      res.status(200).json({ success: true, message: 'Recompensas aplicadas', data: result });
+    } catch (error) {
+      console.error('Error adding rewards to user:', error);
+      if (process.env.NODE_ENV !== 'production') {
+        res.status(500).json({ success: false, message: 'Error interno del servidor', error: (error as any)?.message, stack: (error as any)?.stack });
+      } else {
+        res.status(500).json({ success: false, message: 'Error interno del servidor' });
+      }
     }
   }
 }

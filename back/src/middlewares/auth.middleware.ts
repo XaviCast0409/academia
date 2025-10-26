@@ -45,7 +45,17 @@ export const authMiddleware = (
     }
 
     // Verificar y decodificar token
-    const decoded = verifyToken(token) as any;
+    let decoded: any = null;
+    try {
+      decoded = verifyToken(token) as any;
+    } catch (e) {
+      console.warn('authMiddleware: token verification failed (possible expired/invalid token)');
+      res.status(401).json({ 
+        success: false, 
+        message: 'Token de acceso inválido o expirado' 
+      });
+      return;
+    }
     
     if (!decoded || !decoded.id) {
       res.status(401).json({ 

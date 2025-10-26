@@ -89,7 +89,8 @@ export const createUser = async (
   password: string,
   roleId: number,
   pokemonId: number,
-  section?: string
+  section?: string,
+  isPremium?: boolean
 ): Promise<UserOutput> => {
   // Verificar si el usuario ya existe
   const findUser = await db.User.findOne({ where: { email } });
@@ -121,6 +122,7 @@ export const createUser = async (
     isVerified: false,
     verificationCode: null,
     verificationCodeExpires: null,
+    isPremium: isPremium || false,
   };
   
   const user = await db.User.create(userData);

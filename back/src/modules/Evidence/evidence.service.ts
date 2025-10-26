@@ -209,7 +209,7 @@ export const changeEvidenceStatusAndAddXavicoints = async (
         {
           model: db.User,
           as: "student",
-          attributes: ["id", "name", "xavicoints", "completedActivities"],
+          attributes: ["id", "name", "xavicoints", "completedActivities", "isPremium"],
         },
         {
           model: db.Activity,
@@ -245,9 +245,12 @@ export const changeEvidenceStatusAndAddXavicoints = async (
     if (newStatus === "approved" && previousStatus !== "approved") {
       const student = evidence.student;
       const activityXavicoints = evidence.activity.xavicoints || 0;
+      
+      // Aplicar multiplicador premium si el usuario es premium
+      const finalXavicoints = student.isPremium ? activityXavicoints * 2 : activityXavicoints;
 
       // Actualizar XaviCoins del estudiante
-      student.xavicoints = (student.xavicoints || 0) + activityXavicoints;
+      student.xavicoints = (student.xavicoints || 0) + finalXavicoints;
       student.completedActivities = (student.completedActivities || 0) + 1;
       await student.save({ transaction });
 
@@ -262,7 +265,7 @@ export const changeEvidenceStatusAndAddXavicoints = async (
             userId: student.id,
             activityType: "math_activity",
             mathTopic: evidence.activity.mathTopic,
-            xavicoinsEarned: activityXavicoints,
+            xavicoinsEarned: finalXavicoints,
           });
         } catch (err) {
           console.error("[EVIDENCE SERVICE] Error actualizando logros asíncronamente:", err);

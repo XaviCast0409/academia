@@ -64,7 +64,7 @@ export const getUsersController = async (req: Request, res: Response) => {
 
 export const createUserController = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, roleId, pokemonId, section } = req.body;
+    const { name, email, password, roleId, pokemonId, section, isPremium } = req.body;
     
     // Validaciones básicas
     if (!name || !email || !password) {
@@ -81,7 +81,7 @@ export const createUserController = async (req: Request, res: Response) => {
       return;
     }
     
-    const user = await createUser(name, email, password, roleId, pokemonId, section);
+    const user = await createUser(name, email, password, roleId, pokemonId, section, isPremium);
     
     res.status(201).json({
       message: "Usuario creado exitosamente",

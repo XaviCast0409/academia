@@ -13,10 +13,11 @@ import { Pokemon } from "../models/Pokemon";
 import { Product } from "../models/Product";
 import { Transaction } from "../models/Transaction";
 import { Notification } from "../models/Notification";
+import { Course } from "../models/Course";
+import { SubTopic } from "../models/SubTopic";
 import { StudyCard } from "../models/StudyCard";
 import { UserStudyCard } from "../models/UserStudyCard";
 import { StudySession } from "../models/StudySession";
-
 const db: any = {}
 /* export const sequelize = new Sequelize({
   username: dataConfig.development.username,
@@ -25,8 +26,8 @@ const db: any = {}
   host: dataConfig.development.host,
   dialect: "postgres",
   logging: false,
-}); */
-
+});
+ */
 // configuracion produccion de la base de datos
 export const sequelize = new Sequelize(dataConfig.production.url, {
   dialect: "postgres",
@@ -38,6 +39,16 @@ export const sequelize = new Sequelize(dataConfig.production.url, {
     },
   },
 });
+/* 
+export const sequelize = new Sequelize({
+  username: dataConfig.development.username,
+  password: dataConfig.development.password,
+  database: dataConfig.development.database,
+  host: dataConfig.development.host,
+  dialect: "postgres",
+  logging: false,
+}); */
+
 
 // Inicializar todos los modelos manualmente
 const models = [
@@ -54,6 +65,8 @@ const models = [
   Transaction,
   Notification,
   VerificationCode,
+  Course,
+  SubTopic,
   StudyCard,
   UserStudyCard,
   StudySession

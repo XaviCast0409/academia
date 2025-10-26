@@ -1,16 +1,13 @@
-import { Model, DataTypes, Sequelize, Optional } from "sequelize";
+import { Model, DataTypes, Optional, Sequelize } from "sequelize";
 
 export interface UserStudyCardAttributes {
   id: number;
   userId: number;
   studyCardId: number;
-  isFavorite: boolean; // Si el usuario marcó como favorita
-  timesStudied: number; // Cuántas veces ha estudiado esta tarjeta
-  lastStudied?: Date; // Última vez que estudió esta tarjeta
-  difficultyRating?: number; // Calificación de dificultad del usuario (1-5)
-  personalNotes?: string; // Notas personales del usuario
-  masteryLevel: "nuevo" | "aprendiendo" | "revisando" | "dominado"; // Nivel de dominio
-  nextReviewDate?: Date; // Para implementar spaced repetition en el futuro
+  isFavorite: boolean;
+  timesStudied: number;
+  lastStudied?: Date;
+  masteryLevel: "new" | "learning" | "reviewing" | "mastered";
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -25,22 +22,19 @@ export class UserStudyCard extends Model<UserStudyCardAttributes, UserStudyCardI
   public isFavorite!: boolean;
   public timesStudied!: number;
   public lastStudied?: Date;
-  public difficultyRating?: number;
-  public personalNotes?: string;
-  public masteryLevel!: "nuevo" | "aprendiendo" | "revisando" | "dominado";
-  public nextReviewDate?: Date;
+  public masteryLevel!: "new" | "learning" | "reviewing" | "mastered";
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
   static associate(db: any) {
-    // Relación con User
+    // Un usuario puede tener muchas cartas de estudio
     UserStudyCard.belongsTo(db.User, {
       foreignKey: "userId",
       as: "user",
     });
 
-    // Relación con StudyCard
+    // Una carta puede ser estudiada por muchos usuarios
     UserStudyCard.belongsTo(db.StudyCard, {
       foreignKey: "studyCardId",
       as: "studyCard",
@@ -85,26 +79,10 @@ export class UserStudyCard extends Model<UserStudyCardAttributes, UserStudyCardI
           type: DataTypes.DATE,
           allowNull: true,
         },
-        difficultyRating: {
-          type: DataTypes.INTEGER,
-          allowNull: true,
-          validate: {
-            min: 1,
-            max: 5,
-          },
-        },
-        personalNotes: {
-          type: DataTypes.TEXT,
-          allowNull: true,
-        },
         masteryLevel: {
-          type: DataTypes.ENUM("nuevo", "aprendiendo", "revisando", "dominado"),
+          type: DataTypes.ENUM("new", "learning", "reviewing", "mastered"),
           allowNull: false,
-          defaultValue: "nuevo",
-        },
-        nextReviewDate: {
-          type: DataTypes.DATE,
-          allowNull: true,
+          defaultValue: "new",
         },
       },
       {
@@ -115,7 +93,7 @@ export class UserStudyCard extends Model<UserStudyCardAttributes, UserStudyCardI
         indexes: [
           {
             unique: true,
-            fields: ["userId", "studyCardId"], // Un usuario no puede tener la misma tarjeta duplicada
+            fields: ["userId", "studyCardId"],
           },
         ],
       }

@@ -1,18 +1,21 @@
-import { Model, DataTypes, Sequelize, Optional } from "sequelize";
+import { Model, DataTypes, Optional, Sequelize } from "sequelize";
 
 export interface StudySessionAttributes {
   id: number;
   userId: number;
-  studyCardId?: number; // Opcional, puede ser una sesión general
-  sessionType: "individual" | "review" | "quiz" | "general"; // Tipo de sesión
-  startTime: Date; // Inicio de la sesión
-  endTime?: Date; // Final de la sesión
+  courseId?: number;
+  subTopicId?: number;
+  studyCardId?: number;
+  sessionType: "course" | "subtopic" | "favorites" | "mixed";
+  startTime: Date;
+  endTime?: Date;
   duration: number; // Duración en minutos
-  cardsStudied: number; // Número de tarjetas estudiadas en la sesión
-  xavicoinsEarned: number; // XaviCoins ganados en esta sesión
-  isCompleted: boolean; // Si la sesión fue completada
-  sessionGoal?: number; // Meta de tiempo en minutos (10, 15, 20, etc.)
-  notes?: string; // Notas de la sesión
+  targetDuration: number; // Duración objetivo en minutos
+  cardsStudied: number;
+  xavicoinsEarned: number;
+  experienceEarned: number;
+  isCompleted: boolean;
+  notes?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -23,28 +26,43 @@ export interface StudySessionOutput extends Required<StudySessionAttributes> {}
 export class StudySession extends Model<StudySessionAttributes, StudySessionInput> implements StudySessionAttributes {
   public id!: number;
   public userId!: number;
+  public courseId?: number;
+  public subTopicId?: number;
   public studyCardId?: number;
-  public sessionType!: "individual" | "review" | "quiz" | "general";
+  public sessionType!: "course" | "subtopic" | "favorites" | "mixed";
   public startTime!: Date;
   public endTime?: Date;
   public duration!: number;
+  public targetDuration!: number;
   public cardsStudied!: number;
   public xavicoinsEarned!: number;
+  public experienceEarned!: number;
   public isCompleted!: boolean;
-  public sessionGoal?: number;
   public notes?: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
   static associate(db: any) {
-    // Relación con User
+    // Una sesión pertenece a un usuario
     StudySession.belongsTo(db.User, {
       foreignKey: "userId",
       as: "user",
     });
 
-    // Relación con StudyCard (opcional)
+    // Una sesión puede estar relacionada con un curso
+    StudySession.belongsTo(db.Course, {
+      foreignKey: "courseId",
+      as: "course",
+    });
+
+    // Una sesión puede estar relacionada con un subtema
+    StudySession.belongsTo(db.SubTopic, {
+      foreignKey: "subTopicId",
+      as: "subTopic",
+    });
+
+    // Una sesión puede estar relacionada con una carta específica
     StudySession.belongsTo(db.StudyCard, {
       foreignKey: "studyCardId",
       as: "studyCard",
@@ -67,6 +85,22 @@ export class StudySession extends Model<StudySessionAttributes, StudySessionInpu
             key: "id",
           },
         },
+        courseId: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          references: {
+            model: "courses",
+            key: "id",
+          },
+        },
+        subTopicId: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          references: {
+            model: "sub_topics",
+            key: "id",
+          },
+        },
         studyCardId: {
           type: DataTypes.INTEGER,
           allowNull: true,
@@ -76,9 +110,9 @@ export class StudySession extends Model<StudySessionAttributes, StudySessionInpu
           },
         },
         sessionType: {
-          type: DataTypes.ENUM("individual", "review", "quiz", "general"),
+          type: DataTypes.ENUM("course", "subtopic", "favorites", "mixed"),
           allowNull: false,
-          defaultValue: "general",
+          defaultValue: "mixed",
         },
         startTime: {
           type: DataTypes.DATE,
@@ -93,6 +127,11 @@ export class StudySession extends Model<StudySessionAttributes, StudySessionInpu
           allowNull: false,
           defaultValue: 0,
         },
+        targetDuration: {
+          type: DataTypes.INTEGER, // en minutos
+          allowNull: false,
+          defaultValue: 15,
+        },
         cardsStudied: {
           type: DataTypes.INTEGER,
           allowNull: false,
@@ -103,14 +142,15 @@ export class StudySession extends Model<StudySessionAttributes, StudySessionInpu
           allowNull: false,
           defaultValue: 0,
         },
+        experienceEarned: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+        },
         isCompleted: {
           type: DataTypes.BOOLEAN,
           allowNull: false,
           defaultValue: false,
-        },
-        sessionGoal: {
-          type: DataTypes.INTEGER, // meta en minutos
-          allowNull: true,
         },
         notes: {
           type: DataTypes.TEXT,

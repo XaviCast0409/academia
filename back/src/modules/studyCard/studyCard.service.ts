@@ -1,127 +1,158 @@
 import { StudyCard, StudyCardInput } from "../../models/StudyCard";
+import { Course } from "../../models/Course";
+import { SubTopic } from "../../models/SubTopic";
 import { UserStudyCard } from "../../models/UserStudyCard";
-import { StudySession } from "../../models/StudySession";
-import { User } from "../../models/User";
 import { Op } from "sequelize";
 
 export class StudyCardService {
   
-  // Obtener todas las tarjetas activas con filtros
-  async getAllStudyCards(filters: {
-    category?: string;
-    mathTopic?: string;
-    difficulty?: string;
-    search?: string;
-    limit?: number;
-    offset?: number;
-  }) {
-    const whereClause: any = { isActive: true };
-    
-    if (filters.category) {
-      whereClause.category = filters.category;
-    }
-    
-    if (filters.mathTopic) {
-      whereClause.mathTopic = filters.mathTopic;
-    }
-    
-    if (filters.difficulty) {
-      whereClause.difficulty = filters.difficulty;
-    }
-    
-    if (filters.search) {
-      whereClause[Op.or] = [
-        { title: { [Op.iLike]: `%${filters.search}%` } },
-        { question: { [Op.iLike]: `%${filters.search}%` } },
-        { tags: { [Op.contains]: [filters.search] } }
-      ];
+  // Obtener todas las cartas de un subtema
+  async getCardsBySubTopic(subTopicId: number, userId?: number) {
+    const includeOptions: any[] = [
+      {
+        model: Course,
+        as: 'course',
+        attributes: ['id', 'name']
+      },
+      {
+        model: SubTopic,
+        as: 'subTopic',
+        attributes: ['id', 'name']
+      }
+    ];
+
+    // Si hay un usuario, incluir información de progreso
+    if (userId) {
+      includeOptions.push({
+        model: UserStudyCard,
+        as: 'userStudyCards',
+        where: { userId },
+        required: false,
+        attributes: ['isFavorite', 'timesStudied', 'masteryLevel']
+      });
     }
 
-    return await StudyCard.findAndCountAll({
-      where: whereClause,
-      limit: filters.limit || 20,
-      offset: filters.offset || 0,
-      order: [['createdAt', 'DESC']],
+    const cards = await StudyCard.findAll({
+      where: { 
+        subTopicId,
+        isActive: true 
+      },
+      order: [['createdAt', 'ASC']],
+      include: includeOptions
+    });
+
+    // Normalize to plain objects and ensure frontend fields exist
+    return cards.map((c: any) => {
+      const obj = typeof c.toJSON === 'function' ? c.toJSON() : c;
+      if (obj.xavicoins === undefined) obj.xavicoins = 0;
+      return obj;
     });
   }
 
-  // Obtener una tarjeta por ID
-  async getStudyCardById(id: number) {
-    return await StudyCard.findByPk(id, {
-      include: [
-        {
-          model: UserStudyCard,
-          as: 'userStudyCards',
-          include: [
-            {
-              model: User,
-              as: 'user',
-              attributes: ['id', 'name']
-            }
-          ]
-        }
-      ]
+  // Obtener una carta por ID
+  async getCardById(id: number, userId?: number) {
+    const includeOptions: any[] = [
+      {
+        model: Course,
+        as: 'course',
+        attributes: ['id', 'name']
+      },
+      {
+        model: SubTopic,
+        as: 'subTopic',
+        attributes: ['id', 'name']
+      }
+    ];
+
+    if (userId) {
+      includeOptions.push({
+        model: UserStudyCard,
+        as: 'userStudyCards',
+        where: { userId },
+        required: false,
+        attributes: ['isFavorite', 'timesStudied', 'masteryLevel']
+      });
+    }
+
+    const card = await StudyCard.findByPk(id, {
+      include: includeOptions
     });
+
+    if (!card) return null;
+
+    const obj = typeof (card as any).toJSON === 'function' ? (card as any).toJSON() : card;
+    if (obj.xavicoins === undefined) obj.xavicoins = 0;
+    return obj;
   }
 
-  // Crear una nueva tarjeta (para administradores/profesores)
-  async createStudyCard(cardData: StudyCardInput) {
+  // Crear una nueva carta
+  async createCard(cardData: StudyCardInput) {
     return await StudyCard.create(cardData);
   }
 
-  // Actualizar una tarjeta
-  async updateStudyCard(id: number, cardData: Partial<StudyCardInput>) {
+  // Actualizar una carta
+  async updateCard(id: number, cardData: Partial<StudyCardInput>) {
     const card = await StudyCard.findByPk(id);
     if (!card) {
-      throw new Error('Tarjeta de estudio no encontrada');
+      throw new Error('Carta no encontrada');
     }
-    
     return await card.update(cardData);
   }
 
-  // Eliminar una tarjeta (soft delete)
-  async deleteStudyCard(id: number) {
+  // Eliminar una carta (soft delete)
+  async deleteCard(id: number) {
     const card = await StudyCard.findByPk(id);
     if (!card) {
-      throw new Error('Tarjeta de estudio no encontrada');
+      throw new Error('Carta no encontrada');
     }
-    
     return await card.update({ isActive: false });
   }
 
-  // Obtener tarjetas favoritas de un usuario
-  async getUserFavoriteCards(userId: number, filters?: {
-    limit?: number;
-    offset?: number;
-  }) {
-    return await UserStudyCard.findAndCountAll({
-      where: { 
-        userId,
-        isFavorite: true 
-      },
+  // Obtener cartas favoritas de un usuario
+  async getUserFavoriteCards(userId: number) {
+    const cards = await StudyCard.findAll({
       include: [
         {
-          model: StudyCard,
-          as: 'studyCard',
-          where: { isActive: true }
+          model: Course,
+          as: 'course',
+          attributes: ['id', 'name']
+        },
+        {
+          model: SubTopic,
+          as: 'subTopic',
+          attributes: ['id', 'name']
+        },
+        {
+          model: UserStudyCard,
+          as: 'userStudyCards',
+          where: { 
+            userId,
+            isFavorite: true 
+          },
+          required: true
         }
       ],
-      limit: filters?.limit || 20,
-      offset: filters?.offset || 0,
-      order: [['lastStudied', 'DESC']],
+      where: { isActive: true },
+      order: [['createdAt', 'ASC']]
+    });
+
+    return cards.map((c: any) => {
+      const obj = typeof c.toJSON === 'function' ? c.toJSON() : c;
+      if (obj.xavicoins === undefined) obj.xavicoins = 0;
+      return obj;
     });
   }
 
-  // Marcar/desmarcar una tarjeta como favorita
-  async toggleFavoriteCard(userId: number, studyCardId: number) {
+  // Marcar/desmarcar carta como favorita
+  async toggleFavorite(userId: number, cardId: number) {
     const [userCard, created] = await UserStudyCard.findOrCreate({
-      where: { userId, studyCardId },
+      where: { userId, studyCardId: cardId },
       defaults: {
         userId,
-        studyCardId,
+        studyCardId: cardId,
         isFavorite: true,
         timesStudied: 0,
-        masteryLevel: 'nuevo'
+        masteryLevel: 'new'
       }
     });
 
@@ -129,93 +160,94 @@ export class StudyCardService {
       await userCard.update({ isFavorite: !userCard.isFavorite });
     }
 
-    return userCard;
+  // return plain object
+  return typeof (userCard as any).toJSON === 'function' ? (userCard as any).toJSON() : userCard;
   }
 
-  // Obtener progreso de estudio de un usuario
-  async getUserStudyProgress(userId: number) {
-    const totalCards = await StudyCard.count({ where: { isActive: true } });
-    const studiedCards = await UserStudyCard.count({ 
-      where: { 
+  // Registrar estudio de una carta
+  async recordCardStudy(userId: number, cardId: number) {
+    const [userCard, created] = await UserStudyCard.findOrCreate({
+      where: { userId, studyCardId: cardId },
+      defaults: {
         userId,
-        timesStudied: { [Op.gt]: 0 }
-      }
-    });
-    const favoriteCards = await UserStudyCard.count({ 
-      where: { 
-        userId,
-        isFavorite: true 
-      }
-    });
-    const masteredCards = await UserStudyCard.count({ 
-      where: { 
-        userId,
-        masteryLevel: 'dominado'
+        studyCardId: cardId,
+        isFavorite: false,
+        timesStudied: 1,
+        masteryLevel: 'learning',
+        lastStudied: new Date()
       }
     });
 
-    return {
-      totalCards,
-      studiedCards,
-      favoriteCards,
-      masteredCards,
-      progressPercentage: totalCards > 0 ? (studiedCards / totalCards) * 100 : 0
-    };
+    if (!created) {
+      const newTimesStudied = userCard.timesStudied + 1;
+      const newMasteryLevel = this.calculateMasteryLevel(newTimesStudied);
+      
+      await userCard.update({
+        timesStudied: newTimesStudied,
+        masteryLevel: newMasteryLevel,
+        lastStudied: new Date()
+      });
+    }
+
+  return typeof (userCard as any).toJSON === 'function' ? (userCard as any).toJSON() : userCard;
   }
 
-  // Obtener estadísticas de una tarjeta específica
-  async getCardStatistics(studyCardId: number) {
-    const totalStudies = await UserStudyCard.sum('timesStudied', {
-      where: { studyCardId }
-    });
-    
-    const uniqueStudents = await UserStudyCard.count({
+  // Obtener cartas para estudio (mezcladas)
+  async getCardsForStudy(subTopicId: number, limit: number = 20) {
+    const cards = await StudyCard.findAll({
       where: { 
-        studyCardId,
-        timesStudied: { [Op.gt]: 0 }
-      }
-    });
-
-    const averageDifficulty = await UserStudyCard.findOne({
-      where: { 
-        studyCardId
+        subTopicId,
+        isActive: true 
       },
-      attributes: [
-        [require('sequelize').fn('AVG', require('sequelize').col('difficultyRating')), 'avgDifficulty']
-      ]
+      include: [
+        {
+          model: Course,
+          as: 'course',
+          attributes: ['id', 'name']
+        },
+        {
+          model: SubTopic,
+          as: 'subTopic',
+          attributes: ['id', 'name']
+        }
+      ],
+      order: [require('sequelize').fn('RANDOM')], // Orden aleatorio
+      limit
     });
 
-    return {
-      totalStudies: totalStudies || 0,
-      uniqueStudents: uniqueStudents || 0,
-      averageDifficulty: averageDifficulty?.get('avgDifficulty') || 0
-    };
+    return cards.map((c: any) => {
+      const obj = typeof c.toJSON === 'function' ? c.toJSON() : c;
+      if (obj.xavicoins === undefined) obj.xavicoins = 0;
+      return obj;
+    });
   }
 
-  // Obtener tarjetas recomendadas para un usuario
-  async getRecommendedCards(userId: number, limit: number = 10) {
-    // Obtener tarjetas que el usuario no ha estudiado o ha estudiado poco
-    const userStudiedCards = await UserStudyCard.findAll({
-      where: { userId },
-      attributes: ['studyCardId', 'timesStudied', 'masteryLevel']
-    });
-
-    const studiedCardIds = userStudiedCards.map(uc => uc.studyCardId);
-    
-    // Recomendar tarjetas nuevas o que necesitan repaso
-    const whereClause: any = { 
-      isActive: true,
-      [Op.or]: [
-        { id: { [Op.notIn]: studiedCardIds } }, // Tarjetas nuevas
-        // Tarjetas que necesitan repaso (estudiadas pero no dominadas)
-      ]
+  // Obtener todas las cartas activas, opcionalmente con paginación
+  async getAllCards(limit?: number, page?: number) {
+    const options: any = {
+      where: { isActive: true },
+      order: [['createdAt', 'ASC']],
     };
 
-    return await StudyCard.findAll({
-      where: whereClause,
-      limit,
-      order: [['createdAt', 'DESC']],
+    if (limit) {
+      options.limit = limit;
+      if (page && page > 0) options.offset = (page - 1) * limit;
+    }
+
+    const cards = await StudyCard.findAll(options);
+    return cards.map((c: any) => {
+      const obj = typeof c.toJSON === 'function' ? c.toJSON() : c;
+      if (obj.xavicoins === undefined) obj.xavicoins = 0;
+      return obj;
     });
+  }
+
+  // Función auxiliar para calcular nivel de dominio
+  private calculateMasteryLevel(timesStudied: number): "new" | "learning" | "reviewing" | "mastered" {
+    if (timesStudied === 0) return "new";
+    if (timesStudied <= 2) return "learning";
+    if (timesStudied <= 5) return "reviewing";
+    return "mastered";
   }
 }
 

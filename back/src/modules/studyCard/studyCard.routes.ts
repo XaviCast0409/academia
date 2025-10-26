@@ -1,75 +1,25 @@
 import { Router } from "express";
 import studyCardController from "./studyCard.controller";
-import {
-  createStudyCardValidation,
-  updateStudyCardValidation,
-  getStudyCardsValidation,
-  getCardByIdValidation,
-  toggleFavoriteValidation,
-  getRecommendedValidation
-} from "./studyCard.validation";
+import { optionalAuthMiddleware } from "../../middlewares/auth.middleware";
 
 const router = Router();
 
-// Rutas públicas (requieren autenticación básica)
-router.get(
-  "/",
-  getStudyCardsValidation,
-  studyCardController.getAllStudyCards
-);
+// Ruta pública para listar todas las cartas (opcional: ?limit & ?page)
+router.get('/', studyCardController.getAllCards);
 
-router.get(
-  "/recommended",
-  getRecommendedValidation,
-  studyCardController.getRecommendedCards
-);
+// Rutas públicas
+router.get("/subtopic/:subTopicId", studyCardController.getCardsBySubTopic);
+router.get("/:id", studyCardController.getCardById);
+router.get("/subtopic/:subTopicId/study", studyCardController.getCardsForStudy);
 
-router.get(
-  "/progress",
-  studyCardController.getUserProgress
-);
+// Rutas de usuario (requieren autenticación)
+router.get("/user/favorites", studyCardController.getUserFavoriteCards);
+router.post("/:cardId/favorite", studyCardController.toggleFavorite);
+router.post("/:cardId/study", studyCardController.recordCardStudy);
 
-router.get(
-  "/favorites",
-  studyCardController.getUserFavorites
-);
-
-router.get(
-  "/:id",
-  getCardByIdValidation,
-  studyCardController.getStudyCardById
-);
-
-router.get(
-  "/:id/statistics",
-  getCardByIdValidation,
-  studyCardController.getCardStatistics
-);
-
-// Rutas para gestión de favoritos
-router.post(
-  "/:cardId/favorite",
-  toggleFavoriteValidation,
-  studyCardController.toggleFavorite
-);
-
-// Rutas administrativas (requieren permisos de profesor/admin)
-router.post(
-  "/",
-  createStudyCardValidation,
-  studyCardController.createStudyCard
-);
-
-router.put(
-  "/:id",
-  updateStudyCardValidation,
-  studyCardController.updateStudyCard
-);
-
-router.delete(
-  "/:id",
-  getCardByIdValidation,
-  studyCardController.deleteStudyCard
-);
+// Rutas de administración
+router.post("/", studyCardController.createCard);
+router.put("/:id", studyCardController.updateCard);
+router.delete("/:id", studyCardController.deleteCard);
 
 export default router;

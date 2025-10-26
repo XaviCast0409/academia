@@ -19,6 +19,7 @@ export interface UserAttributes {
   verificationCode?: string; // Código de verificación
   verificationCodeExpires?: Date; // Fecha de expiración del código
   pushToken?: string | null; // Expo push token
+  isPremium?: boolean; // Si el usuario es premium
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -47,6 +48,7 @@ export class User
   public verificationCode?: string;
   public verificationCodeExpires?: Date;
   public pushToken?: string | null;
+  public isPremium?: boolean;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -98,6 +100,18 @@ export class User
     User.hasMany(db.UserMission, {
       foreignKey: "userId",
       as: "userMissions",
+    });
+
+    // Relación con UserStudyCard (un usuario puede tener muchas cartas de estudio)
+    User.hasMany(db.UserStudyCard, {
+      foreignKey: "userId",
+      as: "userStudyCards",
+    });
+
+    // Relación con StudySession (un usuario puede tener muchas sesiones de estudio)
+    User.hasMany(db.StudySession, {
+      foreignKey: "userId",
+      as: "studySessions",
     });
   }
 
@@ -196,6 +210,11 @@ export class User
         pushToken: {
           type: DataTypes.STRING,
           allowNull: true,
+        },
+        isPremium: {
+          type: DataTypes.BOOLEAN,
+          allowNull: true,
+          defaultValue: false, // Valor por defecto para premium
         },
       },
       {

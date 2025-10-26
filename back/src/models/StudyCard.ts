@@ -1,19 +1,15 @@
-import { Model, DataTypes, Sequelize, Optional } from "sequelize";
+import { Model, DataTypes, Optional, Sequelize } from "sequelize";
 
 export interface StudyCardAttributes {
   id: number;
-  title: string;
-  question: string; // Pregunta o concepto (puede incluir LaTeX)
-  answer: string; // Respuesta o explicación (puede incluir LaTeX)
-  category: "matematicas" | "fisica" | "quimica" | "otros";
-  mathTopic?: "algebra" | "trigonometria" | "geometria" | "aritmetica" | "razonamiento_matematico";
-  subtopic?: string; // Tema específico (ej: "teoria_exponentes", "productos_notables", "angulos_trigonometricos")
-  difficulty: "basico" | "intermedio" | "avanzado" | "experto";
-  tags: string[]; // Array de tags para búsqueda
-  hasLatex: boolean; // Indica si la tarjeta contiene LaTeX
-  xavicoinsReward: number; // Recompensa por estudiar esta tarjeta
+  courseId: number;
+  subTopicId: number;
+  question: string;
+  answer: string;
+  isAnswerImage: boolean; // Indica si la respuesta es una imagen
+  difficulty: "easy" | "medium" | "hard";
   isActive: boolean;
-  createdById?: number; // ID del profesor que creó la tarjeta (opcional para futuro)
+  createdBy?: number; // ID del administrador que la creó
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -23,36 +19,38 @@ export interface StudyCardOutput extends Required<StudyCardAttributes> {}
 
 export class StudyCard extends Model<StudyCardAttributes, StudyCardInput> implements StudyCardAttributes {
   public id!: number;
-  public title!: string;
+  public courseId!: number;
+  public subTopicId!: number;
   public question!: string;
   public answer!: string;
-  public category!: "matematicas" | "fisica" | "quimica" | "otros";
-  public mathTopic?: "algebra" | "trigonometria" | "geometria" | "aritmetica" | "razonamiento_matematico";
-  public subtopic?: string;
-  public difficulty!: "basico" | "intermedio" | "avanzado" | "experto";
-  public tags!: string[];
-  public hasLatex!: boolean;
-  public xavicoinsReward!: number;
+  public isAnswerImage!: boolean;
+  public difficulty!: "easy" | "medium" | "hard";
   public isActive!: boolean;
-  public createdById?: number;
+  public createdBy?: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
   static associate(db: any) {
-    // Relación con el creador (User) - opcional para futuro
-    StudyCard.belongsTo(db.User, {
-      foreignKey: "createdById",
-      as: "creator",
+    // Una carta pertenece a un curso
+    StudyCard.belongsTo(db.Course, {
+      foreignKey: "courseId",
+      as: "course",
     });
 
-    // Relación con UserStudyCard (muchos a muchos con usuarios)
+    // Una carta pertenece a un subtema
+    StudyCard.belongsTo(db.SubTopic, {
+      foreignKey: "subTopicId",
+      as: "subTopic",
+    });
+
+    // Una carta puede ser estudiada por muchos usuarios
     StudyCard.hasMany(db.UserStudyCard, {
       foreignKey: "studyCardId",
       as: "userStudyCards",
     });
 
-    // Relación con StudySession
+    // Una carta puede ser parte de muchas sesiones de estudio
     StudyCard.hasMany(db.StudySession, {
       foreignKey: "studyCardId",
       as: "studySessions",
@@ -67,9 +65,21 @@ export class StudyCard extends Model<StudyCardAttributes, StudyCardInput> implem
           autoIncrement: true,
           primaryKey: true,
         },
-        title: {
-          type: DataTypes.STRING,
+        courseId: {
+          type: DataTypes.INTEGER,
           allowNull: false,
+          references: {
+            model: "courses",
+            key: "id",
+          },
+        },
+        subTopicId: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+            model: "sub_topics",
+            key: "id",
+          },
         },
         question: {
           type: DataTypes.TEXT,
@@ -79,44 +89,22 @@ export class StudyCard extends Model<StudyCardAttributes, StudyCardInput> implem
           type: DataTypes.TEXT,
           allowNull: false,
         },
-        category: {
-          type: DataTypes.ENUM("matematicas", "fisica", "quimica", "otros"),
-          allowNull: false,
-        },
-        mathTopic: {
-          type: DataTypes.ENUM("algebra", "trigonometria", "geometria", "aritmetica", "razonamiento_matematico"),
-          allowNull: true,
-        },
-        subtopic: {
-          type: DataTypes.STRING,
-          allowNull: true,
-        },
-        difficulty: {
-          type: DataTypes.ENUM("basico", "intermedio", "avanzado", "experto"),
-          allowNull: false,
-          defaultValue: "basico",
-        },
-        tags: {
-          type: DataTypes.ARRAY(DataTypes.STRING),
-          allowNull: true,
-          defaultValue: [],
-        },
-        hasLatex: {
+        isAnswerImage: {
           type: DataTypes.BOOLEAN,
           allowNull: false,
           defaultValue: false,
         },
-        xavicoinsReward: {
-          type: DataTypes.INTEGER,
+        difficulty: {
+          type: DataTypes.ENUM("easy", "medium", "hard"),
           allowNull: false,
-          defaultValue: 5,
+          defaultValue: "medium",
         },
         isActive: {
           type: DataTypes.BOOLEAN,
           allowNull: false,
           defaultValue: true,
         },
-        createdById: {
+        createdBy: {
           type: DataTypes.INTEGER,
           allowNull: true,
           references: {

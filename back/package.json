@@ -6,6 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/app.ts",
+  "seed:study-cards": "ts-node src/scripts/seed-study-cards.ts",
+  "seed:roles": "ts-node src/scripts/seed-roles.ts",
     "build": "tsc",
     "start": "node build/app.js"
   },
@@ -25,17 +27,22 @@
   },
   "dependencies": {
     "@types/express-validator": "^3.0.2",
+    "@types/katex": "^0.16.7",
     "@types/node-cron": "^3.0.11",
     "@types/nodemailer": "^6.4.17",
+    "@types/uuid": "^10.0.0",
     "axios": "^1.9.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "expo-server-sdk": "^3.15.0",
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
+    "katex": "^0.16.22",
+    "mathjax-node": "^2.1.1",
     "multer": "1.4.5-lts.2",
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.3",
@@ -43,6 +50,9 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.3",
-    "socket.io": "^4.7.5"
+    "sharp": "^0.34.3",
+    "socket.io": "^4.7.5",
+    "svg2png": "^4.1.1",
+    "uuid": "^11.1.0"
   }
 }
