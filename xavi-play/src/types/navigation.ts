@@ -8,11 +8,24 @@ export type RootStackParamList = {
   Missions: undefined;
   Achievements: undefined;
   Notifications: undefined;
+  Donations: undefined;
   CreateUser: undefined;
   Register: undefined;
   LoginAfterRegister: { userEmail?: string };
   // Study system routes
   StudyDecks: undefined;
+  CourseSubtopics: { courseId: number; courseName: string };
+  SessionConfig: {
+    category: string;
+    mathTopic?: string;
+    displayName: string;
+    cardCount: number;
+    totalXavicoins?: number;
+    description?: string;
+    icon?: string;
+    courseId?: number;
+    subTopicId?: number;
+  };
   StudySession: {
     deckCategory: string;
     deckMathTopic?: string;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Alert, BackHandler } from 'react-native';
+import { View, Text, Alert, BackHandler, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import ScreenWrapper from '@/components/common/ScreenWrapper';
@@ -101,6 +101,41 @@ const StudySessionPage: React.FC = () => {
   const handleSessionComplete = async () => {
     const cardsStudied = ankiState.cardHistory.length;
     const timeStudied = Math.floor(sessionTimer / 60); // minutos
+    // Si no alcanzó el tiempo objetivo, pedir al usuario que continúe estudiando
+    if (timeStudied < sessionGoal) {
+      Alert.alert(
+        'Tiempo objetivo no alcanzado',
+        `Has completado el mazo pero todavía faltan ${sessionGoal - timeStudied} minuto(s) para alcanzar la meta de ${sessionGoal} min. ¿Deseas seguir estudiando o finalizar igualmente (sin recompensas)?`,
+        [
+          { text: 'Seguir estudiando', style: 'cancel' },
+          {
+            text: 'Finalizar ahora',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                await cancelSession();
+                navigation.replace('StudyResults', {
+                  sessionId: activeSession?.id || 0,
+                  rewards: {
+                    xavicoins: 0,
+                    timeBonus: false,
+                    cardsBonus: 0
+                  },
+                  statistics: {
+                    cardsStudied,
+                    timeSpent: timeStudied,
+                    correctAnswers: ankiState.cardHistory.filter(h => h.difficulty === 'good' || h.difficulty === 'easy').length
+                  }
+                });
+              } catch (error) {
+                Alert.alert('Error', 'Hubo un problema al cancelar la sesión. Inténtalo de nuevo.', [{ text: 'OK' }]);
+              }
+            }
+          }
+        ]
+      );
+      return;
+    }
 
     try {
       await finishStudySession(cardsStudied);
@@ -146,6 +181,9 @@ const StudySessionPage: React.FC = () => {
     
     return total;
   };
+
+  const timeStudied = Math.floor(sessionTimer / 60);
+  const canFinish = timeStudied >= sessionGoal;
 
   // Si no hay sesión activa, mostrar mensaje de carga
   if (!activeSession) {
@@ -209,6 +247,19 @@ const StudySessionPage: React.FC = () => {
         onShowAnswer={showAnswer}
         onAnswerDifficulty={handleAnswerDifficulty}
       />
+
+      <View style={{ marginTop: 12 }}>
+        <TouchableOpacity
+          style={[studyStyles.actionButton, !canFinish && { opacity: 0.6 }]}
+          disabled={!canFinish}
+          onPress={handleSessionComplete}
+          activeOpacity={0.8}
+        >
+          <Text style={studyStyles.actionButtonText}>
+            {canFinish ? 'Finalizar sesión y cobrar recompensas' : `Faltan ${Math.max(0, sessionGoal - timeStudied)} min`}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       {!isAppActive && (
         <View style={[studyStyles.errorContainer, { backgroundColor: '#fef3c7', borderColor: '#f59e0b' }]}>

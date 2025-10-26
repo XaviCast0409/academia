@@ -59,6 +59,9 @@ export interface StudyDeck {
   description: string;
   icon: string;
   color: string;
+  // IDs para conectar con el backend
+  courseId?: number;
+  subTopicId?: number;
 }
 
 export interface StudySessionConfig {

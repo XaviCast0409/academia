@@ -24,6 +24,7 @@ import LoginAfterRegisterPage from '@/pages/LoginAfterRegisterPage';
 import StudyDecksPage from '@/pages/StudyDecksPage';
 import StudySessionPage from '@/pages/StudySessionPage';
 import StudyResultsPage from '@/pages/StudyResultsPage';
+import DonationsPage from '@/pages/DonationsPage';
 import BottomTabBar from '@/components/navigation/BottomTabBar';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 
@@ -43,7 +44,7 @@ const TabNavigator: React.FC = () => {
       <Tab.Screen name="Profile" component={ProfilePage} />
       <Tab.Screen name="Store" component={StorePage} />
       <Tab.Screen name="Activities" component={ActivitiesPage} />
-      <Tab.Screen name="Study" component={StudyDecksPage} />
+     {/*  <Tab.Screen name="Study" component={StudyDecksPage} /> */}
     </Tab.Navigator>
   );
 };
@@ -86,11 +87,14 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen name="Missions" component={MissionsPage} />
             <Stack.Screen name="Achievements" component={AchievementsPage} />
             <Stack.Screen name="Notifications" component={NotificationsPage} />
+            <Stack.Screen name="Donations" component={DonationsPage} />
             <Stack.Screen name="CreateUser" component={CreateUserPage} />
             <Stack.Screen name="Register" component={RegisterPage} />
             <Stack.Screen name="LoginAfterRegister" component={LoginAfterRegisterPage} />
             {/* Study system screens */}
             <Stack.Screen name="StudyDecks" component={StudyDecksPage} />
+            <Stack.Screen name="CourseSubtopics" component={require('@/pages/CourseSubtopicsPage').default} />
+            <Stack.Screen name="SessionConfig" component={require('@/pages/SessionConfigPage').default} />
             <Stack.Screen name="StudySession" component={StudySessionPage} />
             <Stack.Screen name="StudyResults" component={StudyResultsPage} />
           </>

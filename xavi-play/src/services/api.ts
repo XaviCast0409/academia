@@ -6,7 +6,8 @@ import { apiLogger } from '@/utils/logger';
 const API_CONFIG = {
   development: 'http://192.168.18.159:3000', // Tu IP local que ya funcionaba
   staging: 'https://staging.academia.com',
-  production: 'https://academia-nho8.onrender.com'
+  //production: 'http://192.168.18.180:3000/'
+  production: 'https://academia-nho8.onrender.com' 
 };
 
 // Determinar entorno actual

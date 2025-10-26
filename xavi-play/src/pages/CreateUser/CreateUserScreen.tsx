@@ -17,6 +17,7 @@ interface CreateUserForm {
   confirmPassword: string;
   section: SectionOption | '';
   pokemonId: number;
+  isPremium: boolean;
 }
 
 const SECTION_OPTIONS: SectionOption[] = [
@@ -41,6 +42,7 @@ export const CreateUserScreen: React.FC = () => {
     confirmPassword: '',
     section: '',
     pokemonId: 0,
+    isPremium: false,
   });
 
   const isStepOneValid = useMemo(() => {
@@ -75,6 +77,7 @@ export const CreateUserScreen: React.FC = () => {
         roleId: 2,
         pokemonId: form.pokemonId,
         section: form.section as string,
+        isPremium: form.isPremium,
       });
 
       // Mostrar overlay ~5s y luego navegar a Login

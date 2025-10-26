@@ -29,11 +29,11 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
       label: 'Actividades',
       icon: '📝',
     },
-    {
+/*     {
       name: 'Study' as keyof TabParamList,
       label: 'Estudio',
       icon: '📚',
-    },
+    }, */
   ];
 
   return (

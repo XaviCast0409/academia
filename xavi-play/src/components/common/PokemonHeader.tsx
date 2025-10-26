@@ -63,6 +63,9 @@ const PokemonHeader: React.FC<PokemonHeaderProps> = ({ title, onMenuPress, showB
       case 'misiones':
         (navigation as any).navigate('Missions');
         break;
+      case 'donations':
+        (navigation as any).navigate('Donations');
+        break;
       case 'cerrar-sesion':
         handleLogout();
         break;
@@ -76,6 +79,7 @@ const PokemonHeader: React.FC<PokemonHeaderProps> = ({ title, onMenuPress, showB
      { id: 'mis-compras', title: 'Mis Compras', icon: '🛒' },
      { id: 'ranking', title: 'Ranking', icon: '🏆' },
      { id: 'misiones', title: 'Misiones', icon: '🎯' },
+     { id: 'donations', title: 'Donaciones', icon: '�' },
      { id: 'cerrar-sesion', title: 'Cerrar Sesión', icon: '🚪' },
    ];
 

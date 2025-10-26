@@ -7,6 +7,7 @@ export interface CreateUserData {
   roleId: number;
   pokemonId: number;
   section: string;
+  isPremium: boolean;
 }
 
 export interface Role {
